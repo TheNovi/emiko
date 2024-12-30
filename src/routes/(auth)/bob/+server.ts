@@ -4,11 +4,14 @@ import { eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 // import { writeFile } from 'fs/promises';
 import sharp from 'sharp';
+import { error } from '@sveltejs/kit';
 
 const resize = (f: sharp.Sharp, path: string, width: number, height: number) =>
 	f.clone().resize({ width, height, fit: 'inside' }).toFile(`./data/bob/resized/${path}`);
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+	if (!locals.user) return error(403, 'No user found');
+
 	// await new Promise((resolve) => { setTimeout(resolve, 5000); });
 	const formData = await request.formData();
 	if (!formData) return new Response();
@@ -38,11 +41,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// Create row in db
-		// TODO UserId
 		let r = await db
 			.insert(bobImage)
 			.values({
-				userId: 1,
+				userId: locals.user.id,
 				path: '',
 				takenAt: new Date(file.lastModified), //Most likely current date
 				type: file.type,
