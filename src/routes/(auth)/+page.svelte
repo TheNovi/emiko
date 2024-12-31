@@ -4,4 +4,5 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<h1>Public</h1>
+<h1>Welcome to Emiko</h1>
+<a href="/bob">Bob</a>
