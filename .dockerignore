@@ -25,5 +25,6 @@
 **/build
 **/nudes
 **/data
+Caddyfile
 LICENSE
 README.md
