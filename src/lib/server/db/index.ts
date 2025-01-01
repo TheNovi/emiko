@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
 import { env } from '$env/dynamic/private';
-if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
-const client = createClient({ url: env.DATABASE_URL });
+if (!env.DB_URL) throw new Error('DB_URL is not set');
+const client = createClient({ url: env.DB_URL });
 export const db = drizzle(client);
