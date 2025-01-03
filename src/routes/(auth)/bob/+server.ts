@@ -6,8 +6,11 @@ import type { RequestHandler } from './$types';
 import sharp from 'sharp';
 import { error } from '@sveltejs/kit';
 
+const DATA_FOLDER = '/data/';
+
+//TODO Don't resize if image is smaller
 const resize = (f: sharp.Sharp, path: string, width: number, height: number) =>
-	f.clone().resize({ width, height, fit: 'inside' }).toFile(`./data/bob/resized/${path}`);
+	f.clone().resize({ width, height, fit: 'inside' }).toFile(`${DATA_FOLDER}/bob/resized/${path}`);
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) return error(403, 'No user found');
@@ -56,25 +59,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		//TODO md5
 		const path = `${r[0].id}.${ext}`;
 		let f = sharp(await file.arrayBuffer())
-			.metadata((err, m) => {
-				if (err && err.name) {
-					console.log('Metadata file error', file.name, err.cause, err.name, err.message);
-					// continue;
-				}
-				//* https://www.npmjs.com/package/exifreader (most used)
-				//* https://www.npmjs.com/package/exif-reader (used by sharp tests https://github.com/lovell/sharp/blob/main/test/unit/metadata.js#L46-L49)
-				// console.log(m);
-			})
+			// .metadata((err, m) => {
+			// 	if (err && err.name) {
+			// 		console.log('Metadata file error', file.name, err.cause, err.name, err.message);
+			// 	}
+			// 	//* https://www.npmjs.com/package/exifreader (most used)
+			// 	//* https://www.npmjs.com/package/exif-reader (used by sharp tests https://github.com/lovell/sharp/blob/main/test/unit/metadata.js#L46-L49)
+			// 	// console.log(m);
+			// })
 			.toFormat(ext as any);
 		Promise.all([
 			resize(f, 'T-' + path, 120, 80), //TODO Test sizes
 			resize(f, 'P-' + path, 640, 480),
 			//! Don't make this metadata public (use only images above)
-			f.withMetadata().toFile(`./data/bob/org/${path}`), //TODO Still maybe resize this
+			f.withMetadata().toFile(`${DATA_FOLDER}/bob/org/${path}`), //TODO Still maybe resize this
 		]).then(() => console.log(file.name, '->', path)); //? Await
-		// writeFile(`./data/bob/${path}`, Buffer.from(await file.arrayBuffer())).then(() => {
-		// 	console.log(`${progress++}/${t} ${file.name}`);
-		// }); //? Await
+		// writeFile(`${DATA_FOLDER}/bob/${path}`, Buffer.from(await file.arrayBuffer()));
 
 		// Update path in db
 		await db.update(bobImage).set({ path }).where(eq(bobImage.id, r[0].id));
