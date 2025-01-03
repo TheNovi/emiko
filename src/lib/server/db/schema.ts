@@ -45,7 +45,7 @@ export const bobImage = sqliteTable(
 		size: integer('size').notNull(),
 		takenAt: integer('taken_at', { mode: 'timestamp' }).notNull(),
 		favorite: integer('favorite', { mode: 'boolean' }).notNull().default(false),
-		public: integer('private', { mode: 'boolean' }).notNull().default(false), //TODO View
+		public: integer('public', { mode: 'boolean' }).notNull().default(false), //TODO View
 		description: text('description', { length: 5000 }).notNull().default(''),
 		//TODO Geolocation
 		//TODO Tags

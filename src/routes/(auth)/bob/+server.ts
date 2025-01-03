@@ -6,7 +6,8 @@ import type { RequestHandler } from './$types';
 import sharp from 'sharp';
 import { error } from '@sveltejs/kit';
 
-const DATA_FOLDER = '/data/';
+// const DATA_FOLDER = '/data/';
+const DATA_FOLDER = 'data/'; //TODO From env
 
 //TODO Don't resize if image is smaller
 const resize = (f: sharp.Sharp, path: string, width: number, height: number) =>
@@ -68,12 +69,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 	// console.log(m);
 			// })
 			.toFormat(ext as any);
-		Promise.all([
+		await Promise.all([
 			resize(f, 'T-' + path, 120, 80), //TODO Test sizes
-			resize(f, 'P-' + path, 640, 480),
+			resize(f, 'P-' + path, 640, 640),
 			//! Don't make this metadata public (use only images above)
 			f.withMetadata().toFile(`${DATA_FOLDER}/bob/org/${path}`), //TODO Still maybe resize this
-		]).then(() => console.log(file.name, '->', path)); //? Await
+		]).then(() => console.log(file.name, '->', path));
 		// writeFile(`${DATA_FOLDER}/bob/${path}`, Buffer.from(await file.arrayBuffer()));
 
 		// Update path in db
