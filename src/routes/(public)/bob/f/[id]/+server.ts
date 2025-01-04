@@ -9,8 +9,6 @@ import path from 'path';
 if (!env.DATA_PATH) throw new Error('DATA_PATH is not set');
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
-	// if (!locals.user) return error(403, 'No user found');
-
 	let q = db.select({ path: bobImage.path }).from(bobImage);
 	if (locals.user && !url.searchParams.get('public'))
 		q.where(

@@ -5,7 +5,6 @@ import { and, eq, isNull } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals, url }) => {
-	// if (!locals.user) return error(403, 'No user found');
 	// await new Promise((resolve) => { setTimeout(resolve, 2000); });
 	let offset = +(url.searchParams.get('offset') || 0);
 	let limit = Math.min(+(url.searchParams.get('limit') || 0), 20);
@@ -13,13 +12,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	let q = db
 		.select({
-			// path: bobImage.path,
 			id: bobImage.id,
-			// type: bobImage.type,
-			// takenAt: bobImage.takenAt,
 			favorite: bobImage.favorite,
 			public: bobImage.public,
-			// description: bobImage.description,
 		})
 		.from(bobImage)
 		.offset(offset)

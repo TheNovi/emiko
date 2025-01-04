@@ -10,7 +10,9 @@ declare global {
 			};
 		}
 		// interface PageData {}
-		// interface PageState {}
+		interface PageState {
+			selected?: Record<string, any>;
+		}
 		// interface Platform {}
 	}
 }

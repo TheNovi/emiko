@@ -17,7 +17,7 @@ const resize = (f: sharp.Sharp, path: string, width: number, height: number) =>
 		.toFile(pJoin(env.DATA_PATH, 'bob', 'resized', path));
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	if (!locals.user) return error(403, 'No user found');
+	if (!locals.user || !locals.user.id) return error(403, 'No user found');
 
 	// await new Promise((resolve) => { setTimeout(resolve, 5000); });
 	const formData = await request.formData();
