@@ -60,7 +60,7 @@ export async function getUserFromCookie(event: { cookies: Cookies }) {
 		//.split(' ')[1]; //Bearer token
 		return jwt.verify(token, env.JWT_SECRET, {
 			algorithms: ['HS256'],
-		}) as unknown as { id: number }; //TODO Better type
+		}) as unknown as { id: number };
 	} catch (error) {
 		console.log(error);
 	}

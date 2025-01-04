@@ -6,6 +6,9 @@
 	type Image = { id: number; favorite: boolean; public: boolean };
 
 	let data: Image[] = $state([]);
+	let loading = $state(false);
+	let end = $state(false);
+	let currentOffset = 0;
 
 	let { pub = false }: { pub?: boolean } = $props();
 
@@ -14,16 +17,20 @@
 	}
 
 	//TODO Init data from load
-	function fetchImages(offset = 0) {
-		console.log('fetching');
+	function fetchImages() {
+		loading = true;
+		// console.log('fetching', currentOffset);
 		let q = new URL('/bob/p', page.url);
-		if (pub) q.searchParams.append('public', 'true');
-		q.searchParams.append('offset', offset + '');
+		if (pub) q.searchParams.append('public', 'true'); //This filters out private images if user IS logged in
+		q.searchParams.append('offset', currentOffset + '');
 		q.searchParams.append('limit', PAGE_LIMIT + '');
+		currentOffset += PAGE_LIMIT;
 		fetch(q)
 			.then((r) => r.json())
 			.then((r: Image[]) => {
-				data = [...data, ...r];
+				if (r.length) data = [...data, ...r];
+				else end = true;
+				loading = false;
 			});
 	}
 
@@ -34,9 +41,8 @@
 
 <svelte:window
 	onscroll={() => {
-		if (window.innerHeight * 1.6 + window.scrollY >= document.body.offsetHeight)
-			fetchImages(data.length);
-		//TODO Stop fetching when at end
+		if (!loading && !end && window.innerHeight * 1.6 + window.scrollY >= document.body.offsetHeight)
+			fetchImages();
 		//FIXME This doesn't work if initial content doesn't alow scroll (all photos fit on screen)
 	}}
 />
@@ -45,9 +51,16 @@
 	{#each data as item (item.id)}
 		<img src={`/bob/p/${item.id}${pub ? '?public=true' : ''}`} alt={item.id + ''} />
 	{:else}
-		<div>Empty</div>
+		{#if !loading}
+			<div>Empty</div>
+		{/if}
 	{/each}
 </div>
+
+{#if loading}
+	<!-- TODO Animation -->
+	<div id="loading">Loading...</div>
+{/if}
 
 <style lang="postcss">
 	#gallery {
@@ -67,5 +80,9 @@
 	}
 	#gallery img:hover {
 		object-fit: contain;
+	}
+	#loading {
+		margin: 10px;
+		text-align: center;
 	}
 </style>
