@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import { db } from './db';
 import { user } from './db/schema';
+if (!env.JWT_SECRET) throw new Error('JWT_SECRET is not set');
 
 const COOKIE_NAME = 'emiko';
 

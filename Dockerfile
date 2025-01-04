@@ -2,13 +2,15 @@ ARG NODE_VERSION="23"
 
 FROM node:${NODE_VERSION}-alpine AS build
 WORKDIR /app
-# Only for build
 
 COPY package*.json pnpm-lock.yaml ./
 RUN npm i -g pnpm && pnpm i
 
 COPY . .
-ENV DB_URL=file:build.db
+# Only for build
+ENV DB_URL=file:_.db
+ENV DATA_PATH=/_
+ENV JWT_SECRET=_
 # RUN mkdir data && pnpm db:push --force
 RUN pnpm build && pnpm prune --prod
 
@@ -24,6 +26,7 @@ RUN mkdir /data
 
 ENV NODE_ENV=production
 ENV DB_URL=file:/data/emiko.db
+ENV DATA_PATH=/data
 
 EXPOSE 3000
 ENTRYPOINT ["node", "build"]

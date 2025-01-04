@@ -3,15 +3,18 @@ import { bobImage } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 // import { writeFile } from 'fs/promises';
-import sharp from 'sharp';
+import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
-
-// const DATA_FOLDER = '/data/';
-const DATA_FOLDER = 'data/'; //TODO From env
+import sharp from 'sharp';
+import { join as pJoin } from 'path';
+if (!env.DATA_PATH) throw new Error('DATA_PATH is not set');
 
 //TODO Don't resize if image is smaller
 const resize = (f: sharp.Sharp, path: string, width: number, height: number) =>
-	f.clone().resize({ width, height, fit: 'inside' }).toFile(`${DATA_FOLDER}/bob/resized/${path}`);
+	f
+		.clone()
+		.resize({ width, height, fit: 'inside' })
+		.toFile(pJoin(env.DATA_PATH, 'bob', 'resized', path));
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) return error(403, 'No user found');
@@ -73,7 +76,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			resize(f, 'T-' + path, 120, 80), //TODO Test sizes
 			resize(f, 'P-' + path, 640, 640),
 			//! Don't make this metadata public (use only images above)
-			f.withMetadata().toFile(`${DATA_FOLDER}/bob/org/${path}`), //TODO Still maybe resize this
+			f.withMetadata().toFile(pJoin(env.DATA_PATH, 'bob', 'org', path)), //TODO Still maybe resize this
 		]).then(() => console.log(file.name, '->', path));
 		// writeFile(`${DATA_FOLDER}/bob/${path}`, Buffer.from(await file.arrayBuffer()));
 

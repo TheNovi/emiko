@@ -6,6 +6,7 @@ import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals, url }) => {
 	// if (!locals.user) return error(403, 'No user found');
+	// await new Promise((resolve) => { setTimeout(resolve, 2000); });
 	let offset = +(url.searchParams.get('offset') || 0);
 	let limit = Math.min(+(url.searchParams.get('limit') || 0), 20);
 	if (limit < 0) limit = 0;

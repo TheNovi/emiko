@@ -4,6 +4,9 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import { bobImage } from '$lib/server/db/schema';
 import { and, eq, isNull } from 'drizzle-orm';
+import { env } from '$env/dynamic/private';
+import path from 'path';
+if (!env.DATA_PATH) throw new Error('DATA_PATH is not set');
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// if (!locals.user) return error(403, 'No user found');
@@ -24,7 +27,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	let p = await q.get();
 	if (!p || !p.path) return error(404, 'Image not found');
 	// let f = readFileSync('data/bob/org/' +p.path);
-	let f = readFileSync('data/bob/resized/P-' + p.path);
+	let f = readFileSync(path.join(env.DATA_PATH, 'bob', 'resized', 'P-' + path.basename(p.path))); //TODO Test
 
 	return new Response(f, { status: 200, headers: {} }); //TODO Headers?
 };
