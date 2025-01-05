@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto, preloadData, pushState } from '$app/navigation';
 	import { page } from '$app/state';
+	import { clickedOutsideOfNode } from '$lib/util/directives.svelte';
 	import { onMount } from 'svelte';
 	import DetailPage from '../../routes/(public)/bob/[id]/+page.svelte';
 
@@ -47,6 +48,7 @@
 
 		// prevent navigation
 		e.preventDefault();
+		e.stopPropagation();
 
 		const { href } = e.currentTarget;
 
@@ -63,7 +65,8 @@
 </script>
 
 <svelte:window
-	onscroll={() => {
+	onscroll={(e) => {
+		if (page.state.selected) e.preventDefault();
 		if (!loading && !end && window.innerHeight * 1.6 + window.scrollY >= document.body.offsetHeight)
 			fetchImages();
 		//FIXME This doesn't work if initial content doesn't alow scroll (all photos fit on screen)
@@ -71,10 +74,10 @@
 />
 
 {#if page.state.selected}
-	<!-- TODO Close on click outside -->
-	<!-- TODO Disable scroll in gallery -->
-	<div id="modal">
-		<DetailPage close={() => history.back()} data={page.state.selected as any} />
+	<div id="curtain">
+		<div id="modal" use:clickedOutsideOfNode={() => history.back()}>
+			<DetailPage close={() => history.back()} data={page.state.selected as any} />
+		</div>
 	</div>
 {/if}
 
@@ -123,11 +126,21 @@
 		display: block;
 		position: fixed;
 		padding: 4px;
-		background-color: gray;
+		background-color: black;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
 		box-sizing: border-box;
+	}
+
+	#curtain {
+		display: block;
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background-color: #000000f5;
 	}
 
 	#loading {
