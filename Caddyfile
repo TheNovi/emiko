@@ -5,3 +5,26 @@
 localhost {
 	reverse_proxy emiko:3000
 }
+
+bob.localhost {
+	redir https://localhost/pbob{uri}
+}
+
+# Rewrite bob.localhost
+
+# localhost {
+# 	handle_path /pbob {
+# 		redir https://bob.{host}{uri}
+# 	}
+# 	reverse_proxy emiko:3000
+# }
+# bob.localhost {
+# 	handle_path /pbob {
+# 		redir * {uri}
+# 	}
+# 	handle / {
+# 		rewrite * /pbob
+# 		reverse_proxy emiko:3000
+# 	}
+# 	reverse_proxy emiko:3000
+# }
