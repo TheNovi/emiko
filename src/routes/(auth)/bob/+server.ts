@@ -9,13 +9,14 @@ import sharp from 'sharp';
 import { join as pJoin } from 'path';
 if (!env.DATA_PATH) throw new Error('DATA_PATH is not set');
 
-//TODO Don't resize if image is smaller
+//TODO TEST Don't resize if image is smaller
 const resize = (f: sharp.Sharp, path: string, width: number, height: number) =>
 	f
 		.clone()
-		.resize({ width, height, fit: 'inside' })
+		.resize({ width, height, fit: 'inside', withoutEnlargement: true })
 		.toFile(pJoin(env.DATA_PATH, 'bob', 'resized', path));
 
+//File upload
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user || !locals.user.id) return error(403, 'No user found');
 
@@ -33,11 +34,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	for (const file of files) {
 		//TODO Video
 		//TODO Logger
-		//TODO Error handling
+		//TODO Error handling (try to upload exe or something)
 		// Checks
 		if (!file || !file.size) continue;
 		if (file.size > 50 * 1000 * 1000) {
 			//50 MB (yes its in bytes)
+			//? Is this necessary? Photo is resized anyway.
 			console.log('File too big', file.name, file.size);
 			continue;
 		}
@@ -60,8 +62,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.returning({ id: bobImage.id });
 
 		// Write file to disk
-		//TODO md5
-		const path = `${r[0].id}.${ext}`;
 		let f = sharp(await file.arrayBuffer())
 			// .metadata((err, m) => {
 			// 	if (err && err.name) {
@@ -72,11 +72,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 	// console.log(m);
 			// })
 			.toFormat(ext as any);
+		const path = `${r[0].id.toString(16)}.${ext}`;
 		await Promise.all([
 			resize(f, 'T-' + path, 120, 80), //TODO Test sizes
 			resize(f, 'P-' + path, 640, 640),
-			//! Don't make this metadata public (use only images above)
-			f.withMetadata().toFile(pJoin(env.DATA_PATH, 'bob', 'org', path)), //TODO Still maybe resize this
+			f.toFile(pJoin(env.DATA_PATH, 'bob', 'org', path)), //TODO Still maybe resize this
 		]).then(() => console.log(file.name, '->', path));
 		// writeFile(`${DATA_FOLDER}/bob/${path}`, Buffer.from(await file.arrayBuffer()));
 

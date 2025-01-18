@@ -8,6 +8,7 @@ import { env } from '$env/dynamic/private';
 import path from 'path';
 if (!env.DATA_PATH) throw new Error('DATA_PATH is not set');
 
+// Get file file :)
 export const GET: RequestHandler = async ({ locals, params, url }) => {
 	let q = db.select({ path: bobImage.path }).from(bobImage);
 	if (locals.user && !url.searchParams.get('public'))

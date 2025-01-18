@@ -16,7 +16,10 @@
 	let { pub = false }: { pub?: boolean } = $props();
 
 	export function reFetch() {
+		currentOffset = 0;
+		data = [];
 		fetchImages();
+		end = false;
 	}
 
 	//TODO Init data from load
@@ -27,10 +30,10 @@
 		if (pub) q.searchParams.append('public', 'true'); //This filters out private images if user IS logged in
 		q.searchParams.append('offset', currentOffset + '');
 		q.searchParams.append('limit', PAGE_LIMIT + '');
-		currentOffset += PAGE_LIMIT;
 		fetch(q)
 			.then((r) => r.json())
 			.then((r: Image[]) => {
+				currentOffset += r.length;
 				if (r.length) data = [...data, ...r];
 				else end = true;
 				loading = false;
