@@ -117,8 +117,8 @@
 	}
 	#gallery img {
 		object-fit: cover;
-		max-width: 100%;
-		max-height: 100%;
+		width: 100%;
+		height: 100%;
 		aspect-ratio: 1;
 	}
 	#gallery img:hover {
@@ -127,13 +127,17 @@
 
 	#modal {
 		display: block;
-		position: fixed;
-		padding: 4px;
+		position: relative;
 		background-color: black;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
 		box-sizing: border-box;
+		overflow: hidden;
+		margin: auto;
+		max-width: max-content;
+		height: 90vh;
+		top: 5%;
+		/* left: 50%; */
+		/* top: 50%; */
+		/* transform: translate(-50%, -50%); */
 	}
 
 	#curtain {
@@ -143,7 +147,10 @@
 		left: 0;
 		bottom: 0;
 		right: 0;
-		background-color: #000000f5;
+		background-color: #000000f0;
+		/* Margin for modal */
+		padding-left: 5vw;
+		padding-right: 5vw;
 	}
 
 	#loading {
