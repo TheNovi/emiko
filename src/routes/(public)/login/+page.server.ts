@@ -26,9 +26,10 @@ export const actions: Actions = {
 		addError(
 			error,
 			(await loginUser(event, { name, password })) && 'Username or password is incorrect'
+			// await loginUser(event, { name, password })
 		);
-		if (error.length == 0) redirect(302, '/'); //TODO url from query
 		// console.log(error);
+		if (error.length == 0) redirect(302, '/'); //TODO url from query
 		return {
 			error: error.join('\n'),
 			name,

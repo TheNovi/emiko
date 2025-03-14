@@ -71,8 +71,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 	//* https://www.npmjs.com/package/exif-reader (used by sharp tests https://github.com/lovell/sharp/blob/main/test/unit/metadata.js#L46-L49)
 			// 	// console.log(m);
 			// })
-			.toFormat(ext as any);
-		const path = `${r[0].id.toString(16)}.${ext}`;
+			// .toFormat(ext as any);
+			.toFormat('webp'); //Is webp best?
+		// const path = `${r[0].id.toString(16)}.${ext}`;
+		const path = `${r[0].id.toString(16)}.webp`;
 		await Promise.all([
 			resize(f, 'T-' + path, 120, 80), //TODO Test sizes
 			resize(f, 'P-' + path, 640, 640),
