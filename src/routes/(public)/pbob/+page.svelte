@@ -6,6 +6,5 @@
 </script>
 
 <h1>Bob public</h1>
-<!-- <div>{JSON.stringify(data)}</div> -->
 
 <Gallery pub />

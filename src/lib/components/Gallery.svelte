@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { goto, preloadData, pushState } from '$app/navigation';
 	import { page } from '$app/state';
-	import { clickedOutsideOfNode } from '$lib/util/directives.svelte';
 	import { onMount } from 'svelte';
-	import DetailPage from '../../routes/(public)/bob/[id]/+page.svelte';
+	import ImageDetail from './ImageDetail.svelte';
 
 	const PAGE_LIMIT = 6;
 	type Image = { id: number; favorite: boolean; public: boolean };
@@ -12,8 +10,9 @@
 	let loading = $state(false);
 	let end = $state(false);
 	let currentOffset = 0;
+	let imageDetail: ReturnType<typeof ImageDetail>;
 
-	let { pub = false }: { pub?: boolean } = $props();
+	let { pub }: { pub: boolean } = $props();
 
 	export function reFetch() {
 		currentOffset = 0;
@@ -40,26 +39,11 @@
 			});
 	}
 
-	async function showImageDetail(
-		e: MouseEvent & {
-			currentTarget: EventTarget & HTMLAnchorElement;
-		},
-		id: number
-	) {
-		//TODO Mousewheel
-		if (innerWidth < 640 || e.shiftKey || e.metaKey || e.ctrlKey) return;
-
-		// prevent navigation
+	async function showImageDetail(e: MouseEvent, id: number) {
 		e.preventDefault();
 		e.stopPropagation();
-
-		const { href } = e.currentTarget;
-
-		const result = await preloadData(href);
-
-		if (result.type === 'loaded' && result.status === 200)
-			pushState(href, { selected: result.data });
-		else goto(href);
+		// if (innerWidth < 640) return;
+		if (imageDetail) imageDetail.openImageDetail(id);
 	}
 
 	onMount(() => {
@@ -69,26 +53,19 @@
 
 <svelte:window
 	onscroll={(e) => {
-		if (page.state.selected) e.preventDefault();
 		if (!loading && !end && window.innerHeight * 1.6 + window.scrollY >= document.body.offsetHeight)
 			fetchImages();
 		//FIXME This doesn't work if initial content doesn't alow scroll (all photos fit on screen)
 	}}
 />
 
-{#if page.state.selected}
-	<div id="curtain">
-		<div id="modal" use:clickedOutsideOfNode={() => history.back()}>
-			<DetailPage close={() => history.back()} data={page.state.selected as any} />
-		</div>
-	</div>
-{/if}
+<ImageDetail {pub} bind:this={imageDetail} />
 
 <div id="gallery">
 	{#each data as item (item.id)}
-		<a href={'/bob/' + item.id} onclick={(e) => showImageDetail(e, item.id)}>
+		<button onclick={(e) => showImageDetail(e, item.id)}>
 			<img src={`/bob/f/${item.id}${pub ? '?public=true' : ''}`} alt={item.id + ''} />
-		</a>
+		</button>
 	{:else}
 		{#if !loading}
 			<div>Empty</div>
@@ -112,8 +89,12 @@
 		gap: 4px;
 		margin: 5px;
 	}
-	#gallery a {
+	#gallery button {
 		aspect-ratio: 1;
+		background-color: transparent;
+		padding: 0;
+		margin: 0;
+		border: 0;
 	}
 	#gallery img {
 		object-fit: cover;
@@ -123,34 +104,6 @@
 	}
 	#gallery img:hover {
 		object-fit: contain;
-	}
-
-	#modal {
-		display: block;
-		position: relative;
-		background-color: black;
-		box-sizing: border-box;
-		overflow: hidden;
-		margin: auto;
-		max-width: max-content;
-		height: 90vh;
-		top: 5%;
-		/* left: 50%; */
-		/* top: 50%; */
-		/* transform: translate(-50%, -50%); */
-	}
-
-	#curtain {
-		display: block;
-		position: fixed;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		background-color: #000000f0;
-		/* Margin for modal */
-		padding-left: 5vw;
-		padding-right: 5vw;
 	}
 
 	#loading {

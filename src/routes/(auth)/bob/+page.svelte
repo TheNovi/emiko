@@ -7,5 +7,4 @@
 
 <Upload onComplete={() => gallery.reFetch()} />
 
-<!-- <div>{JSON.stringify(data)}</div> -->
-<Gallery bind:this={gallery} />
+<Gallery pub={false} bind:this={gallery} />
