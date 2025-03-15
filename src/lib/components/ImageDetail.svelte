@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { clickedOutsideOfNode } from '$lib/util/directives.svelte';
+	import { clickedOutsideOfNode } from '$lib/directives.svelte';
 
 	type Image = {
 		id: number;

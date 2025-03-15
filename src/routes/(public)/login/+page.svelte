@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
+	import Header from '$lib/components/Header.svelte';
 
 	//TODO Form errors
 	let name = $state('');
 	let password = $state('');
 	if (dev) name = password = 'admin';
 </script>
+
+<Header title="Login" />
 
 <form method="post">
 	<div>
