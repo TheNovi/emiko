@@ -7,10 +7,9 @@
 </script>
 
 {#if data.user}
-	<div id="header">{data.user.name}</div>
+	<div id="header"><a href="/p">{data.user.name}</a></div>
 {/if}
 {@render children()}
-
 
 <style lang="postcss">
 	#header {
