@@ -22,11 +22,10 @@
 	{/if}
 	<ul>
 		{#if data.user}
-			<li>&gt;<a href="/bob">Bob</a>&lt;</li>
+			<li>&gt;<a href="/bob">bob</a>&lt;</li>
 		{/if}
-		<li>&gt;<a href="/pbob">PBob</a>&lt;</li>
-		<!-- TODO Stroll -->
-		<!-- <li>&gt;<a href="/stroll">stroll</a>&lt;</li> -->
+		<li>&gt;<a href="/pbob">pbob</a>&lt;</li>
+		<li>&gt;<a href="/stroll">stroll</a>&lt;</li>
 	</ul>
 </div>
 

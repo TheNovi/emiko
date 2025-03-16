@@ -52,4 +52,14 @@ export const bobImage = sqliteTable(
 	}
 	// (table) => ({})
 );
-export type BobImage = typeof bobImage.$inferSelect;
+// export type BobImage = typeof bobImage.$inferSelect;
+
+//* Stroll
+export const stroll = sqliteTable('stroll', {
+	id: integer('id').primaryKey(),
+	...timestamps,
+	name: text('name').default('').notNull(),
+	region: text('region').default('').notNull(),
+	tz: integer('tz'),
+});
+// export type Stroll = typeof stroll.$inferSelect;
