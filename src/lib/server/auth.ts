@@ -20,7 +20,6 @@ export async function loginUser(
 		.from(user)
 		.where(eq(user.name, creds.name))
 		.get();
-	//TODO Enum
 	if (!u) return `User doesn't exist`;
 	if (u.deletedAt) return `User deleted`;
 	if (!bcrypt.compareSync(creds.password.trim(), u.password)) return `Wrong password`;

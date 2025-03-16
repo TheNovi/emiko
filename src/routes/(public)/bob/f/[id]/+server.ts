@@ -25,8 +25,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		);
 	let p = await q.get();
 	if (!p || !p.path) return error(404, 'Image not found');
-	// let f = readFileSync('data/bob/org/' + p.path);
-	let f = readFileSync(path.join(env.DATA_PATH, 'bob', 'resized', 'P-' + path.basename(p.path))); //TODO Test
+	let f = readFileSync(path.join(env.DATA_PATH, 'bob', 'resized', 'P-' + path.basename(p.path))); //TODO Test ../
 
 	return new Response(f, { status: 200, headers: {} }); //TODO Headers?
 };
