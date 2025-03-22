@@ -1,53 +1,53 @@
-import { env } from '$env/dynamic/private';
-import type { Cookies } from '@sveltejs/kit';
-import bcrypt from 'bcrypt';
-import { eq } from 'drizzle-orm';
-import jwt from 'jsonwebtoken';
-import { db } from './db';
-import { user } from './db/schema';
-if (!env.JWT_SECRET) throw new Error('JWT_SECRET is not set');
+import { env } from "$env/dynamic/private";
+import type { Cookies } from "@sveltejs/kit";
+import bcrypt from "bcrypt";
+import { eq } from "drizzle-orm";
+import jwt from "jsonwebtoken";
+import { db } from "./db";
+import { user } from "./db/schema";
+if (!env.JWT_SECRET) throw new Error("JWT_SECRET is not set");
 
-const COOKIE_NAME = 'emiko';
+const COOKIE_NAME = "emiko";
 
-export async function loginUser(
-	event: { cookies: Cookies },
-	creds: { name?: string; password?: string }
-): Promise<string | undefined> {
-	if (!creds.name || !creds.password) return 'Some field is missing';
+export enum AuthError {
+	MISSING = "All fields are required",
+	USER_NOT_EXISTS = "User doesn't exist",
+	USER_DELETED = "User deleted",
+	WRONG_PASSWORD = "Wrong password",
+}
 
-	let u = await db
-		.select({ id: user.id, password: user.password, deletedAt: user.deletedAt })
-		.from(user)
-		.where(eq(user.name, creds.name))
-		.get();
-	if (!u) return `User doesn't exist`;
-	if (u.deletedAt) return `User deleted`;
-	if (!bcrypt.compareSync(creds.password.trim(), u.password)) return `Wrong password`;
+export async function loginUser(event: { cookies: Cookies }, creds: { name?: string; password?: string }): Promise<string | undefined> {
+	if (!creds.name || !creds.password) return AuthError.MISSING;
+
+	let u = await db.select({ id: user.id, password: user.password, deletedAt: user.deletedAt }).from(user).where(eq(user.name, creds.name)).get();
+	if (!u) return AuthError.USER_NOT_EXISTS;
+	if (u.deletedAt) return AuthError.USER_DELETED;
+	if (!bcrypt.compareSync(creds.password.trim(), u.password)) return AuthError.WRONG_PASSWORD;
 
 	// await db.update(user).set({lastLogin: new Date()}).where(eq(user.id, u.id));
-	console.log('Login', u.id);
+	console.log("Login", u.id);
 	createCookie(event, u);
 }
 
 export function createCookie(event: { cookies: Cookies }, user: { id: number }) {
-	let token = jwt.sign({ id: user.id }, env.JWT_SECRET, { expiresIn: '1d', algorithm: 'HS256' });
+	let token = jwt.sign({ id: user.id }, env.JWT_SECRET, { expiresIn: "1d", algorithm: "HS256" });
 	//`Bearer ${token}`
 	event.cookies.set(COOKIE_NAME, token, {
-		path: '/',
+		path: "/",
 		secure: true,
 		httpOnly: true,
-		sameSite: 'strict',
+		sameSite: "strict",
 		maxAge: 60 * 60 * 24,
 	});
 }
 
 export async function logoutUser(event: { cookies: Cookies }) {
-	console.log('Logout');
+	console.log("Logout");
 	await event.cookies.delete(COOKIE_NAME, {
-		path: '/',
+		path: "/",
 		secure: true,
 		httpOnly: true,
-		sameSite: 'strict',
+		sameSite: "strict",
 		maxAge: 60 * 60 * 24,
 	});
 }
@@ -58,7 +58,7 @@ export async function getUserFromCookie(event: { cookies: Cookies }) {
 	try {
 		//.split(' ')[1]; //Bearer token
 		return jwt.verify(token, env.JWT_SECRET, {
-			algorithms: ['HS256'],
+			algorithms: ["HS256"],
 		}) as unknown as { id: number };
 	} catch (error) {
 		console.log(error);
