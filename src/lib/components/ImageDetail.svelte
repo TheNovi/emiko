@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { clickedOutsideOfNode } from '$lib/directives.svelte';
+	import { enhance } from "$app/forms";
+	import { page } from "$app/state";
+	import { clickedOutsideOfNode } from "$lib/directives.svelte";
 
 	type Image = {
 		id: number;
@@ -12,18 +13,20 @@
 
 	let img: Image | undefined = $state();
 	let loading: boolean = $state(false);
+	let tmpDescr = $state("");
 
 	let { pub, close }: { pub: boolean; close?: () => any } = $props();
 
 	export function openImageDetail(id: number) {
 		loading = true;
 		let q = new URL(`/bob/f/${id}/desc`, page.url);
-		if (pub) q.searchParams.append('public', 'true'); //This filters out private images if user IS logged in
+		if (pub) q.searchParams.append("public", "true"); //This filters out private images if user IS logged in
 		//TODO Error
 		fetch(q)
 			.then((r) => r.json())
 			.then((r: Image) => {
 				img = r;
+				tmpDescr = r.description;
 				loading = false;
 			});
 	}
@@ -38,28 +41,71 @@
 	<div id="curtain">
 		<div id="modal" use:clickedOutsideOfNode={() => hideImageDetail()}>
 			<div id="c">
-				{#if img}
-					<div id="l">
-						<img src={'/bob/f/' + img.id} alt={img.id + ''} />
-					</div>
-					<div id="r">
-						<!-- <section><span>Taken at: </span> {img.takenAt.toISOString()}</section> -->
-						<section><span>Public: </span> {img.public}</section>
-						<div>Description:</div>
-						<div class="wrap">
-							{img.description ||
-								'Empty sd qwe zxc dsfo oihj iqhode iqwdoq  asd anid noaidnoa ndaodnhaisdaoidadoa doa dnoandoasdnoaidn aod iandoa dnaodn aodinao daso dandoadaodaodadaod'}
-						</div>
-						<br />
-						<button type="button" onclick={() => hideImageDetail()}>Close</button>
-					</div>
+				<div id="l">
+					<img src={"/bob/f/" + img.id} alt={img.id + ""} />
+				</div>
+				{#if pub}
+					<div id="r">{@render right(img)}</div>
 				{:else}
-					<div>File not found</div>
+					<form
+						id="r"
+						method="POST"
+						use:enhance={({ formData, cancel }) => {
+							if (!img) return cancel();
+							console.log(formData.get("description"), img.description);
+							if (formData.get("description") == img.description) formData.delete("description");
+							// formData.set("path", "exploit"); //Debug
+							// console.log(Object.fromEntries(formData));
+							return async ({ update, result }) => {
+								if (!img) return;
+								if (result.status == 200) {
+									img.public = formData.get("public") == "on";
+									img.favorite = formData.get("favorite") == "on";
+									img.description = tmpDescr || "";
+								}
+								update({ reset: false });
+							};
+						}}
+					>
+						{#each page.form?.errors || [] as e (e)}
+							<div class="error">{e}</div>
+						{/each}
+						<input type="hidden" name="id" id="id" value={img.id} />
+						<section>
+							<label for="public">Public:</label>
+							<input type="checkbox" name="public" id="public" checked={img.public} />
+						</section>
+						<section>
+							<label for="favorite">Favorite:</label>
+							<!--  onchange={(e) => patch({ favorite: (e.target as HTMLInputElement)?.checked })}-->
+							<input type="checkbox" name="favorite" id="favorite" checked={img.favorite} />
+						</section>
+						{@render right(img)}
+					</form>
 				{/if}
 			</div>
 		</div>
 	</div>
 {/if}
+
+{#snippet right(img: Image)}
+	<!-- Not public fields are above -->
+	<section>
+		<label for="takenAt">Taken At:</label>
+		{new Date(img.takenAt).toLocaleString()}
+		<!-- {img.takenAt} -->
+		<!-- TODO yyyy-mm-ddThh:mm  -->
+		<!-- <input type="datetime-local" name="takenAt" id="takenAt" required max={new Date().toJSON()} value={img.takenAt} onchange={() => console.log("asd")} /> -->
+	</section>
+	<section>
+		<textarea name="description" id="description" readonly={pub} bind:value={tmpDescr}></textarea>
+	</section>
+	<br />
+	{#if !pub}
+		<button type="submit">Save</button>
+	{/if}
+	<button type="button" onclick={() => hideImageDetail()}>Close</button>
+{/snippet}
 
 <style lang="postcss">
 	#curtain {
@@ -113,7 +159,23 @@
 		width: min-content;
 	}
 
-	.wrap {
-		text-wrap: wrap;
+	textarea {
+		width: 100%;
+		height: fit-content;
+		max-height: 50%;
+		resize: vertical;
+		background-color: transparent;
+		border: none;
+		color: inherit;
 	}
+	textarea:read-only:focus {
+		outline: none;
+	}
+	textarea:read-only {
+		cursor: default;
+	}
+
+	/* .wrap {
+		text-wrap: wrap;
+	} */
 </style>

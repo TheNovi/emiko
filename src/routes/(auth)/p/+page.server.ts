@@ -31,6 +31,7 @@ export const actions: Actions = {
 		});
 
 		if (!o.success) {
+			//TODO Try to return fail, without use:enhance
 			return { errors: o.issues.map((e) => e.message), name: data.name };
 		}
 		const { name, pas1, pas2 } = o.output;
