@@ -30,7 +30,7 @@
 	{/each}
 	<div>
 		<label for="name">name</label>
-		<input type="text" name="name" id="name" required value={form?.name ?? data.user.name} />
+		<input type="text" autocomplete="username" name="name" id="name" required value={data.user.name} />
 	</div>
 
 	<div>
@@ -43,7 +43,8 @@
 	</div>
 
 	<div>
-		<button type="submit">Submit</button>
+		<button type="submit" formaction="?/edit">Submit</button>
+		<button type="submit" formaction="?/logout">Logout</button>
 	</div>
 </form>
 

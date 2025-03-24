@@ -98,9 +98,8 @@
 		<!-- <input type="datetime-local" name="takenAt" id="takenAt" required max={new Date().toJSON()} value={img.takenAt} onchange={() => console.log("asd")} /> -->
 	</section>
 	<section>
-		<textarea name="description" id="description" readonly={pub} bind:value={tmpDescr}></textarea>
+		<textarea name="description" id="description" placeholder="description" readonly={pub} bind:value={tmpDescr}></textarea>
 	</section>
-	<br />
 	{#if !pub}
 		<button type="submit">Save</button>
 	{/if}
@@ -162,11 +161,15 @@
 	textarea {
 		width: 100%;
 		height: fit-content;
+		min-height: 50px;
 		max-height: 50%;
 		resize: vertical;
 		background-color: transparent;
 		border: none;
 		color: inherit;
+	}
+	textarea::placeholder {
+		color: #ddd;
 	}
 	textarea:read-only:focus {
 		outline: none;

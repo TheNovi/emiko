@@ -1,7 +1,7 @@
-import { hash } from "$lib/server/auth";
+import { hash, logoutUser } from "$lib/server/auth";
 import { db } from "$lib/server/db";
 import { user } from "$lib/server/db/schema";
-import { redirect } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import * as v from "valibot";
 import type { Actions, PageServerLoad } from "./$types";
@@ -10,55 +10,55 @@ export const load = (async (event) => {
 	if (!event.locals.user) redirect(303, "/login");
 }) satisfies PageServerLoad;
 
-const s = v.object({
-	name: v.pipe(v.string("Name can't be empty"), v.trim(), v.minLength(3, "Name is too short"), v.maxLength(25, "Name is too long")),
-	// pas1: v.optional(v.union([v.literal(""), v.pipe(v.string("Password must be string"), v.trim(), v.minLength(5, "Password is too short"), v.maxLength(250, "Password is too long"))])),
-	pas1: v.optional(
-		v.pipe(v.string("Password must be string"), v.trim(), v.union([v.literal(""), v.pipe(v.string(), v.minLength(5, "Password is too short"), v.maxLength(250, "Password is too long"))]))
-	),
-	pas2: v.optional(v.pipe(v.string(), v.trim())),
-});
-
 export const actions: Actions = {
-	default: async (event) => {
-		if (!event.locals.user) return redirect(303, "/");
+	logout: async ({ locals, cookies }) => {
+		if (!locals.user) await logoutUser(cookies);
+		locals.user = undefined; //Just to be sure
+		return redirect(303, "/");
+	},
+	edit: async ({ locals, request }) => {
+		if (!locals.user) return redirect(303, "/");
 		let out: { name?: string; password?: string } = {};
-		const data = Object.fromEntries(await event.request.formData());
-		const o = v.safeParse(s, {
-			name: data.name,
-			pas1: data.newPassword,
-			pas2: data.newPasswordAgain,
-		});
+		const o = v.safeParse(
+			v.object({
+				name: v.pipe(v.string("Name can't be empty"), v.trim(), v.minLength(3, "Name is too short"), v.maxLength(25, "Name is too long")),
+				newPassword: v.optional(
+					v.pipe(v.string("Password must be string"), v.trim(), v.union([v.literal(""), v.pipe(v.string(), v.minLength(5, "Password is too short"), v.maxLength(250, "Password is too long"))]))
+				),
+				newPasswordAgain: v.optional(v.pipe(v.string(), v.trim())),
+			}),
+			Object.fromEntries(await request.formData())
+		);
 
 		if (!o.success) {
-			//TODO Try to return fail, without use:enhance
-			return { errors: o.issues.map((e) => e.message), name: data.name };
+			return fail(400, { errors: o.issues.map((e) => e.message) });
 		}
-		const { name, pas1, pas2 } = o.output;
+		const { name, newPassword, newPasswordAgain } = o.output;
 
-		if (name !== event.locals.user.name) {
+		if (name !== locals.user.name) {
 			const u = await db.selectDistinct({ id: user.id }).from(user).where(eq(user.name, name)).get();
-			if (u) return { errors: ["User with this name already exists."], name };
+			if (u) return fail(400, { errors: ["User with this name already exists."] });
 			out["name"] = name;
 		}
-		if (pas1) {
-			if (pas1 !== pas2) return { errors: ["Passwords are not the same"], name };
-			out["password"] = hash(pas1);
+		if (newPassword) {
+			if (newPassword !== newPasswordAgain) return fail(400, { errors: ["Passwords are not the same"] });
+			out["password"] = hash(newPassword);
 		}
 
 		if (out.name || out.password) {
-			const u = await db.update(user).set(out).where(eq(user.id, event.locals.user.id)).returning({ name: user.name }).get();
+			const u = await db.update(user).set(out).where(eq(user.id, locals.user.id)).returning({ name: user.name }).get();
 			if (u) {
-				event.locals.user.name = u.name;
+				locals.user.name = u.name;
 				return {
 					success: true,
-					name: u.name,
+					// name: u.name,
 				};
 			}
-			//TODO Error
+			//TODO SQL Error
 		}
 		return {
-			name: name,
+			errors: ["SQL Error"],
+			// name: name,
 		};
 	},
 };

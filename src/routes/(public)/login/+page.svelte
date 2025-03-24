@@ -26,7 +26,7 @@
 	{/each}
 	<div>
 		<label for="name">name</label>
-		<input type="text" autocomplete="username" name="name" id="name" required value={form?.name || name} />
+		<input type="text" autocomplete="username" name="name" id="name" required value={name} />
 	</div>
 
 	<div>

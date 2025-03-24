@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import ImageDetail from './ImageDetail.svelte';
+	import { page } from "$app/state";
+	import { onMount } from "svelte";
+	import ImageDetail from "./ImageDetail.svelte";
 
 	const PAGE_LIMIT = 6;
 	type Image = { id: number; favorite: boolean; public: boolean };
@@ -21,14 +21,15 @@
 		end = false;
 	}
 
-	//TODO Init data from load
+	//TODO Init data from load (for ssr)
+	//TODO Fetch more images, but load them lazily
 	function fetchImages() {
 		loading = true;
 		// console.log('fetching', currentOffset);
-		let q = new URL('/bob/f', page.url);
-		if (pub) q.searchParams.append('public', 'true'); //This filters out private images if user IS logged in
-		q.searchParams.append('offset', currentOffset + '');
-		q.searchParams.append('limit', PAGE_LIMIT + '');
+		let q = new URL("/bob/f", page.url);
+		if (pub) q.searchParams.append("public", "true"); //This filters out private images if user IS logged in
+		q.searchParams.append("offset", currentOffset + "");
+		q.searchParams.append("limit", PAGE_LIMIT + "");
 		fetch(q)
 			.then((r) => r.json())
 			.then((r: Image[]) => {
@@ -53,8 +54,7 @@
 
 <svelte:window
 	onscroll={(e) => {
-		if (!loading && !end && window.innerHeight * 1.6 + window.scrollY >= document.body.offsetHeight)
-			fetchImages();
+		if (!loading && !end && window.innerHeight * 1.6 + window.scrollY >= document.body.offsetHeight) fetchImages();
 		//FIXME This doesn't work if initial content doesn't alow scroll (all photos fit on screen)
 	}}
 />
@@ -64,7 +64,7 @@
 <div id="gallery">
 	{#each data as item (item.id)}
 		<button onclick={(e) => showImageDetail(e, item.id)}>
-			<img src={`/bob/f/${item.id}${pub ? '?public=true' : ''}`} alt={item.id + ''} />
+			<img src={`/bob/f/${item.id}${pub ? "?public=true" : ""}`} alt={item.id + ""} />
 		</button>
 	{:else}
 		{#if !loading}

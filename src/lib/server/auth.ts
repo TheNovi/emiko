@@ -1,5 +1,5 @@
 import { env } from "$env/dynamic/private";
-import type { Cookies } from "@sveltejs/kit";
+import { redirect, type Cookies } from "@sveltejs/kit";
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
@@ -16,7 +16,7 @@ export enum AuthError {
 	WRONG_PASSWORD = "Wrong password",
 }
 
-export async function loginUser(event: { cookies: Cookies }, creds: { name?: string; password?: string }): Promise<string | undefined> {
+export async function loginUser(cookies: Cookies, creds: { name?: string; password?: string }): Promise<string | undefined> {
 	if (!creds.name || !creds.password) return AuthError.MISSING;
 
 	let u = await db.select({ id: user.id, password: user.password, deletedAt: user.deletedAt }).from(user).where(eq(user.name, creds.name)).get();
@@ -26,13 +26,13 @@ export async function loginUser(event: { cookies: Cookies }, creds: { name?: str
 
 	// await db.update(user).set({lastLogin: new Date()}).where(eq(user.id, u.id));
 	console.log("Login", u.id);
-	createCookie(event, u);
+	createCookie(cookies, u);
 }
 
-export function createCookie(event: { cookies: Cookies }, user: { id: number }) {
+export function createCookie(cookies: Cookies, user: { id: number }) {
 	let token = jwt.sign({ id: user.id }, env.JWT_SECRET, { expiresIn: "1d", algorithm: "HS256" });
 	//`Bearer ${token}`
-	event.cookies.set(COOKIE_NAME, token, {
+	cookies.set(COOKIE_NAME, token, {
 		path: "/",
 		secure: true,
 		httpOnly: true,
@@ -41,9 +41,9 @@ export function createCookie(event: { cookies: Cookies }, user: { id: number }) 
 	});
 }
 
-export async function logoutUser(event: { cookies: Cookies }) {
+export async function logoutUser(cookies: Cookies) {
 	console.log("Logout");
-	await event.cookies.delete(COOKIE_NAME, {
+	await cookies.delete(COOKIE_NAME, {
 		path: "/",
 		secure: true,
 		httpOnly: true,
@@ -52,8 +52,8 @@ export async function logoutUser(event: { cookies: Cookies }) {
 	});
 }
 
-export async function getUserFromCookie(event: { cookies: Cookies }) {
-	const token = event.cookies.get(COOKIE_NAME);
+export async function getUserFromCookie(cookies: Cookies) {
+	const token = cookies.get(COOKIE_NAME);
 	if (!token) return;
 	try {
 		//.split(' ')[1]; //Bearer token
