@@ -12,7 +12,7 @@ export const load = (async (event) => {
 
 export const actions: Actions = {
 	logout: async ({ locals, cookies }) => {
-		if (!locals.user) await logoutUser(cookies);
+		if (locals.user) await logoutUser(cookies);
 		locals.user = undefined; //Just to be sure
 		return redirect(303, "/");
 	},
