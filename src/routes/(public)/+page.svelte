@@ -26,6 +26,7 @@
 		{/if}
 		<!-- <li>&gt;<a href="/bob">bob</a>&lt;</li> -->
 		<li>&gt;<a href="/stroll">stroll</a>&lt;</li>
+		<li>&gt;<a href="/lorenz">lorenz</a>&lt;</li>
 	</ul>
 </div>
 
