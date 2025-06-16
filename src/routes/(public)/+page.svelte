@@ -1,12 +1,14 @@
 <script lang="ts">
 	import type { PageData } from "./$types";
 	import Header from "$lib/components/Header.svelte";
+	import Lorenz from "$lib/components/Lorenz.svelte";
 
 	let { data }: { data: PageData } = $props();
 </script>
 
 <Header title="Home" />
-
+<!-- TODO Some less resources expensive setting -->
+<Lorenz style="opacity: 50%" />
 <div id="c">
 	<h1>
 		{#if data.user}
