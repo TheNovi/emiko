@@ -1,22 +1,22 @@
-import { sql } from 'drizzle-orm';
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sql } from "drizzle-orm";
+import { sqliteTable, text, integer, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
 
 const timestamps = {
-	createdAt: integer('created_at', { mode: 'timestamp' })
+	createdAt: integer("created_at", { mode: "timestamp" })
 		.notNull()
 		.default(sql`(UNIXEPOCH())`),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
+	updatedAt: integer("updated_at", { mode: "timestamp" })
 		.notNull()
 		.default(sql`(UNIXEPOCH())`)
 		.$onUpdate(() => new Date()),
-	deletedAt: integer('deleted_at', { mode: 'timestamp' }),
+	deletedAt: integer("deleted_at", { mode: "timestamp" }),
 };
 
 const basicCols = {
-	id: integer('id').primaryKey(),
+	id: integer("id").primaryKey(),
 	...timestamps,
-	userId: integer('user_id')
-		.references(() => user.id, { onDelete: 'cascade', onUpdate: 'cascade' })
+	userId: integer("user_id")
+		.references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" })
 		.notNull(),
 };
 
@@ -24,12 +24,12 @@ const basicCols = {
 
 //* Root
 export const user = sqliteTable(
-	'user',
+	"user",
 	{
-		id: integer('id').primaryKey(),
+		id: integer("id").primaryKey(),
 		...timestamps,
-		name: text('name', { length: 100 }).notNull().unique('user_name_unique'),
-		password: text('password', { length: 100 }).notNull(),
+		name: text("name", { length: 100 }).notNull().unique("user_name_unique"),
+		password: text("password", { length: 100 }).notNull(),
 	}
 	// (table) => ({})
 );
@@ -37,16 +37,16 @@ export type User = typeof user.$inferSelect;
 
 //* Bob
 export const bobImage = sqliteTable(
-	'bob_image',
+	"bob_image",
 	{
 		...basicCols,
-		path: text('path', { length: 250 }).notNull(),
-		type: text('type', { length: 50 }).notNull(),
-		size: integer('size').notNull(),
-		takenAt: integer('taken_at', { mode: 'timestamp' }).notNull(),
-		favorite: integer('favorite', { mode: 'boolean' }).notNull().default(false),
-		public: integer('public', { mode: 'boolean' }).notNull().default(false), //TODO View
-		description: text('description', { length: 5000 }).notNull().default(''),
+		path: text("path", { length: 250 }).notNull(),
+		type: text("type", { length: 50 }).notNull(),
+		size: integer("size").notNull(),
+		takenAt: integer("taken_at", { mode: "timestamp" }).notNull(),
+		favorite: integer("favorite", { mode: "boolean" }).notNull().default(false),
+		public: integer("public", { mode: "boolean" }).notNull().default(false), //TODO View
+		description: text("description", { length: 5000 }).notNull().default(""),
 		//TODO Geolocation
 		//TODO Tags
 	}
@@ -55,11 +55,25 @@ export const bobImage = sqliteTable(
 // export type BobImage = typeof bobImage.$inferSelect;
 
 //* Stroll
-export const stroll = sqliteTable('stroll', {
-	id: integer('id').primaryKey(),
+export const stroll = sqliteTable("stroll", {
+	id: integer("id").primaryKey(),
 	...timestamps,
-	name: text('name').default('').notNull(),
-	region: text('region').default('').notNull(),
-	tz: integer('tz'),
+	name: text("name").default("").notNull(),
+	region: text("region").default("").notNull(),
+	tz: integer("tz"),
 });
 // export type Stroll = typeof stroll.$inferSelect;
+
+export const todItem = sqliteTable(
+	"tod_item",
+	{
+		...basicCols,
+		parentId: integer("parent_id").references((): AnySQLiteColumn => todItem.id, { onDelete: "cascade", onUpdate: "cascade" }),
+		title: text("title", { length: 250 }).notNull(),
+		state: integer("state").notNull().default(0),
+		// stateSet: integer("stateEnum").notNull().default(0), //TODO As separate table, or every item will have its own?
+		description: text("description", { length: 5000 }).notNull().default(""),
+	}
+	// (table) => ({})
+);
+// export type TodItem = typeof todItem.$inferSelect;

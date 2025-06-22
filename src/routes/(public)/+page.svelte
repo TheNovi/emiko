@@ -25,6 +25,7 @@
 	<ul>
 		{#if data.user}
 			<li>&gt;<a href="/ebob">Ebob</a>&lt;</li>
+			<li>&gt;<a href="/tod">Tod</a>&lt;</li>
 		{/if}
 		<!-- <li>&gt;<a href="/bob">bob</a>&lt;</li> -->
 		<li>&gt;<a href="/stroll">stroll</a>&lt;</li>
