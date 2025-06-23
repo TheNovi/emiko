@@ -2,6 +2,9 @@ import { db } from "$lib/server/db";
 import { todItem } from "$lib/server/db/schema";
 import { and, eq, inArray, isNull, sql, type SQLWrapper } from "drizzle-orm";
 
+type ParentItems = Awaited<ReturnType<typeof getParents>>;
+type ItemDetail = typeof todItem.$inferSelect & { parents: ParentItems };
+
 function basicWhere(userId: number, ...other: SQLWrapper[]) {
 	return and(eq(todItem.userId, userId), isNull(todItem.deletedAt), ...other);
 }
@@ -11,13 +14,16 @@ export async function getItemDetail(userId: number, itemId: number) {
 		.select()
 		.from(todItem)
 		.where(basicWhere(userId, eq(todItem.id, itemId)))
-		.get();
+		.get()
+		.then(async (i) => {
+			if (i) (i as ItemDetail).parents = await getParents(userId, i.id);
+			return i as ItemDetail;
+		});
 }
 
 export async function getItem(userId: number, itemId: number = 0) {
 	// type Item = Awaited<ReturnType<typeof getImmediateChildren>>[0] & { children?: boolean };
 	type Items = Awaited<ReturnType<typeof getImmediateChildren>>;
-	type ParentItems = Awaited<ReturnType<typeof getParents>>;
 
 	let r: { items: Items; parents: ParentItems } = { items: await getImmediateChildren(userId, itemId), parents: await getParents(userId, itemId) };
 	//Unused
