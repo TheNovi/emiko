@@ -1,6 +1,6 @@
 import { db } from "$lib/server/db";
-import { todItem, user } from "$lib/server/db/schema";
-import { and, eq, isNull, type SQLWrapper } from "drizzle-orm";
+import { todItem } from "$lib/server/db/schema";
+import { and, eq, inArray, isNull, sql, type SQLWrapper } from "drizzle-orm";
 
 function basicWhere(userId: number, ...other: SQLWrapper[]) {
 	return and(eq(todItem.userId, userId), isNull(todItem.deletedAt), ...other);
@@ -14,14 +14,16 @@ export async function getItemDetail(userId: number, itemId: number) {
 		.get();
 }
 
-export async function getItem(userId: number, parentId: number = 0) {
-	type Item = Awaited<ReturnType<typeof getImmediateChildren>>[0] & { children?: boolean };
-	type ParentItem = Awaited<ReturnType<typeof getParent>>;
+export async function getItem(userId: number, itemId: number = 0) {
+	// type Item = Awaited<ReturnType<typeof getImmediateChildren>>[0] & { children?: boolean };
+	type Items = Awaited<ReturnType<typeof getImmediateChildren>>;
+	type ParentItems = Awaited<ReturnType<typeof getParents>>;
 
-	let r: { items: Item[]; parent: ParentItem } = { items: await getImmediateChildren(userId, parentId), parent: await getParent(userId, parentId) };
-	for (const item of r.items) {
-		item.children = await hasChildren(userId, item.id); //TODO 3 As subquery
-	}
+	let r: { items: Items; parents: ParentItems } = { items: await getImmediateChildren(userId, itemId), parents: await getParents(userId, itemId) };
+	//Unused
+	// for (const item of r.items) {
+	// 	item.children = await hasChildren(userId, item.id); //TODO 1 As subquery
+	// }
 	return r;
 }
 
@@ -35,13 +37,25 @@ async function hasChildren(userId: number, itemId: number) {
 		.then((v) => !!v);
 }
 
-async function getParent(userId: number, parentId: number) {
+async function getParents(userId: number, itemId: number) {
+	// Drizzle doesn't have with recursive
+	const q = await db
+		.all(
+			sql`WITH RECURSIVE p(id) AS (
+    VALUES(${itemId}) -- Start value
+    UNION
+    SELECT parent_id FROM tod_item, p -- Get next parent (adds new line, which is used in next loop)
+    WHERE tod_item.id=p.id
+  )
+  SELECT id FROM tod_item WHERE tod_item.id IN p; -- Select anything you want, but only items from select above (p has ids of all parents)`
+		)
+		.then((v) => (v as { id: number }[]).map((i) => i.id));
+
+	//It can be done in one drizzle query, but it looks real bad and most likely slower than current solution. Once I start optimizing this, it would be best to do it in one sql``
 	return await db
 		.select({ id: todItem.id, title: todItem.title })
 		.from(todItem)
-		.where(basicWhere(userId, eq(todItem.id, parentId)))
-		.get()
-		.then((v) => (v ? v : { id: parentId, title: "" }));
+		.where(basicWhere(userId, inArray(todItem.id, q)));
 }
 
 async function getImmediateChildren(userId: number, parentId: number = 0) {

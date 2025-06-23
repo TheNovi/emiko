@@ -3,23 +3,28 @@
 	import type { PageData } from "./$types";
 
 	let { data }: { data: PageData } = $props();
+	let lastP = $derived(data.tod.parents.length ? data.tod.parents[data.tod.parents.length - 1] : { id: 0, title: "Tod" });
 
-	$inspect(data.tod);
+	// $inspect(data.tod.parents);
 </script>
 
-{#if data.tod.parent.title}
-	<Header title={`Tod | ${data.tod.parent.title}`} />
+{#if lastP.title}
+	<Header title={`Tod | ${lastP.title}`} />
 {:else}
 	<Header title="Tod" />
 {/if}
-<h1>/{data.tod.parent.title}</h1>
-<!-- TODO 9 Path (make parent as array) -->
+<span>
+	{#each [{ id: 0, title: "Tod" }, ...data.tod.parents].slice(0, -1) as p}
+		<a href={`/tod/${p.id}`}>/{p.title}</a>
+	{/each}
+</span>
+<h1>{lastP.title}</h1>
 {#each data.tod.items as i}
 	<div>
-		{i.title}
-		{#if i.children}
+		<a href={`/tod/${i.id}`}> {i.title}</a>
+		<!-- {#if i.children}
 			<a href={`/tod/${i.id}`}>expand</a>
-		{/if}
+		{/if} -->
 		<a href={`/tod/${i.id}/i`}>open</a>
 	</div>
 {/each}
