@@ -70,9 +70,14 @@ export const todItem = sqliteTable(
 		...basicCols,
 		parentId: integer("parent_id").references((): AnySQLiteColumn => todItem.id, { onDelete: "cascade", onUpdate: "cascade" }),
 		title: text("title", { length: 250 }).notNull(),
-		state: integer("state").notNull().default(0),
-		// stateSet: integer("stateEnum").notNull().default(0), //TODO As separate table, or every item will have its own?
+		state: integer("state").notNull().default(1), //0 Done, 1 Open, 2 Process, ...stateSet
+		// stateSet: idk("stateSet"), //List of other states
 		description: text("description", { length: 5000 }).notNull().default(""),
+		// Calendar stuff
+		dateFrom: integer("date_from", { mode: "timestamp" }),
+		dateTo: integer("date_to", { mode: "timestamp" }),
+		dateCopyOffset: integer("date_copy_offset", { mode: "timestamp" }), //As normal int?
+		dateCopyMode: integer("date_copy_offset"), //Auto copy mode
 	}
 	// (table) => ({})
 );
