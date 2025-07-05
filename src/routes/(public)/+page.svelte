@@ -1,14 +1,15 @@
 <script lang="ts">
-	import type { PageData } from "./$types";
+	import GraphAnim from "$lib/components/GraphAnim.svelte";
 	import Header from "$lib/components/Header.svelte";
-	import Lorenz from "$lib/components/Lorenz.svelte";
+	import { GraphMode } from "$lib/graphAnim";
+	import type { PageData } from "./$types";
 
 	let { data }: { data: PageData } = $props();
 </script>
 
 <Header title="Home" />
 <!-- TODO Some less resources expensive setting -->
-<Lorenz style="opacity: 50%" />
+<GraphAnim mode={GraphMode.Lorenz} style="opacity: 50%" />
 <div id="c">
 	<h1>
 		{#if data.user}
@@ -29,7 +30,9 @@
 		{/if}
 		<!-- <li>&gt;<a href="/bob">bob</a>&lt;</li> -->
 		<li>&gt;<a href="/stroll">stroll</a>&lt;</li>
+		<!-- TODO All GraphAnims as one page with query -->
 		<li>&gt;<a href="/lorenz">lorenz</a>&lt;</li>
+		<!-- <li>&gt;<a href="/threebody">Three Body</a>&lt;</li> -->
 	</ul>
 </div>
 

@@ -1,39 +1,45 @@
-export default class Lorenz {
+export enum GraphMode {
+	Lorenz,
+	ThreeBody,
+}
+
+export type LorenzConsts = { o: number; p: number; b: number };
+export type ThreeBodyConsts = { m: number };
+
+export const LorenzDefaults = {
+	BASIC: { o: 10, p: 28, b: 8 / 3 },
+	IDK: { o: 10, p: 14, b: 8 / 3 },
+};
+
+export class GPoint {
 	x = 0;
-	y = 1;
-	z = 1.05;
-	o = 10;
-	p = 28;
-	b = 2.667;
+	y = 0;
+	z = 0;
 	center = [0, 0];
 	scale = 1;
 	size = 100;
 	points: Points;
-	//                       o   p   b
-	static readonly BASIC = [10, 28, 8 / 3];
-	static readonly IDK = [10, 14, 8 / 3];
+	consts: any;
 
-	constructor(init: { xyz?: number[]; center?: number[]; size?: number; scale?: number; consts?: number[] }) {
+	fun = (self: GPoint, c: any, dt: number) => {
+		// self.x += dt;
+		// self.y += dt;
+		// self.z += dt;
+	};
+
+	constructor(init: { xyz?: number[]; center?: number[]; size?: number; scale?: number }, consts: any, fun?: (self: GPoint, consts: any, dt: number) => void) {
 		if (init.xyz) [this.x, this.y, this.z] = init.xyz;
 		if (init.center) this.center = init.center;
 		if (init.scale) this.scale = init.scale;
 		if (init.size) this.size = init.size;
-		if (init.consts) [this.o, this.p, this.b] = init.consts;
+		this.consts = consts;
+		if (fun) this.fun = fun;
 
 		this.points = new Points(this.size);
 	}
 
-	private lorenz(dt: number) {
-		let dx = this.o * (this.y - this.x);
-		let dy = this.x * (this.p - this.z) - this.y;
-		let dz = this.x * this.y - this.b * this.z;
-		this.x += dx * dt;
-		this.y += dy * dt;
-		this.z += dz * dt;
-	}
-
 	step(callback: (points: Points) => void, dt = 0.01) {
-		this.lorenz(dt);
+		this.fun(this, this.consts, dt);
 		this.points.push(this.x * this.scale + this.center[0], this.y * this.scale + this.center[1]);
 		callback(this.points);
 	}

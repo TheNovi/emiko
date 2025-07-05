@@ -3,4 +3,4 @@
 	import { GraphMode } from "$lib/graphAnim";
 </script>
 
-<GA mode={GraphMode.Lorenz} />
+<GA mode={GraphMode.ThreeBody} />
