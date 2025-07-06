@@ -6,7 +6,7 @@
 	let cI = $derived(data.tod.parents.length ? data.tod.parents[data.tod.parents.length - 1] : { id: 0, title: "Tod" });
 	let lastP = $derived(data.tod.parents.length > 1 ? data.tod.parents[data.tod.parents.length - 2].id : 0);
 
-	// $inspect(data.tod.parents);
+	// $inspect(data.tod);
 </script>
 
 {#if cI.id}
@@ -31,10 +31,10 @@
 {/each}
 <div id="control">
 	<a style="background-color: red;" href={`/tod/${lastP}`}>Back</a>
-	<!-- TODO 5 Add Tod Item -->
-	<!-- <a style="background-color: blue;" href={`/tod/${lastP}`}>Add</a> -->
-	<!-- TODO 8 Fix edit on id 0 (do control as flex, so you can freely add/remove buttons)-->
-	<a style="background-color: green;" href={`/tod/${cI.id}/i`}>Open</a>
+	<a style="background-color: blue;" href={`/tod/${cI.id}/n`}>Add</a>
+	{#if cI.id}
+		<a style="background-color: green;" href={`/tod/${cI.id}/e`}>Open</a>
+	{/if}
 </div>
 
 <style lang="postcss">
@@ -58,8 +58,7 @@
 	#control {
 		position: fixed;
 		/* TODO 2 Remove grid */
-		display: grid;
-		grid-template-columns: 1fr 1fr;
+		display: flex;
 		/* gap: 10%; */
 		left: 0;
 		bottom: 1px;
@@ -68,6 +67,7 @@
 	#control a {
 		background-color: #222;
 		text-align: center;
+		flex-grow: 1;
 		/* aspect-ratio: 1; */
 		height: 3em;
 		line-height: 3em;

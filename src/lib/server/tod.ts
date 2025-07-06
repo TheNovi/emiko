@@ -21,6 +21,25 @@ export async function getItemDetail(userId: number, itemId: number) {
 		});
 }
 
+export async function getEmptyItemDetail(userId: number, parentId: number): ReturnType<typeof getItemDetail> {
+	return {
+		id: 0,
+		userId,
+		parents: await getParents(userId, parentId),
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		deletedAt: null,
+		parentId,
+		title: "",
+		state: 1,
+		description: "",
+		dateFrom: null,
+		dateTo: null,
+		dateCopyOffset: null,
+		dateCopyMode: null,
+	};
+}
+
 export async function getItem(userId: number, itemId: number = 0) {
 	// type Item = Awaited<ReturnType<typeof getImmediateChildren>>[0] & { children?: boolean };
 	type Items = Awaited<ReturnType<typeof getImmediateChildren>>;

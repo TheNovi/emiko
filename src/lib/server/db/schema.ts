@@ -64,21 +64,17 @@ export const stroll = sqliteTable("stroll", {
 });
 // export type Stroll = typeof stroll.$inferSelect;
 
-export const todItem = sqliteTable(
-	"tod_item",
-	{
-		...basicCols,
-		parentId: integer("parent_id").references((): AnySQLiteColumn => todItem.id, { onDelete: "cascade", onUpdate: "cascade" }),
-		title: text("title", { length: 250 }).notNull(),
-		state: integer("state").notNull().default(1), //0 Done, 1 Open, 2 Process, ...stateSet
-		// stateSet: idk("stateSet"), //List of other states
-		description: text("description", { length: 5000 }).notNull().default(""),
-		// Calendar stuff
-		dateFrom: integer("date_from", { mode: "timestamp" }),
-		dateTo: integer("date_to", { mode: "timestamp" }),
-		dateCopyOffset: integer("date_copy_offset", { mode: "timestamp" }), //As normal int?
-		dateCopyMode: integer("date_copy_offset"), //Auto copy mode
-	}
-	// (table) => ({})
-);
+export const todItem = sqliteTable("tod_item", {
+	...basicCols,
+	parentId: integer("parent_id").references((): AnySQLiteColumn => todItem.id, { onDelete: "cascade", onUpdate: "cascade" }),
+	title: text("title", { length: 250 }).notNull(),
+	state: integer("state").notNull().default(1), //0 Done, 1 Open, 2 Process, ...stateSet
+	// stateSet: idk("stateSet"), //List of other states
+	description: text("description", { length: 5000 }).notNull().default(""),
+	// Calendar stuff
+	dateFrom: integer("date_from", { mode: "timestamp" }),
+	dateTo: integer("date_to", { mode: "timestamp" }),
+	dateCopyOffset: integer("date_copy_offset", { mode: "timestamp" }), //As normal int?
+	dateCopyMode: integer("date_copy_offset"), //Auto copy mode
+});
 // export type TodItem = typeof todItem.$inferSelect;
