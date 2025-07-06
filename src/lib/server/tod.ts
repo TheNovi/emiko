@@ -90,3 +90,36 @@ async function getImmediateChildren(userId: number, parentId: number = 0) {
 		.where(basicWhere(userId, parentId ? eq(todItem.parentId, parentId) : isNull(todItem.parentId)));
 	// .toSQL().sql;
 }
+
+export async function checkIfItemBelongsUser(userId: number, itemId: number) {
+	if (itemId == 0) return true; //New or root
+	let o = await db
+		.select({ id: todItem.id })
+		.from(todItem)
+		.where(and(eq(todItem.id, itemId), eq(todItem.userId, userId)));
+	return !!o.length;
+}
+
+/**
+ * Check if parentId belongs to user before running this
+ * @param item
+ */
+export async function updateItem(item: Partial<typeof todItem.$inferSelect> & { id: number; userId: number }) {
+	await db
+		.update(todItem)
+		.set({ ...item, id: undefined, userId: undefined, parentId: item.parentId ? item.parentId : null })
+		.where(and(eq(todItem.id, item.id), eq(todItem.userId, item.userId)));
+}
+
+/**
+ * Check if parentId belongs to user before running this
+ * @param item
+ */
+export async function insertItem(item: typeof todItem.$inferInsert) {
+	let d = await db
+		.insert(todItem)
+		.values({ ...item, id: undefined, parentId: item.parentId ? item.parentId : null })
+		.returning({ id: todItem.id })
+		.get();
+	return d.id;
+}

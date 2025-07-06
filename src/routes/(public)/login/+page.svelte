@@ -38,9 +38,3 @@
 		<button type="submit">Login</button>
 	</div>
 </form>
-
-<style lang="postcss">
-	.error {
-		color: red;
-	}
-</style>

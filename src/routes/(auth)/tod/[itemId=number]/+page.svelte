@@ -57,20 +57,19 @@
 
 	#control {
 		position: fixed;
-		/* TODO 2 Remove grid */
 		display: flex;
-		/* gap: 10%; */
 		left: 0;
-		bottom: 1px;
+		bottom: 0;
 		width: 100%;
+		height: 3em;
+		line-height: 3em;
 	}
 	#control a {
 		background-color: #222;
 		text-align: center;
 		flex-grow: 1;
-		/* aspect-ratio: 1; */
-		height: 3em;
-		line-height: 3em;
 		border-radius: 0.5em;
+		/* Somehow this makes all buttons same size */
+		aspect-ratio: 1;
 	}
 </style>

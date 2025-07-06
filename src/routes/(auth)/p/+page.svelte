@@ -47,9 +47,3 @@
 		<button type="submit" formaction="?/logout">Logout</button>
 	</div>
 </form>
-
-<style lang="postcss">
-	.error {
-		color: red;
-	}
-</style>
