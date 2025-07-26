@@ -91,8 +91,8 @@ async function getImmediateChildren(userId: number, parentId: number = 0) {
 	// .toSQL().sql;
 }
 
-export async function checkIfItemBelongsUser(userId: number, itemId: number) {
-	if (itemId == 0) return true; //New or root
+export async function checkIfItemBelongsUser(userId: number, itemId?: number | null) {
+	if (!itemId) return true; //New or root
 	let o = await db
 		.select({ id: todItem.id })
 		.from(todItem)
