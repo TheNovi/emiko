@@ -30,7 +30,7 @@ const vFormNumber = v.pipe(
 
 const vFormDate = v.pipe(
 	v.string(),
-	v.isoDateTime(),
+	v.isoTimestamp("Not valid date format"),
 	v.transform((e) => new Date(e)),
 	v.date()
 );
@@ -45,7 +45,6 @@ export const actions: Actions = {
 		if (!locals.user) return redirect(303, "/login");
 		let errors: string[] = [];
 		// console.log(await request.formData());
-		// return;
 
 		const item = v.safeParse(
 			v.object({
@@ -64,38 +63,15 @@ export const actions: Actions = {
 						v.transform((e) => e * 24 * 3600 * 1000)
 					),
 				]),
-				timezoneOffset: v.union([
-					v.pipe(
-						v.literal(""),
-						v.transform(() => undefined)
-					),
-					v.pipe(
-						v.string(),
-						v.decimal(),
-						v.transform((e) => +e),
-						v.number()
-					),
-				]),
 			}),
 			Object.fromEntries(await request.formData())
 		);
 		if (!item.success) return fail(400, { errors: item.issues.map((i) => i.message) });
 		item.output.userId = locals.user.id;
-		console.log(process.env.TZ);
 
-		if (item.output.timezoneOffset) {
-			let t = item.output.timezoneOffset * 60000;
-			t = new Date().getTimezoneOffset() * 60000 - t;
-			if (item.output.dateFrom) item.output.dateFrom = new Date(item.output.dateFrom?.getTime() - t);
-			if (item.output.dateTo) item.output.dateTo = new Date(item.output.dateTo?.getTime() - t);
-		} else {
-			item.output.dateFrom = null;
-			item.output.dateTo = null;
-		}
 		console.log(item.output);
 		// return;
 
-		delete item.output.timezoneOffset;
 		if (!(await checkIfItemBelongsUser(item.output.userId, item.output.parentId))) return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
 		if (item.output.id) {
 			// This check is not really necessary, updateItem updates checks for id and userId. And should be impossible to get this by normal use
