@@ -2,8 +2,8 @@ import { db } from "$lib/server/db";
 import { todItem } from "$lib/server/db/schema";
 import { and, eq, isNull, sql, type SQLWrapper } from "drizzle-orm";
 
-type ParentItems = Awaited<ReturnType<typeof getParents>>;
-type ItemDetail = typeof todItem.$inferSelect & { parents: ParentItems; items: Awaited<ReturnType<typeof getChildren>> };
+//Type for empty Root and ItemDetail select (it auto switches based on value in id) (discriminated unions)
+type ItemDetail = ({ id: null; title: string } | typeof todItem.$inferSelect) & { parents: Awaited<ReturnType<typeof getParents>>; items: Awaited<ReturnType<typeof getChildren>> };
 
 function basicWhere(userId: number, ...other: SQLWrapper[]) {
 	return and(eq(todItem.userId, userId), isNull(todItem.deletedAt), ...other);
@@ -12,7 +12,7 @@ function basicWhere(userId: number, ...other: SQLWrapper[]) {
 export async function getItemDetail(userId: number, itemId: number): Promise<ItemDetail | undefined> {
 	if (!itemId) return await getRootItemDetail(userId);
 	return await db
-		.select()
+		.select() //TODO Remove unused fields (userId and deletedAt?)
 		.from(todItem)
 		.where(basicWhere(userId, eq(todItem.id, itemId)))
 		.get()
@@ -21,27 +21,17 @@ export async function getItemDetail(userId: number, itemId: number): Promise<Ite
 				(e as ItemDetail).parents = await getParents(userId, e.id);
 				(e as ItemDetail).items = await getChildren(userId, e.id);
 			}
-			return e as ItemDetail;
+			return e as ItemDetail | undefined;
 		});
 }
 
 export async function getRootItemDetail(userId: number): Promise<ItemDetail> {
 	return {
-		id: 0,
-		userId,
-		parents: await getParents(userId, null),
+		id: null,
+		// userId, //Not needed?
 		items: await getChildren(userId, null),
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		deletedAt: null,
-		parentId: null,
+		parents: [],
 		title: "Tod",
-		state: 1,
-		description: "",
-		dateFrom: null,
-		dateTo: null,
-		dateCopyOffset: null,
-		dateCopyMode: null,
 	};
 }
 
