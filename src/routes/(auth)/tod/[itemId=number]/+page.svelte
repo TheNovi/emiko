@@ -1,41 +1,98 @@
 <script lang="ts">
+	import { enhance } from "$app/forms";
 	import Header from "$lib/components/Header.svelte";
-	import type { PageData } from "./$types";
+	import { formDatesToISO, formParseInputDate } from "$lib/util";
+	import type { PageProps } from "./$types";
 
-	let { data }: { data: PageData } = $props();
-	let cI = $derived(data.tod.parents.length ? data.tod.parents[data.tod.parents.length - 1] : { id: 0, title: "Tod" });
-	let lastP = $derived(data.tod.parents.length > 1 ? data.tod.parents[data.tod.parents.length - 2].id : 0);
+	let { data, form }: PageProps = $props();
+	let tod = $derived(data.tod);
+	//TODO Don't reverse, loop backwards
+	//TODO Remove parent Tod from Root
+	let parents = $derived([...tod.parents, { id: 0, title: "Tod" }].reverse());
+	let lastP = $derived(tod.parents.length ? tod.parents[0].id : 0);
 
-	// $inspect(data.tod);
+	// $inspect(tod.parents);
 </script>
 
-{#if cI.id}
-	<Header title={`Tod | ${cI.title}`} />
+{#if tod.id}
+	<Header title={`Tod | ${tod.title}`} />
 {:else}
 	<Header title="Tod" />
 {/if}
 <div id="header">
 	<span>
-		{#each [{ id: 0, title: "Tod" }, ...data.tod.parents].slice(0, -1) as p, i}
+		{#each parents as p, i}
 			<a href={`/tod/${p.id}`}>{i > 0 ? " / " : ""}{p.title}</a>
 		{:else}
 			<span>&nbsp;</span>
 		{/each}
 	</span>
-	<h1>{cI.title}</h1>
+	<h1>{tod.title}</h1>
 </div>
+{#if tod.id}
+	<form
+		method="post"
+		use:enhance={({ formData }) => {
+			formDatesToISO(formData, ["dateFrom", "dateTo"]);
+			//TODO Send only changed (mainly description)
+			// console.log(formData.get("dateFrom"));
+			return async ({ update }) => {
+				update({ reset: false });
+			};
+		}}
+	>
+		{#each form?.errors || [] as e (e)}
+			<div class="error">{e}</div>
+		{/each}
+		<input type="hidden" name="id" id="id" value={tod.id} />
+		<input type="hidden" name="parentId" id="parentId" value={tod.parentId} />
+		<div>
+			<label for="title">title</label>
+			<input type="text" name="title" id="title" required maxlength="250" value={tod.title} />
+		</div>
+		<div>
+			<label for="state">state</label>
+			<!-- <input type="number" name="state" id="state" required max="100" value={tod.state} /> -->
+			<select name="state" id="state" required value={"" + tod.state}>
+				<option value="1">Open</option>
+				<option value="2">In Process</option>
+				<option value="0">Done</option>
+			</select>
+		</div>
+		<div>
+			<label for="dateFrom">from</label>
+			<input type="datetime-local" name="dateFrom" id="dateFrom" value={formParseInputDate(tod.dateFrom)} />
+		</div>
+		<div>
+			<label for="dateTo">To</label>
+			<input type="datetime-local" name="dateTo" id="dateTo" value={formParseInputDate(tod.dateTo)} />
+		</div>
+		<div>
+			<label for="dateCopyOffset">Event copy date offset in days</label>
+			<input type="number" min="0" name="dateCopyOffset" id="dateCopyOffset" value={tod.dateCopyOffset ? tod.dateCopyOffset / (24 * 3600 * 1000) : null} />
+		</div>
+		<div>
+			<label for="description">description</label>
+			<textarea name="description" id="description" maxlength="2500" value={tod.description}></textarea>
+		</div>
+		<div id="control">
+			<a style="background-color: red;" href={`/tod/${lastP}`}>Back</a>
+			<!-- TODO 999 Tod Add item -->
+			<a style="background-color: blue;" href={`/tod/${tod.id}/n`}>Add</a>
+			<button type="submit" style="background-color: green;">Save</button>
+		</div>
+	</form>
+{:else}
+	<div id="control">
+		<a style="background-color: red;" href={`/tod/${lastP}`}>Back</a>
+		<a style="background-color: blue;" href={`/tod/${tod.id}/n`}>Add</a>
+	</div>
+{/if}
 {#each data.tod.items as i}
 	<!-- {#each [...Array(100).keys()].map((v) => ({ id: v, title: "false " + v })) as i} -->
 	<a class="item" href={`/tod/${i.id}`}>{i.title}</a>
 	<!-- TODO 0 Quick change state -->
 {/each}
-<div id="control">
-	<a style="background-color: red;" href={`/tod/${lastP}`}>Back</a>
-	<a style="background-color: blue;" href={`/tod/${cI.id}/n`}>Add</a>
-	{#if cI.id}
-		<a style="background-color: green;" href={`/tod/${cI.id}/e`}>Open</a>
-	{/if}
-</div>
 
 <style lang="postcss">
 	#header {
@@ -64,10 +121,11 @@
 		height: 3em;
 		line-height: 3em;
 	}
-	#control a {
+	#control * {
 		background-color: #222;
 		text-align: center;
 		flex-grow: 1;
+		border: 0;
 		border-radius: 0.5em;
 		/* Somehow this makes all buttons same size */
 		aspect-ratio: 1;

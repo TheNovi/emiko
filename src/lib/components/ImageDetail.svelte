@@ -94,7 +94,7 @@
 		<label for="takenAt">Taken At:</label>
 		{new Date(img.takenAt).toLocaleString()}
 		<!-- {img.takenAt} -->
-		<!-- TODO yyyy-mm-ddThh:mm  -->
+		<!-- TODO Copy from tod -->
 		<!-- <input type="datetime-local" name="takenAt" id="takenAt" required max={new Date().toJSON()} value={img.takenAt} onchange={() => console.log("asd")} /> -->
 	</section>
 	<section>

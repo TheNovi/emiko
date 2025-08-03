@@ -1,36 +1,41 @@
 import { db } from "$lib/server/db";
 import { todItem } from "$lib/server/db/schema";
-import { and, eq, inArray, isNull, sql, type SQLWrapper } from "drizzle-orm";
+import { and, eq, isNull, sql, type SQLWrapper } from "drizzle-orm";
 
 type ParentItems = Awaited<ReturnType<typeof getParents>>;
-type ItemDetail = typeof todItem.$inferSelect & { parents: ParentItems };
+type ItemDetail = typeof todItem.$inferSelect & { parents: ParentItems; items: Awaited<ReturnType<typeof getChildren>> };
 
 function basicWhere(userId: number, ...other: SQLWrapper[]) {
 	return and(eq(todItem.userId, userId), isNull(todItem.deletedAt), ...other);
 }
 
-export async function getItemDetail(userId: number, itemId: number) {
+export async function getItemDetail(userId: number, itemId: number): Promise<ItemDetail | undefined> {
+	if (!itemId) return await getEmptyItemDetail(userId, null, await getChildren(userId, itemId));
 	return await db
 		.select()
 		.from(todItem)
 		.where(basicWhere(userId, eq(todItem.id, itemId)))
 		.get()
-		.then(async (i) => {
-			if (i) (i as ItemDetail).parents = await getParents(userId, i.id);
-			return i as ItemDetail;
+		.then(async (e) => {
+			if (e) {
+				(e as ItemDetail).parents = await getParents(userId, e.id);
+				(e as ItemDetail).items = await getChildren(userId, e.id);
+			}
+			return e as ItemDetail;
 		});
 }
 
-export async function getEmptyItemDetail(userId: number, parentId: number): ReturnType<typeof getItemDetail> {
+export async function getEmptyItemDetail(userId: number, parentId: number | null, items: ItemDetail["items"] = []): Promise<ItemDetail> {
 	return {
 		id: 0,
 		userId,
 		parents: await getParents(userId, parentId),
+		items,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		deletedAt: null,
 		parentId,
-		title: "",
+		title: parentId != null ? "" : "Tod",
 		state: 1,
 		description: "",
 		dateFrom: null,
@@ -40,50 +45,28 @@ export async function getEmptyItemDetail(userId: number, parentId: number): Retu
 	};
 }
 
-export async function getItem(userId: number, itemId: number = 0) {
-	// type Item = Awaited<ReturnType<typeof getImmediateChildren>>[0] & { children?: boolean };
-	type Items = Awaited<ReturnType<typeof getImmediateChildren>>;
-
-	let r: { items: Items; parents: ParentItems } = { items: await getImmediateChildren(userId, itemId), parents: await getParents(userId, itemId) };
-	//Unused
-	// for (const item of r.items) {
-	// 	item.children = await hasChildren(userId, item.id); //TODO 1 As subquery
-	// }
-	return r;
-}
-
-async function hasChildren(userId: number, itemId: number) {
+async function getParents(userId: number, itemId: number | null): Promise<{ id: number; title: string }[]> {
+	if (!itemId) return []; //Root
+	// Gets all parents using 'with recursive' and saves them to p
+	// Selects from p and joins tod_item for title column (selecting from p keeps parent order. Selecting from tod_item would sort parents by rowid, which is wrong)
+	// offset removes self from the result (limit must be there for valid syntax :/)
 	return await db
-		.select({ id: todItem.id })
-		.from(todItem)
-		.where(basicWhere(userId, eq(todItem.parentId, itemId)))
-		.limit(1)
-		.get()
-		.then((v) => !!v);
-}
-
-async function getParents(userId: number, itemId: number) {
-	// Drizzle doesn't have with recursive
-	const q = await db
-		.all(
-			sql`WITH RECURSIVE p(id) AS (
-    VALUES(${itemId}) -- Start value
-    UNION
-    SELECT parent_id FROM tod_item, p -- Get next parent (adds new line, which is used in next loop)
-    WHERE tod_item.id=p.id
-  )
-  SELECT id FROM tod_item WHERE tod_item.id IN p; -- Select anything you want, but only items from select above (p has ids of all parents)`
+		.all<{ id: number; title: string }>(
+			sql`
+		WITH RECURSIVE p(id) AS (
+			VALUES(${itemId}) -- Start value
+			UNION
+			SELECT parent_id FROM tod_item, p WHERE tod_item.id=p.id AND user_id=${userId}
 		)
-		.then((v) => (v as { id: number }[]).map((i) => i.id));
-
-	//It can be done in one drizzle query, but it looks real bad and most likely slower than current solution. Once I start optimizing this, it would be best to do it in one sql``
-	return await db
-		.select({ id: todItem.id, title: todItem.title })
-		.from(todItem)
-		.where(basicWhere(userId, inArray(todItem.id, q)));
+		SELECT p.id, title FROM p left join tod_item on p.id=tod_item.id limit -1 offset 1;`
+		)
+		.then((e) => {
+			e.pop();
+			return e;
+		});
 }
 
-async function getImmediateChildren(userId: number, parentId: number = 0) {
+async function getChildren(userId: number, parentId: number = 0) {
 	return await db
 		.select({ id: todItem.id, title: todItem.title, state: todItem.state })
 		.from(todItem)
