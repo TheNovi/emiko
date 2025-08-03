@@ -30,7 +30,13 @@ const vFormEmpty = v.pipe(
 );
 
 export const actions: Actions = {
-	default: async ({ locals, request }) => {
+	add: async ({ locals, params: { itemId } }) => {
+		if (!locals.user) return redirect(303, "/login");
+		if (!(await checkIfItemBelongsUser(locals.user.id, +itemId))) return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
+		let n = await insertItem(locals.user.id, +itemId, "New Item");
+		return redirect(303, `/tod/${n}`);
+	},
+	save: async ({ locals, request }) => {
 		if (!locals.user) return redirect(303, "/login");
 		let errors: string[] = [];
 		// console.log(await request.formData());
@@ -58,18 +64,11 @@ export const actions: Actions = {
 		if (!item.success) return fail(400, { errors: item.issues.map((i) => i.message) });
 		item.output.userId = locals.user.id;
 
-		console.log(item.output);
+		// console.log(item.output);
 		// return;
 
 		if (!(await checkIfItemBelongsUser(item.output.userId, item.output.parentId))) return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
-		if (item.output.id) {
-			// This check is not really necessary, updateItem updates checks for id and userId. And should be impossible to get this by normal use
-			// if (!(await checkIfItemBelongsUser(item.output.userId, item.output.id))) return fail(400, { errors: ["Item id does not belong to user"] }); //User should never get this error
-			await updateItem(item.output);
-		} else {
-			let id = await insertItem(item.output);
-			return redirect(303, `/tod/${id}/e`);
-		}
+		await updateItem(item.output);
 
 		if (errors.length == 0) return { success: true };
 		else return fail(400, { errors });

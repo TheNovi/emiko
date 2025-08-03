@@ -10,7 +10,7 @@ function basicWhere(userId: number, ...other: SQLWrapper[]) {
 }
 
 export async function getItemDetail(userId: number, itemId: number): Promise<ItemDetail | undefined> {
-	if (!itemId) return await getEmptyItemDetail(userId, null, await getChildren(userId, itemId));
+	if (!itemId) return await getRootItemDetail(userId);
 	return await db
 		.select()
 		.from(todItem)
@@ -25,17 +25,17 @@ export async function getItemDetail(userId: number, itemId: number): Promise<Ite
 		});
 }
 
-export async function getEmptyItemDetail(userId: number, parentId: number | null, items: ItemDetail["items"] = []): Promise<ItemDetail> {
+export async function getRootItemDetail(userId: number): Promise<ItemDetail> {
 	return {
 		id: 0,
 		userId,
-		parents: await getParents(userId, parentId),
-		items,
+		parents: await getParents(userId, null),
+		items: await getChildren(userId, null),
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		deletedAt: null,
-		parentId,
-		title: parentId != null ? "" : "Tod",
+		parentId: null,
+		title: "Tod",
 		state: 1,
 		description: "",
 		dateFrom: null,
@@ -66,7 +66,7 @@ async function getParents(userId: number, itemId: number | null): Promise<{ id: 
 		});
 }
 
-async function getChildren(userId: number, parentId: number = 0) {
+async function getChildren(userId: number, parentId: number | null) {
 	return await db
 		.select({ id: todItem.id, title: todItem.title, state: todItem.state })
 		.from(todItem)
@@ -75,7 +75,7 @@ async function getChildren(userId: number, parentId: number = 0) {
 }
 
 export async function checkIfItemBelongsUser(userId: number, itemId?: number | null) {
-	if (!itemId) return true; //New or root
+	if (itemId == null || itemId == 0) return true; //Root
 	let o = await db
 		.select({ id: todItem.id })
 		.from(todItem)
@@ -98,11 +98,7 @@ export async function updateItem(item: Partial<typeof todItem.$inferSelect> & { 
  * Check if parentId belongs to user before running this
  * @param item
  */
-export async function insertItem(item: typeof todItem.$inferInsert) {
-	let d = await db
-		.insert(todItem)
-		.values({ ...item, id: undefined, parentId: item.parentId ? item.parentId : null })
-		.returning({ id: todItem.id })
-		.get();
+export async function insertItem(userId: number, parentId: number | null, title: string) {
+	let d = await db.insert(todItem).values({ userId, parentId, title }).returning({ id: todItem.id }).get();
 	return d.id;
 }

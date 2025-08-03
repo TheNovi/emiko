@@ -29,21 +29,21 @@
 	</span>
 	<h1>{tod.title}</h1>
 </div>
-{#if tod.id}
-	<form
-		method="post"
-		use:enhance={({ formData }) => {
-			formDatesToISO(formData, ["dateFrom", "dateTo"]);
-			//TODO Send only changed (mainly description)
-			// console.log(formData.get("dateFrom"));
-			return async ({ update }) => {
-				update({ reset: false });
-			};
-		}}
-	>
-		{#each form?.errors || [] as e (e)}
-			<div class="error">{e}</div>
-		{/each}
+<form
+	method="post"
+	use:enhance={({ formData }) => {
+		formDatesToISO(formData, ["dateFrom", "dateTo"]);
+		//TODO Send only changed (mainly description)
+		// console.log(formData.get("dateFrom"));
+		return async ({ update }) => {
+			update({ reset: false });
+		};
+	}}
+>
+	{#each form?.errors || [] as e (e)}
+		<div class="error">{e}</div>
+	{/each}
+	{#if tod.id}
 		<input type="hidden" name="id" id="id" value={tod.id} />
 		<input type="hidden" name="parentId" id="parentId" value={tod.parentId} />
 		<div>
@@ -75,19 +75,13 @@
 			<label for="description">description</label>
 			<textarea name="description" id="description" maxlength="2500" value={tod.description}></textarea>
 		</div>
-		<div id="control">
-			<a style="background-color: red;" href={`/tod/${lastP}`}>Back</a>
-			<!-- TODO 999 Tod Add item -->
-			<a style="background-color: blue;" href={`/tod/${tod.id}/n`}>Add</a>
-			<button type="submit" style="background-color: green;">Save</button>
-		</div>
-	</form>
-{:else}
+	{/if}
 	<div id="control">
 		<a style="background-color: red;" href={`/tod/${lastP}`}>Back</a>
-		<a style="background-color: blue;" href={`/tod/${tod.id}/n`}>Add</a>
+		<button formaction="?/add" type="submit" style="background-color: blue;">Add</button>
+		<button formaction="?/save" disabled={!tod.id} type="submit" style="background-color: green;">Save</button>
 	</div>
-{/if}
+</form>
 {#each data.tod.items as i}
 	<!-- {#each [...Array(100).keys()].map((v) => ({ id: v, title: "false " + v })) as i} -->
 	<a class="item" href={`/tod/${i.id}`}>{i.title}</a>
