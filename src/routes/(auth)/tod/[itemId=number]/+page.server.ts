@@ -33,7 +33,7 @@ export const actions: Actions = {
 	add: async ({ locals, params: { itemId } }) => {
 		if (!locals.user) return redirect(303, "/login");
 		if (!(await checkIfItemBelongsUser(locals.user.id, +itemId))) return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
-		let n = await insertItem(locals.user.id, +itemId, "New Item");
+		let n = await insertItem(locals.user.id, +itemId || null, "New Item");
 		return redirect(303, `/tod/${n}`);
 	},
 	save: async ({ locals, request }) => {
