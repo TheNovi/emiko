@@ -10,17 +10,15 @@
 <Header title="Tod Calendar" />
 
 {#each data.cal as item, i}
-	{#if item.dateFrom}
-		<div>
-			{#if i == 0 || (data.cal[i].dateFrom && data.cal[i].dateFrom < item.dateFrom)}
-				{item.dateFrom.toLocaleDateString()}
-				{#if item.dateFrom.getHours() || item.dateFrom.getMinutes()}
-					{item.dateFrom.toLocaleTimeString()}
-				{/if}
+	<div>
+		{#if i == 0 || (data.cal[i].dateFrom && data.cal[i].dateFrom < item.dateFrom)}
+			{item.dateFrom.toLocaleDateString()}
+			{#if item.dateFrom.getHours() || item.dateFrom.getMinutes()}
+				{item.dateFrom.toLocaleTimeString()}
 			{/if}
-		</div>
-		<ListItem {item} isDate />
-	{/if}
+		{/if}
+	</div>
+	<ListItem {item} isDate />
 {/each}
 
 <Control>

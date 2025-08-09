@@ -12,8 +12,8 @@ import { and, eq, or, gte, lt, isNull, isNotNull, type SQLWrapper, lte } from "d
 export async function getCal(userId: number, dateFrom: Date, dateTo: Date) {
 	if (dateFrom >= dateTo) return [];
 	console.debug("cal", userId, dateFrom, dateTo);
-	//TODO Make return type dateFrom notNull
-	let all = await db
+	//Get all events
+	const q = db
 		.select({
 			id: todItem.id,
 			title: todItem.title,
@@ -36,6 +36,10 @@ export async function getCal(userId: number, dateFrom: Date, dateTo: Date) {
 			)
 		)
 		.orderBy(todItem.dateFrom);
+	type CalItem = Awaited<typeof q>[0] & { dateFrom: Date };
+	const all = (await q) as CalItem[];
+	//Process events
+	//TODO
 
 	console.debug(all);
 	return all;
