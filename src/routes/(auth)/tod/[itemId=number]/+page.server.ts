@@ -6,7 +6,7 @@ import type { Actions, PageServerLoad } from "./$types";
 export const load = (async (event) => {
 	if (!event.locals.user) redirect(303, "/login");
 	let tod = await getItemDetail(event.locals.user.id, +event.params.itemId);
-	return tod ? { tod } : redirect(303, "/tod/0");
+	return tod ? { tod } : redirect(303, "/tod");
 }) satisfies PageServerLoad;
 
 const vFormNumber = v.pipe(

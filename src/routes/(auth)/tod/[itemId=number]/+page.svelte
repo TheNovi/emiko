@@ -2,6 +2,8 @@
 	import { enhance } from "$app/forms";
 	import Header from "$lib/components/Header.svelte";
 	import { formDatesToISO, formParseInputDate } from "$lib/util";
+	import Control from "../Control.svelte";
+	import ListItem from "../ListItem.svelte";
 	import type { PageProps } from "./$types";
 
 	let { data, form }: PageProps = $props();
@@ -76,16 +78,16 @@
 			<textarea name="description" id="description" maxlength="2500" value={tod.description}></textarea>
 		</div>
 	{/if}
-	<div id="control">
-		<a style="background-color: red;" href={`/tod/${lastP}`}>Back</a>
+	<Control>
+		<a style="background-color: red;" href={`/tod/${lastP}`}>Parent</a>
+		<a style="background-color: #333;" href="/tod">Calendar</a>
 		<button formaction="?/add" type="submit" style="background-color: blue;">Add</button>
 		<button formaction="?/save" disabled={!tod.id} type="submit" style="background-color: green;">Save</button>
-	</div>
+	</Control>
 </form>
-{#each data.tod.items as i}
+{#each data.tod.items as item}
 	<!-- {#each [...Array(100).keys()].map((v) => ({ id: v, title: "false " + v })) as i} -->
-	<a class="item" href={`/tod/${i.id}`}>{i.title}</a>
-	<!-- TODO 0 Quick change state -->
+	<ListItem {item} isDate={false} />
 {/each}
 
 <style lang="postcss">
@@ -95,33 +97,5 @@
 		border-radius: 1em;
 		padding: 0.5em;
 		margin: 1em 0em 0.7em 0em;
-	}
-
-	.item {
-		display: block;
-		background-color: #222;
-		text-align: center;
-		border-radius: 0.5em;
-		padding: 0.5em;
-		margin-bottom: 0.5em;
-	}
-
-	#control {
-		position: fixed;
-		display: flex;
-		left: 0;
-		bottom: 0;
-		width: 100%;
-		height: 3em;
-		line-height: 3em;
-	}
-	#control * {
-		background-color: #222;
-		text-align: center;
-		flex-grow: 1;
-		border: 0;
-		border-radius: 0.5em;
-		/* Somehow this makes all buttons same size */
-		aspect-ratio: 1;
 	}
 </style>

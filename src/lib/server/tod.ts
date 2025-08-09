@@ -78,6 +78,14 @@ export async function checkIfItemBelongsUser(userId: number, itemId?: number | n
  * @param item
  */
 export async function updateItem(item: Partial<typeof todItem.$inferSelect> & { id: number; userId: number }) {
+	//TODO Do this date checks in db (before update trigger)
+	if (item.dateFrom && item.dateTo && item.dateFrom > item.dateTo) {
+		const d = item.dateFrom;
+		item.dateFrom = item.dateTo;
+		item.dateTo = d;
+	}
+	if (item.dateTo && item.dateFrom == item.dateTo) item.dateTo = null;
+
 	await db
 		.update(todItem)
 		.set({ ...item, id: undefined, userId: undefined, parentId: item.parentId ? item.parentId : null })
