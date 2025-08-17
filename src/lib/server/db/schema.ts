@@ -74,7 +74,8 @@ export const todItem = sqliteTable("tod_item", {
 	// Calendar stuff
 	dateFrom: integer("date_from", { mode: "timestamp" }),
 	dateTo: integer("date_to", { mode: "timestamp" }),
-	dateCopyOffset: integer("date_copy_offset"), //TODO Add Copy offset type (enum?)
-	dateCopyMode: integer("date_copy_mode"), //Auto copy mode
+	dateCopyOffset: integer("date_copy_offset"),
+	dateCopyMode: integer("date_copy_mode"), //1=day, 2=month, 3=year //TODO Rename by iCal
+	//TODO Add repeat end date (find name from iCal)
 });
 // export type TodItem = typeof todItem.$inferSelect;
