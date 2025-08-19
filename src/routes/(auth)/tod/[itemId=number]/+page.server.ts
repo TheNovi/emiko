@@ -50,7 +50,10 @@ export const actions: Actions = {
 				title: v.pipe(v.string("Title must be string"), v.trim(), v.nonEmpty("Title must not be empty"), v.maxLength(250, "Title is too long")),
 				description: v.pipe(v.string("Description must be string"), v.trim(), v.maxLength(2500, "Description is too long")),
 				dateFrom: v.union([vFormEmpty, vFormDate]),
-				dateTo: v.union([vFormEmpty, vFormDate]),
+				dateTo: v.pipe(
+					v.union([vFormEmpty, vFormDate]),
+					v.transform((d) => (d ? d.getTime() : null))
+				),
 				dateCopyOffset: v.union([
 					vFormEmpty,
 					v.pipe(
@@ -64,6 +67,15 @@ export const actions: Actions = {
 		if (!item.success) return fail(400, { errors: item.issues.map((i) => i.message) });
 		item.output.userId = locals.user.id;
 
+		//TODO Do this date checks in db (before update trigger)
+		if (item.output.dateFrom && item.output.dateTo) {
+			item.output.dateTo = item.output.dateTo - item.output.dateFrom.getTime();
+			if (item.output.dateTo < 0) {
+				item.output.dateFrom.setTime(item.output.dateFrom.getTime() + item.output.dateTo);
+				item.output.dateTo *= -1;
+			}
+		}
+		if (item.output.dateTo == 0) item.output.dateTo = null; //Is this necessary?
 		// console.log(item.output);
 		// return;
 

@@ -2,14 +2,18 @@ import { db } from "$lib/server/db";
 import { todItem } from "$lib/server/db/schema";
 import { and, eq, isNull, sql, type SQLWrapper } from "drizzle-orm";
 
-//Type for empty Root and ItemDetail select (it auto switches based on value in id) (discriminated unions)
-type ItemDetail = ({ id: null; title: string } | typeof todItem.$inferSelect) & { parents: Awaited<ReturnType<typeof getParents>>; items: Awaited<ReturnType<typeof getChildren>> };
+type ItemDetail = Omit<typeof todItem.$inferSelect, "dateTo"> & { dateTo: Date | null };
+//Type for empty Root and SmartItemDetail select (it auto switches based on value in id) (discriminated unions)
+type SmartItemDetail = ({ id: null; title: string } | ItemDetail) & {
+	parents: Awaited<ReturnType<typeof getParents>>;
+	items: Awaited<ReturnType<typeof getChildren>>;
+};
 
 function basicWhere(userId: number, ...other: SQLWrapper[]) {
 	return and(eq(todItem.userId, userId), isNull(todItem.deletedAt), ...other);
 }
 
-export async function getItemDetail(userId: number, itemId: number): Promise<ItemDetail | undefined> {
+export async function getItemDetail(userId: number, itemId: number): Promise<SmartItemDetail | undefined> {
 	if (!itemId) return await getRootItemDetail(userId);
 	return await db
 		.select() //TODO Remove unused fields (userId and deletedAt?)
@@ -18,14 +22,15 @@ export async function getItemDetail(userId: number, itemId: number): Promise<Ite
 		.get()
 		.then(async (e) => {
 			if (e) {
-				(e as ItemDetail).parents = await getParents(userId, e.id);
-				(e as ItemDetail).items = await getChildren(userId, e.id);
+				if (e.dateFrom && e.dateTo) (e as ItemDetail).dateTo = new Date(e.dateFrom.getTime() + e.dateTo);
+				(e as SmartItemDetail).parents = await getParents(userId, e.id);
+				(e as SmartItemDetail).items = await getChildren(userId, e.id);
 			}
-			return e as ItemDetail | undefined;
+			return e as SmartItemDetail | undefined;
 		});
 }
 
-export async function getRootItemDetail(userId: number): Promise<ItemDetail> {
+export async function getRootItemDetail(userId: number): Promise<SmartItemDetail> {
 	return {
 		id: null,
 		// userId, //Not needed?
@@ -78,14 +83,6 @@ export async function checkIfItemBelongsUser(userId: number, itemId?: number | n
  * @param item
  */
 export async function updateItem(item: Partial<typeof todItem.$inferSelect> & { id: number; userId: number }) {
-	//TODO Do this date checks in db (before update trigger)
-	if (item.dateFrom && item.dateTo && item.dateFrom > item.dateTo) {
-		const d = item.dateFrom;
-		item.dateFrom = item.dateTo;
-		item.dateTo = d;
-	}
-	if (item.dateTo && item.dateFrom == item.dateTo) item.dateTo = null;
-
 	await db
 		.update(todItem)
 		.set({ ...item, id: undefined, userId: undefined, parentId: item.parentId ? item.parentId : null })
@@ -97,6 +94,6 @@ export async function updateItem(item: Partial<typeof todItem.$inferSelect> & { 
  * @param item
  */
 export async function insertItem(userId: number, parentId: number | null, title: string) {
-	let d = await db.insert(todItem).values({ userId, parentId, title }).returning({ id: todItem.id }).get();
+	const d = await db.insert(todItem).values({ userId, parentId, title }).returning({ id: todItem.id }).get();
 	return d.id;
 }
