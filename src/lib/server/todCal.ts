@@ -50,10 +50,10 @@ export async function getCal(userId: number, dateFrom: Date, dateTo: Date) {
 	//Process events
 	const out: typeof all = all.filter((e) => {
 		//TODO Test all of this!
-		console.debug("\n" + e.title);
-		pD(e.dateFrom.getTime(), e.dateTo);
 		if (e.dateFrom >= dateFrom || (e.dateTo && e.dateFrom.getTime() + e.dateTo >= dateFrom.getTime())) return true; //Already in range
-		console.log(" mode: ", e.dateCopyMode);
+		// console.debug("\n" + e.title);
+		// pD(e.dateFrom.getTime(), e.dateTo);
+		// console.log(" mode: ", e.dateCopyMode);
 		switch (e.dateCopyMode) {
 			case 1: //Days //TODO Do this in select?
 				return rangeModeDay(e, dateFrom, dateTo);
@@ -66,34 +66,35 @@ export async function getCal(userId: number, dateFrom: Date, dateTo: Date) {
 				break;
 		}
 	});
-	console.debug(out);
+	// console.debug(out);
 	return out;
 }
 
 const test: CallItem[] = [
-	// {
-	// 	id: 1,
-	// 	title: "20.7 + 31*2d",
-	// 	state: 0,
-	// 	dateCopyMode: 1,
-	// 	dateCopyOffset: 31 * 2,
-	// 	dateFrom: new Date(2025, 7 - 1, 20),
-	// 	dateTo: null, //TODO Test
-	// },
+	{
+		id: 1,
+		title: "20.7 + 7d",
+		state: 0,
+		dateCopyMode: 1,
+		dateCopyOffset: 7,
+		dateFrom: new Date(2025, 7 - 1, 20),
+		dateTo: null, //TODO Test
+	},
 	{
 		id: 2,
 		title: "13.X",
 		state: 0,
-		dateCopyMode: 10,
+		dateCopyMode: 2,
 		dateCopyOffset: 0,
-		dateFrom: new Date(2024, 4 - 1, 13),
+		// dateFrom: new Date(2024, 4 - 1, 13),
+		dateFrom: new Date("2025-08-13T18:53:33.004Z"),
 		dateTo: null,
 	},
 	{
 		id: 3,
 		title: "20.8 + 2y",
 		state: 0,
-		dateCopyMode: 30,
+		dateCopyMode: 3,
 		dateCopyOffset: 2,
 		dateFrom: new Date(2021, 8 - 1, 20),
 		dateTo: null,
@@ -113,6 +114,7 @@ function rangeModeDay(e: CallItem, dateFrom: Date, dateTo: Date) {
 }
 
 function rangeModeMonth(e: CallItem, dateFrom: Date, dateTo: Date) {
+	//UTC?
 	if (e.dateCopyOffset == null) return false;
 	if (e.dateCopyOffset == 0) {
 		//Date of the month
@@ -130,12 +132,14 @@ function rangeModeMonth(e: CallItem, dateFrom: Date, dateTo: Date) {
 }
 
 function rangeModeMonthWeek(e: CallItem, dateFrom: Date, dateTo: Date) {
+	//UTC?
 	if (!e.dateCopyOffset) return false; //Day of the month
 	//First friday, 4. sunday, last monday etc.
 	return true;
 }
 
 function rangeModeYear(e: CallItem, dateFrom: Date, dateTo: Date) {
+	//UTC?
 	if (!e.dateCopyOffset) return false; //Years to skip
 	const ds = new Date(e.dateFrom);
 	const y = dateFrom.getFullYear() - ds.getFullYear();
