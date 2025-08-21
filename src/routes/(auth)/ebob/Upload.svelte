@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tick } from 'svelte';
+	import { tick } from "svelte";
 
 	let input: HTMLInputElement;
 
@@ -29,12 +29,12 @@
 			// data.append('p', i + 1 + '');
 			let cBatchSize = 0;
 			for (let y = i + BATCH_SIZE; i < y && i < total; i++) {
-				data.append('files', input.files[i], input.files[i].name);
+				data.append("files", input.files[i], input.files[i].name);
 				cBatchSize++;
 			}
 
 			// console.log('r', i - BATCH_SIZE, i);
-			promises.push(fetch('', { method: 'POST', body: data }).then(() => (progress += cBatchSize)));
+			promises.push(fetch("", { method: "POST", body: data }).then(() => (progress += cBatchSize)));
 			if (promises.length >= CONCURRENT_REQUEST) {
 				// console.log('w');
 				await tick();

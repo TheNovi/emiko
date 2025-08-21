@@ -1,39 +1,33 @@
-import { db } from '$lib/server/db';
-import { bobImage } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
-import type { RequestHandler } from './$types';
+import { db } from "$lib/server/db";
+import { bobImage } from "$lib/server/db/schema";
+import { eq } from "drizzle-orm";
+import type { RequestHandler } from "./$types";
 // import { writeFile } from 'fs/promises';
-import { env } from '$env/dynamic/private';
-import { error } from '@sveltejs/kit';
-import sharp from 'sharp';
-import { join as pJoin } from 'path';
-if (!env.DATA_PATH) throw new Error('DATA_PATH is not set');
+import { env } from "$env/dynamic/private";
+import { error } from "@sveltejs/kit";
+import sharp from "sharp";
+import { join as pJoin } from "path";
+if (!env.DATA_PATH) throw new Error("DATA_PATH is not set");
 
-const resize = (
-	f: sharp.Sharp,
-	path: string,
-	width: number,
-	height: number,
-	folder: string = 'resized'
-) =>
+const resize = (f: sharp.Sharp, path: string, width: number, height: number, folder: string = "resized") =>
 	f
 		.clone()
-		.resize({ width, height, fit: 'inside', withoutEnlargement: true })
-		.toFile(pJoin(env.DATA_PATH, 'bob', folder, path));
+		.resize({ width, height, fit: "inside", withoutEnlargement: true })
+		.toFile(pJoin(env.DATA_PATH, "bob", folder, path));
 
 //File upload
 export const POST: RequestHandler = async ({ request, locals }) => {
-	if (!locals.user || !locals.user.id) return error(403, 'No user found');
+	if (!locals.user || !locals.user.id) return error(403, "No user found");
 
 	// await new Promise((resolve) => { setTimeout(resolve, 5000); });
 	const formData = await request.formData();
 	if (!formData) return new Response();
-	const files = formData.getAll('files') as File[];
+	const files = formData.getAll("files") as File[];
 
 	const types = new Map<string, keyof sharp.FormatEnum>([
-		['image/png', 'png'],
-		['image/jpeg', 'jpg'],
-		['image/gif', 'gif'],
+		["image/png", "png"],
+		["image/jpeg", "jpg"],
+		["image/gif", "gif"],
 	]);
 
 	for (const file of files) {
@@ -45,13 +39,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (file.size > 50 * 1000 * 1000) {
 			//50 MB (yes its in bytes)
 			//? Is this necessary? Photo is resized anyway.
-			console.error('File too big', file.name, file.size);
+			console.error("File too big", file.name, file.size);
 			continue;
 			// return error(413, file.name);
 		}
 		const ext = types.get(file.type);
 		if (!ext) {
-			console.error('Unsupported file type', file.name, file.type);
+			console.error("Unsupported file type", file.name, file.type);
 			continue;
 			// return error(415, file.name);
 		}
@@ -67,7 +61,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 	// console.log(m);
 			// })
 			// .toFormat(ext as any);
-			.toFormat('webp');
+			.toFormat("webp");
 
 		// Check if file is really a image (or something what sharp can process)
 		try {
@@ -83,7 +77,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.insert(bobImage)
 			.values({
 				userId: locals.user.id,
-				path: '',
+				path: "",
 				takenAt: new Date(file.lastModified), //Most likely current date
 				type: file.type,
 				size: file.size,
@@ -93,11 +87,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// const path = `${r[0].id.toString(16)}.${ext}`;
 		const path = `${r[0].id.toString(16)}.webp`;
 		await Promise.all([
-			resize(f, 'T-' + path, 120, 80), //TODO Find best sizes for full HD, notebook and mobile (idk, good luck).
-			resize(f, 'P-' + path, 640, 640), //TODO Resize images on request
-			resize(f, path, 1920, 1080, 'org'),
+			resize(f, "T-" + path, 120, 80), //TODO Find best sizes for full HD, notebook and mobile (idk, good luck).
+			resize(f, "P-" + path, 640, 640), //TODO Resize images on request
+			resize(f, path, 1920, 1080, "org"),
 			// f.toFile(pJoin(env.DATA_PATH, 'bob', 'org', path)),
-		]).then(() => console.log(file.name, '->', path));
+		]).then(() => console.log(file.name, "->", path));
 		// writeFile(`${DATA_FOLDER}/bob/${path}`, Buffer.from(await file.arrayBuffer()));
 
 		// Update path in db

@@ -1,5 +1,5 @@
-import { getStrollPlaceWeek } from '$lib/server/stroll';
-import type { PageServerLoad } from './$types';
+import { getStrollPlaceWeek } from "$lib/server/stroll";
+import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async () => {
 	return { week: await getStrollPlaceWeek() };

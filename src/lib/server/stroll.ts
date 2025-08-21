@@ -1,7 +1,7 @@
-import { db } from '$lib/server/db';
-import { stroll } from '$lib/server/db/schema';
-import { createHash } from 'crypto';
-import { sql } from 'drizzle-orm';
+import { db } from "$lib/server/db";
+import { stroll } from "$lib/server/db/schema";
+import { createHash } from "crypto";
+import { sql } from "drizzle-orm";
 
 /**
  * {weekFrom1970-1-1}
@@ -16,10 +16,10 @@ function seedEpochWeek() {
 function r(v: number) {
 	// console.log(v);
 	return parseInt(
-		'0x' +
-			createHash('SHA256')
-				.update(v + '')
-				.digest('hex')
+		"0x" +
+			createHash("SHA256")
+				.update(v + "")
+				.digest("hex")
 				.slice(0, 4), //This limits max number (can be changed if needed)
 		16
 	);

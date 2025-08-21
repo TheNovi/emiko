@@ -1,9 +1,8 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import type { PageData } from "./$types";
 
-	const { place, picking = false }: { place: PageData['week'] | undefined; picking: boolean } =
-		$props();
-	const pickingText = 'Losuji...';
+	const { place, picking = false }: { place: PageData["week"] | undefined; picking: boolean } = $props();
+	const pickingText = "Losuji...";
 	// $effect(() => console.log(place));
 </script>
 
@@ -12,10 +11,7 @@
 		<li>
 			<a href={prefix + link} {title} target="_blank" rel="noopener noreferrer">
 				<!-- <img src={ico ? ico : `//www.google.com/s2/favicons?domain=${prefix}&sz=20`} class="size-[20px]" alt={title} /> -->
-				<img
-					src={ico ? ico : `https://www.google.com/s2/favicons?domain=${prefix}&sz=20`}
-					alt={title}
-				/>
+				<img src={ico ? ico : `https://www.google.com/s2/favicons?domain=${prefix}&sz=20`} alt={title} />
 			</a>
 		</li>
 	{/if}
@@ -32,19 +28,9 @@
 		<h2>{place.name}</h2>
 		<span class="mb-1">{place.region}</span>
 		<ul>
-			{@render link('Google', '//google.cz/search?q=', place.name, '')}
-			{@render link(
-				'Google Maps',
-				'//www.google.com/maps/search/',
-				place.name,
-				'//www.google.com/images/branding/product/ico/maps15_bnuw3a_32dp.ico'
-			)}
-			{@render link(
-				'Turistické známky',
-				'//turisticke-znamky.cz/znamky/',
-				place.name + '-c' + place.tz,
-				''
-			)}
+			{@render link("Google", "//google.cz/search?q=", place.name, "")}
+			{@render link("Google Maps", "//www.google.com/maps/search/", place.name, "//www.google.com/images/branding/product/ico/maps15_bnuw3a_32dp.ico")}
+			{@render link("Turistické známky", "//turisticke-znamky.cz/znamky/", place.name + "-c" + place.tz, "")}
 		</ul>
 	</div>
 {/if}

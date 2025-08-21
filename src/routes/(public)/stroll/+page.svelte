@@ -1,21 +1,21 @@
 <script lang="ts">
-	import Header from '$lib/components/Header.svelte';
-	import { random, sleep } from '$lib/util';
-	import Place from './Place.svelte';
-	import WeeklyStrollCountdown from './WeeklyStrollCountdown.svelte';
-	import type { PageData } from './$types';
+	import Header from "$lib/components/Header.svelte";
+	import { random, sleep } from "$lib/util";
+	import Place from "./Place.svelte";
+	import WeeklyStrollCountdown from "./WeeklyStrollCountdown.svelte";
+	import type { PageData } from "./$types";
 
 	let { data }: { data: PageData } = $props();
 
 	let picking = $state(false);
-	let place: PageData['week'] | undefined = $state(undefined);
+	let place: PageData["week"] | undefined = $state(undefined);
 	async function getRandomPlace(depth = 0) {
 		if (depth) console.log(`Stroll | same place d=${depth}`, data.week);
 		if (picking) return;
 		picking = true;
 		let p: typeof place;
 		await Promise.all([
-			fetch('/stroll/api')
+			fetch("/stroll/api")
 				.then((r) => r.json())
 				.then((r) => (p = r)),
 			depth ? undefined : sleep(random(1, 3) * 1000),
@@ -29,8 +29,7 @@
 
 <Header title="Stroll" />
 <div id="c">
-	Chceš na výlet, ale nevíš kam? Zde najdeš každý týden nový tip kam vyrazit. A pokud daná lokace
-	zrovna nebude vyhovovat, tak si jednoduše vylosuješ novou.
+	Chceš na výlet, ale nevíš kam? Zde najdeš každý týden nový tip kam vyrazit. A pokud daná lokace zrovna nebude vyhovovat, tak si jednoduše vylosuješ novou.
 	<div id="countdown">
 		Další místo bude vylosováno za: <div><WeeklyStrollCountdown /></div>
 	</div>

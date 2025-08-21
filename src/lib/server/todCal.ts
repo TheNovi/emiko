@@ -1,6 +1,6 @@
-import { db } from '$lib/server/db';
-import { todItem } from '$lib/server/db/schema';
-import { and, eq, gte, isNotNull, isNull, lt, or, sql } from 'drizzle-orm';
+import { db } from "$lib/server/db";
+import { todItem } from "$lib/server/db/schema";
+import { and, eq, gte, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 
 /**
  * Gets all events between dateFrom and dateTo, and all repeated events before dateFrom
@@ -42,7 +42,7 @@ type CallItem = Awaited<ReturnType<typeof queryAll.all>>[0] & { dateFrom: Date }
  */
 export async function getCal(userId: number, dateFrom: Date, dateTo: Date) {
 	if (dateFrom >= dateTo) return [];
-	console.debug('cal', userId, dateFrom, dateTo);
+	console.debug("cal", userId, dateFrom, dateTo);
 	//Get all events
 	const all = (await queryAll.all({ userId, dateFrom: Math.floor(dateFrom.getTime() / 1000), dateTo: Math.floor(dateTo.getTime() / 1000) })) as CallItem[];
 	// const all = test;
@@ -67,7 +67,7 @@ export function parseCalls(calls: CallItem[], dateFrom: Date, dateTo: Date) {
 			case 3: //Years
 				return rangeModeYear(e, dateFrom, dateTo);
 			default:
-				console.error('Tod getCal | Unknown dateCopyMode', e.dateCopyMode);
+				console.error("Tod getCal | Unknown dateCopyMode", e.dateCopyMode);
 				break;
 		}
 	});
@@ -76,7 +76,7 @@ export function parseCalls(calls: CallItem[], dateFrom: Date, dateTo: Date) {
 const test: CallItem[] = [
 	{
 		id: 1,
-		title: '20.7 + 7d',
+		title: "20.7 + 7d",
 		state: 0,
 		dateCopyMode: 1,
 		dateCopyOffset: 7,
@@ -85,17 +85,17 @@ const test: CallItem[] = [
 	},
 	{
 		id: 2,
-		title: '13.X',
+		title: "13.X",
 		state: 0,
 		dateCopyMode: 2,
 		dateCopyOffset: 0,
 		// dateFrom: new Date(2024, 4 - 1, 13),
-		dateFrom: new Date('2025-08-13T18:53:33.004Z'),
+		dateFrom: new Date("2025-08-13T18:53:33.004Z"),
 		dateTo: null,
 	},
 	{
 		id: 3,
-		title: '20.8 + 2y',
+		title: "20.8 + 2y",
 		state: 0,
 		dateCopyMode: 3,
 		dateCopyOffset: 2,
@@ -166,7 +166,7 @@ function isBetweenRange(ds: number, nds: number, edt: number | null, dateFrom: D
 }
 
 //Debug
-function pD(ds: number, de: number | null, text = '') {
-	if (de) console.debug('', text, new Date(ds).toISOString(), new Date(ds + de).toISOString());
-	else console.debug('', text, new Date(ds).toISOString());
+function pD(ds: number, de: number | null, text = "") {
+	if (de) console.debug("", text, new Date(ds).toISOString(), new Date(ds + de).toISOString());
+	else console.debug("", text, new Date(ds).toISOString());
 }

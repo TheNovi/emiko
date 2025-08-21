@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/state';
+	import { page } from "$app/state";
 
 	let { title }: { title: string } = $props();
 	//TODO Do this using Context?

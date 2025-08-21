@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount } from "svelte";
 
 	let d: number = getNextWeekDate();
-	let text: string = $state('');
+	let text: string = $state("");
 
 	updateTime();
 	onMount(() => {
@@ -22,7 +22,7 @@
 	}
 
 	function updateTime() {
-		let pad = (n: number) => ('0000' + n).slice(-2);
+		let pad = (n: number) => ("0000" + n).slice(-2);
 
 		let t = d - new Date().getTime();
 		if (t < 0) {
@@ -31,13 +31,13 @@
 		}
 
 		t = Math.floor(t / 1000);
-		text = pad(t % 60) + ''; //Sec
+		text = pad(t % 60) + ""; //Sec
 		t = Math.floor(t / 60);
-		text = pad(t % 60) + ':' + text; //Min
+		text = pad(t % 60) + ":" + text; //Min
 		t = Math.floor(t / 60);
-		text = pad(t % 24) + ':' + text; //Hour
+		text = pad(t % 24) + ":" + text; //Hour
 		t = Math.floor(t / 24);
-		if (t > 0) text = t + ' ' + (t > 4 ? 'dní' : t > 1 ? 'dny' : 'den') + ' ' + text; //Days
+		if (t > 0) text = t + " " + (t > 4 ? "dní" : t > 1 ? "dny" : "den") + " " + text; //Days
 	}
 </script>
 
