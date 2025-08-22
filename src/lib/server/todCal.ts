@@ -31,7 +31,7 @@ const queryAll = db
 	.orderBy(todItem.dateFrom) //Is this necessary
 	.prepare();
 
-type CallItem = Awaited<ReturnType<typeof queryAll.all>>[0] & { dateFrom: Date };
+export type CallItem = Awaited<ReturnType<typeof queryAll.all>>[0] & { dateFrom: Date };
 
 /**
  * Main function

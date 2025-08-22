@@ -1,23 +1,42 @@
 <script lang="ts">
+	import { page } from "$app/state";
 	import Header from "$lib/components/Header.svelte";
-	import type { PageProps } from "./$types";
+	import type { CallItem } from "$lib/server/todCal";
+	import { onMount } from "svelte";
 	import Control from "./Control.svelte";
 	import ListItem from "./ListItem.svelte";
 
-	type CallItem = (typeof data.cal)[0];
+	// let { data }: PageProps = $props();
+	let cal: CallItem[] = $state([]);
+	let loading = $state(true);
 
-	let { data }: PageProps = $props();
-	let cal = $derived.by(() => {
-		const o: CallItem[] = [];
-		//Repeat all
-		for (const e of data.cal) {
-			if (data.from <= e.dateFrom) o.push(e);
-			for (let t = next(e, e.dateFrom); t && t.dateFrom < data.to; t = next(t, e.dateFrom)) {
-				if (data.from <= t.dateFrom) o.push(t);
-			}
-		}
-		return o.sort((a, b) => a.dateFrom.getTime() - b.dateFrom.getTime()); //TODO Optimize?
-	});
+	function fetchData() {
+		loading = true;
+		// console.log('fetching', currentOffset);
+		const d = new Date();
+		d.setHours(0, 0, 0, 0); //This part is crucial, because it creates date with client's timezone. And its main reason why this cant be send in props
+		let q = new URL("tod/api/" + d.getTime(), page.url);
+		fetch(q) //TODO As svelte remote function (when they become stable)
+			.then((r) => r.json()) // TODO Errors
+			.then((r: { cal: CallItem[]; from: string; to: string }) => {
+				//All dates in r are ISO Strings
+				const df = new Date(r.from);
+				const dt = new Date(r.to);
+				// console.log({ df, dt });
+
+				cal = [];
+				//Repeat all
+				for (const e of r.cal) {
+					e.dateFrom = new Date(e.dateFrom);
+					if (df <= e.dateFrom) cal.push(e);
+					for (let t = next(e, e.dateFrom); t && t.dateFrom < dt; t = next(t, e.dateFrom)) {
+						if (df <= t.dateFrom) cal.push(t);
+					}
+				}
+				cal.sort((a, b) => a.dateFrom.getTime() - b.dateFrom.getTime()); //TODO Optimize?
+				loading = false;
+			});
+	}
 
 	function next(item: CallItem, orgBf: Date): CallItem | undefined {
 		if (!item.dateCopyMode) return;
@@ -45,11 +64,13 @@
 			dateFrom: df,
 		};
 	}
+
+	onMount(fetchData);
 </script>
 
 <Header title="Tod Calendar" />
 
-{#each cal || [] as item, i}
+{#each cal as item, i}
 	<div>
 		{#if i == 0 || cal[i - 1].dateFrom < item.dateFrom}
 			{item.dateFrom.toDateString()}
@@ -59,7 +80,12 @@
 		{/if}
 	</div>
 	<ListItem {item} isDate />
+{:else}
+	{#if !loading}
+		<div>No events found</div>
+	{/if}
 {/each}
+<!-- else if content here -->
 
 <Control>
 	<a style="background-color: #333;" href="/tod/0">List</a>
