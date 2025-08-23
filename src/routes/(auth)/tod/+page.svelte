@@ -5,6 +5,7 @@
 	import { onMount } from "svelte";
 	import Control from "./Control.svelte";
 	import ListItem from "./ListItem.svelte";
+	import DateView from "$lib/components/DateView.svelte";
 
 	// let { data }: PageProps = $props();
 	let cal: CallItem[] = $state([]);
@@ -65,6 +66,12 @@
 		};
 	}
 
+	function toStartOfDay(d: Date) {
+		const o = new Date(d);
+		o.setHours(0, 0, 0, 0);
+		return o;
+	}
+
 	onMount(fetchData);
 </script>
 
@@ -73,10 +80,8 @@
 {#each cal as item, i}
 	<div>
 		{#if i == 0 || cal[i - 1].dateFrom < item.dateFrom}
-			{item.dateFrom.toDateString()}
-			{#if item.dateFrom.getHours() || item.dateFrom.getMinutes()}
-				{item.dateFrom.toLocaleTimeString()}
-			{/if}
+			<!-- TODO Better start of the day   -->
+			<DateView date={toStartOfDay(item.dateFrom)} />
 		{/if}
 	</div>
 	<ListItem {item} isDate />
