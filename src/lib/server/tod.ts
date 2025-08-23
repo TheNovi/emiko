@@ -2,9 +2,8 @@ import { db } from "$lib/server/db";
 import { todItem } from "$lib/server/db/schema";
 import { and, eq, isNull, sql, type SQLWrapper } from "drizzle-orm";
 
-type ItemDetail = Omit<typeof todItem.$inferSelect, "dateTo"> & { dateTo: Date | null };
 //Type for empty Root and SmartItemDetail select (it auto switches based on value in id) (discriminated unions)
-type SmartItemDetail = ({ id: null; title: string } | ItemDetail) & {
+type SmartItemDetail = ({ id: null; title: string } | typeof todItem.$inferSelect) & {
 	parents: Awaited<ReturnType<typeof getParents>>;
 	items: Awaited<ReturnType<typeof getChildren>>;
 };
@@ -22,7 +21,7 @@ export async function getItemDetail(userId: number, itemId: number): Promise<Sma
 		.get()
 		.then(async (e) => {
 			if (e) {
-				if (e.dateFrom && e.dateTo) (e as ItemDetail).dateTo = new Date(e.dateFrom.getTime() + e.dateTo);
+				// if (e.dateFrom && e.dateTo) (e as ItemDetail).dateTo = new Date(e.dateFrom.getTime() + e.dateTo);
 				(e as SmartItemDetail).parents = await getParents(userId, e.id);
 				(e as SmartItemDetail).items = await getChildren(userId, e.id);
 			}
@@ -63,7 +62,7 @@ async function getParents(userId: number, itemId: number | null): Promise<{ id: 
 
 async function getChildren(userId: number, parentId: number | null) {
 	return await db
-		.select({ id: todItem.id, title: todItem.title, state: todItem.state })
+		.select({ id: todItem.id, title: todItem.title, state: todItem.state, dtStart: todItem.dtStart, dtEnd: todItem.dtEnd })
 		.from(todItem)
 		.where(basicWhere(userId, parentId ? eq(todItem.parentId, parentId) : isNull(todItem.parentId)));
 	// .toSQL().sql;
@@ -83,6 +82,14 @@ export async function checkIfItemBelongsUser(userId: number, itemId?: number | n
  * @param item
  */
 export async function updateItem(item: Partial<typeof todItem.$inferSelect> & { id: number; userId: number }) {
+	//TODO Do this date checks in db (before update trigger)
+	if (item.dtStart && item.dtEnd && item.dtStart > item.dtEnd) {
+		const d = item.dtStart;
+		item.dtStart = item.dtEnd;
+		item.dtEnd = d;
+	}
+	if (item.dtEnd && item.dtStart == item.dtEnd) item.dtEnd = null;
+
 	await db
 		.update(todItem)
 		.set({ ...item, id: undefined, userId: undefined, parentId: item.parentId ? item.parentId : null })

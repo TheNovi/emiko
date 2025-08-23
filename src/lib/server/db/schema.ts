@@ -72,10 +72,10 @@ export const todItem = sqliteTable("tod_item", {
 	// stateSet: idk("stateSet"), //List of other states
 	description: text("description", { length: 5000 }).notNull().default(""),
 	// Calendar stuff
-	dateFrom: integer("date_from", { mode: "timestamp" }),
-	dateTo: integer("date_to"),
-	dateCopyOffset: integer("date_copy_offset"),
-	dateCopyMode: integer("date_copy_mode"), //1=day, 2=month, 3=year //Indexes wip //TODO Rename by iCal
-	//TODO Add repeat end date (find name from iCal)
+	dtStart: integer("dt_start", { mode: "timestamp" }),
+	dtEnd: integer("dt_end", { mode: "timestamp" }),
+	rFreq: integer("r_freq"), //1=day, 2=weekly, 3=month, 4=year
+	rInterval: integer("r_interval"),
+	rUntil: integer("r_until", { mode: "timestamp" }),
 });
 // export type TodItem = typeof todItem.$inferSelect;

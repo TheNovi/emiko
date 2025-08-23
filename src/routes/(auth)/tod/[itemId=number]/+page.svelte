@@ -7,10 +7,13 @@
 	import type { PageProps } from "./$types";
 
 	let { data, form }: PageProps = $props();
-	let tod = $derived(data.tod);
+	//Reactive values (for bindings)
+	let tod = $derived.by(() => {
+		let v = $state(data.tod);
+		return v;
+	});
 	//TODO Don't reverse, loop backwards
-	//TODO Remove parent Tod from Root
-	let parents = $derived([...tod.parents, { id: 0, title: "Tod" }].reverse());
+	let parents = $derived(tod.id ? [...tod.parents, { id: 0, title: "Tod" }].reverse() : []);
 	let lastP = $derived(tod.parents.length ? tod.parents[0].id : 0);
 
 	// $inspect(tod.parents);
@@ -34,9 +37,9 @@
 <form
 	method="post"
 	use:enhance={({ formData }) => {
-		formDatesToISO(formData, ["dateFrom", "dateTo"]);
+		formDatesToISO(formData, ["dtStart", "dtEnd"]);
 		//TODO Send only changed (mainly description)
-		// console.log(formData.get("dateFrom"));
+		// console.log(formData.get("dtStart"));
 		return async ({ update }) => {
 			update({ reset: false });
 		};
@@ -54,25 +57,54 @@
 		</div>
 		<div>
 			<label for="state">state</label>
-			<!-- <input type="number" name="state" id="state" required max="100" value={tod.state} /> -->
-			<select name="state" id="state" required value={"" + tod.state}>
-				<option value="1">Open</option>
-				<option value="2">In Process</option>
-				<option value="0">Done</option>
+			<select name="state" id="state" required value={tod.state}>
+				<option value={1}>Open</option>
+				<option value={2}>In Process</option>
+				<option value={0}>Done</option>
 			</select>
 		</div>
 		<div>
-			<label for="dateFrom">from</label>
-			<input type="datetime-local" name="dateFrom" id="dateFrom" value={formParseInputDate(tod.dateFrom)} />
+			<label for="dtStart">from</label>
+			<!-- TODO Better (most likely make inputDate component just for this conversion) -->
+			<input
+				type="datetime-local"
+				name="dtStart"
+				id="dtStart"
+				bind:value={
+					() => formParseInputDate(tod.dtStart),
+					(v) => {
+						tod.dtStart = v ? new Date(v) : null;
+					}
+				}
+			/>
 		</div>
 		<div>
-			<label for="dateTo">To</label>
-			<input type="datetime-local" name="dateTo" id="dateTo" value={formParseInputDate(tod.dateTo)} />
+			<label for="dateEnd">To</label>
+			<input type="datetime-local" name="dateEnd" id="dateEnd" disabled={!tod.dtStart} value={formParseInputDate(tod.dtEnd)} />
 		</div>
 		<div>
-			<label for="dateCopyOffset">Event copy date offset in days</label>
-			<input type="number" min="0" name="dateCopyOffset" id="dateCopyOffset" value={tod.dateCopyOffset ? tod.dateCopyOffset / (24 * 3600 * 1000) : null} />
+			<label for="rFreq">Repeats</label>
+			<select name="rFreq" id="rFreq" bind:value={tod.rFreq}>
+				<option value={null}></option>
+				<option value={1}>Daily</option>
+				<option value={2} disabled>Weekly</option>
+				<option value={3}>Monthly</option>
+				<option value={4}>Yearly</option>
+			</select>
 		</div>
+
+		{#if tod.rFreq == 1}
+			<!-- Daily -->
+			<div>
+				<label for="rInterval">Interval</label>
+				<input type="number" min="0" name="rInterval" id="rInterval" disabled={!tod.dtStart} value={tod.rInterval ? tod.rInterval / (24 * 3600 * 1000) : null} />
+			</div>
+		{:else}
+			<div>
+				<label for="rInterval">Interval</label>
+				<input type="number" min="0" name="rInterval" id="rInterval" disabled />
+			</div>
+		{/if}
 		<div>
 			<label for="description">description</label>
 			<textarea name="description" id="description" maxlength="2500" value={tod.description}></textarea>
@@ -87,7 +119,7 @@
 </form>
 {#each data.tod.items as item}
 	<!-- {#each [...Array(100).keys()].map((v) => ({ id: v, title: "false " + v })) as i} -->
-	<ListItem {item} isDate={false} />
+	<ListItem {item} />
 {/each}
 
 <style lang="postcss">

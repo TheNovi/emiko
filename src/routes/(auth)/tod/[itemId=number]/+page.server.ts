@@ -41,6 +41,7 @@ export const actions: Actions = {
 		let errors: string[] = [];
 		// console.log(await request.formData());
 
+		//TODO Make some tests for this
 		const item = v.safeParse(
 			v.object({
 				id: vFormNumber,
@@ -49,33 +50,22 @@ export const actions: Actions = {
 				state: vFormNumber,
 				title: v.pipe(v.string("Title must be string"), v.trim(), v.nonEmpty("Title must not be empty"), v.maxLength(250, "Title is too long")),
 				description: v.pipe(v.string("Description must be string"), v.trim(), v.maxLength(2500, "Description is too long")),
-				dateFrom: v.union([vFormEmpty, vFormDate]),
-				dateTo: v.pipe(
-					v.union([vFormEmpty, vFormDate]),
-					v.transform((d) => (d ? d.getTime() : null))
+				dtStart: v.union([vFormEmpty, vFormDate]),
+				dtEnd: v.nullish(v.union([vFormEmpty, vFormDate])),
+				rInterval: v.nullish(
+					v.union([
+						vFormEmpty,
+						v.pipe(
+							vFormNumber,
+							v.transform((e) => e * 24 * 3600 * 1000)
+						),
+					])
 				),
-				dateCopyOffset: v.union([
-					vFormEmpty,
-					v.pipe(
-						vFormNumber,
-						v.transform((e) => e * 24 * 3600 * 1000)
-					),
-				]),
 			}),
 			Object.fromEntries(await request.formData())
 		);
 		if (!item.success) return fail(400, { errors: item.issues.map((i) => i.message) });
 		item.output.userId = locals.user.id;
-
-		//TODO Do this date checks in db (before update trigger)
-		if (item.output.dateFrom && item.output.dateTo) {
-			item.output.dateTo = item.output.dateTo - item.output.dateFrom.getTime();
-			if (item.output.dateTo < 0) {
-				item.output.dateFrom.setTime(item.output.dateFrom.getTime() + item.output.dateTo);
-				item.output.dateTo *= -1;
-			}
-		}
-		if (item.output.dateTo == 0) item.output.dateTo = null; //Is this necessary?
 		// console.log(item.output);
 		// return;
 

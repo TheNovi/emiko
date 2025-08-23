@@ -16,7 +16,7 @@
 		// console.log('fetching', currentOffset);
 		const d = new Date();
 		d.setHours(0, 0, 0, 0); //This part is crucial, because it creates date with client's timezone. And its main reason why this cant be send in props
-		let q = new URL("tod/api/" + d.getTime(), page.url);
+		let q = new URL("/tod/api/" + d.getTime(), page.url);
 		fetch(q) //TODO As svelte remote function (when they become stable)
 			.then((r) => r.json()) // TODO Errors
 			.then((r: { cal: CallItem[]; from: string; to: string }) => {
@@ -28,41 +28,45 @@
 				cal = [];
 				//Repeat all
 				for (const e of r.cal) {
-					e.dateFrom = new Date(e.dateFrom);
-					if (df <= e.dateFrom) cal.push(e);
-					for (let t = next(e, e.dateFrom); t && t.dateFrom < dt; t = next(t, e.dateFrom)) {
-						if (df <= t.dateFrom) cal.push(t);
+					e.dtStart = new Date(e.dtStart); //FIXME Is this necessary?
+					if (df <= e.dtStart) cal.push(e);
+					for (let t = next(e, e.dtStart); t && t.dtStart < dt; t = next(t, e.dtStart)) {
+						if (df <= t.dtStart) cal.push(t);
 					}
 				}
-				cal.sort((a, b) => a.dateFrom.getTime() - b.dateFrom.getTime()); //TODO Optimize?
+				cal.sort((a, b) => a.dtStart.getTime() - b.dtStart.getTime()); //TODO Optimize?
 				loading = false;
 			});
 	}
 
 	function next(item: CallItem, orgBf: Date): CallItem | undefined {
-		if (!item.dateCopyMode) return;
-		let df = new Date(item.dateFrom);
-		switch (item.dateCopyMode) {
+		if (!item.rFreq) return;
+		let df = new Date(item.dtStart);
+		const edt = item.dtEnd ? new Date(item.dtEnd.getTime() - df.getTime()).getTime() : 0;
+		switch (item.rFreq) {
 			case 1:
-				if (!item.dateCopyOffset) return;
-				df = new Date(df.getTime() + item.dateCopyOffset * 24 * 60 * 60000); //Skip days
+				if (!item.rInterval) return;
+				df = new Date(df.getTime() + item.rInterval * 24 * 60 * 60000); //Skip days
 				break;
-			case 2:
-				if (item.dateCopyOffset == null) return;
-				if (item.dateCopyOffset == 0)
+			case 2: //Week //TODO
+				return;
+			case 3:
+				if (!item.rInterval)
 					df.setMonth(df.getMonth() + 1, orgBf.getDate()); //Date of month
 				else return; //Day of month (second friday, etc.)
 				break;
-			case 3:
-				if (!item.dateCopyOffset) return;
-				df.setFullYear(df.getFullYear() + item.dateCopyOffset, orgBf.getMonth(), orgBf.getDate()); //Skip years
+			case 4:
+				if (!item.rInterval) return;
+				df.setFullYear(df.getFullYear() + item.rInterval, orgBf.getMonth(), orgBf.getDate()); //Skip years
 				break;
 			default:
 				return;
 		}
+		//TODO rUntil
 		return {
 			...item,
-			dateFrom: df,
+			dtStart: df,
+			dtEnd: new Date(df.getTime() + edt),
 		};
 	}
 
@@ -79,12 +83,12 @@
 
 {#each cal as item, i}
 	<div>
-		{#if i == 0 || cal[i - 1].dateFrom < item.dateFrom}
+		{#if i == 0 || cal[i - 1].dtStart < item.dtStart}
 			<!-- TODO Better start of the day   -->
-			<DateView date={toStartOfDay(item.dateFrom)} />
+			<DateView date={toStartOfDay(item.dtStart)} />
 		{/if}
 	</div>
-	<ListItem {item} isDate />
+	<ListItem {item} />
 {:else}
 	{#if !loading}
 		<div>No events found</div>

@@ -1,6 +1,6 @@
 <script lang="ts">
-	type TItem = { id: number; title: string; state: number };
-	let { item, isDate = false }: { isDate: false; item: TItem } | { isDate: true; item: TItem & { dateFrom: Date; dateTo: number | null } } = $props();
+	type TItem = { id: number; title: string; state: number; dtStart: Date | null; dtEnd: Date | null };
+	let { item }: { item: TItem } = $props();
 </script>
 
 <!-- TODO 0 Quick change state -->
