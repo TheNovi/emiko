@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { dev } from "$app/environment";
 	import { enhance } from "$app/forms";
-	import Header from "$lib/components/Header.svelte";
+	import Title from "$lib/components/Title.svelte";
 	import type { PageProps } from "./$types";
 
 	let { form }: PageProps = $props();
@@ -10,7 +10,7 @@
 	if (dev) name = password = "admin";
 </script>
 
-<Header title="Login" />
+<Title title="Login" />
 
 <form
 	method="post"

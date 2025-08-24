@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
-	import Header from "$lib/components/Header.svelte";
+	import Title from "$lib/components/Title.svelte";
 	import type { CallItem } from "$lib/server/todCal";
 	import { onMount } from "svelte";
 	import Control from "./Control.svelte";
@@ -83,7 +83,7 @@
 	onMount(fetchData);
 </script>
 
-<Header title="Tod Calendar" />
+<Title title="Tod Calendar" />
 
 <div id="cont">
 	{#each cal as item, i}

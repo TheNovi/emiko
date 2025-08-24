@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import Header from "$lib/components/Header.svelte";
 	import InputDate from "$lib/components/InputDate.svelte";
-	import { formDatesToISO, formParseInputDate } from "$lib/util";
+	import Title from "$lib/components/Title.svelte";
+	import { formDatesToISO } from "$lib/util";
 	import Control from "../Control.svelte";
 	import ListItem from "../ListItem.svelte";
 	import type { PageProps } from "./$types";
@@ -21,9 +21,9 @@
 </script>
 
 {#if tod.id}
-	<Header title={`Tod | ${tod.title}`} />
+	<Title title={`Tod | ${tod.title}`} />
 {:else}
-	<Header title="Tod" />
+	<Title title="Tod" />
 {/if}
 <div id="header">
 	<span>

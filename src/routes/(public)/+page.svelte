@@ -1,13 +1,13 @@
 <script lang="ts">
 	import GraphAnim from "$lib/components/GraphAnim.svelte";
-	import Header from "$lib/components/Header.svelte";
+	import Title from "$lib/components/Title.svelte";
 	import { GraphMode } from "$lib/graphAnim";
 	import type { PageData } from "./$types";
 
 	let { data }: { data: PageData } = $props();
 </script>
 
-<Header title="Home" />
+<Title title="Home" />
 <!-- TODO Some less resources expensive setting -->
 <GraphAnim mode={GraphMode.Lorenz} style="opacity: 50%" />
 <div id="c">

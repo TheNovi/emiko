@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Header from "$lib/components/Header.svelte";
+	import Title from "$lib/components/Title.svelte";
 	import { random, sleep } from "$lib/util";
 	import Place from "./Place.svelte";
 	import WeeklyStrollCountdown from "./WeeklyStrollCountdown.svelte";
@@ -27,7 +27,7 @@
 	// $effect(() => console.log(data.week));
 </script>
 
-<Header title="Stroll" />
+<Title title="Stroll" />
 <div id="c">
 	Chceš na výlet, ale nevíš kam? Zde najdeš každý týden nový tip kam vyrazit. A pokud daná lokace zrovna nebude vyhovovat, tak si jednoduše vylosuješ novou.
 	<div id="countdown">

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import Header from "$lib/components/Header.svelte";
+	import Title from "$lib/components/Title.svelte";
 	import type { PageProps } from "./$types";
 
 	let { data, form }: PageProps = $props();
@@ -13,7 +13,7 @@
 	});
 </script>
 
-<Header title="Profile" />
+<Title title="Profile" />
 
 <!-- TODO As multiple forms -->
 <form
