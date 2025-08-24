@@ -51,7 +51,6 @@ export async function getCal(userId: number, dateFrom: Date, dateTo: Date) {
 	//Get all events
 	const all = (await queryAll.all({ userId, dateFrom: Math.floor(dateFrom.getTime() / 1000), dateTo: Math.floor(dateTo.getTime() / 1000) })) as CallItem[];
 	// const all = test;
-	// console.debug(all);
 	const out = parseCalls(all, dateFrom, dateTo);
 	// console.debug(out);
 	return out;

@@ -54,6 +54,7 @@ function p(
 describe("parseCalls", () => {
 	describe("Days", () => {
 		const m = 1;
+		p({ interval: null, ds: "2025-01-01T00:00:00.000Z", de: "2025-01-05T00:00:00.000Z", until: null }, "2025-01-05T00:00:00.000Z", "2025-02-05T00:00:00.000Z", m, true);
 		p({ interval: 7, ds: "2025-06-07T00:00:00.000Z", de: null, until: null }, "2025-08-13T00:00:00.000Z", "2025-09-13T00:00:00.000Z", m, true);
 	});
 	describe("Month days", () => {

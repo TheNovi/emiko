@@ -20,16 +20,20 @@
 		fetch(q) //TODO As svelte remote function (when they become stable)
 			.then((r) => r.json()) // TODO Errors
 			.then((r: { cal: CallItem[]; from: string; to: string }) => {
-				//All dates in r are ISO Strings
+				//! All dates are ISO Strings!
 				const df = new Date(r.from);
 				const dt = new Date(r.to);
 				// console.log({ df, dt });
+				// console.log(r.cal);
 
-				cal = [];
 				//Repeat all
+				cal = [];
 				for (const e of r.cal) {
-					e.dtStart = new Date(e.dtStart); //FIXME Is this necessary?
-					if (df <= e.dtStart) cal.push(e);
+					//! All dates in r are ISO Strings!
+					e.dtStart = new Date(e.dtStart);
+					if (e.dtEnd) e.dtEnd = new Date(e.dtEnd);
+
+					if (df <= e.dtStart || (e.dtEnd && df <= e.dtEnd)) cal.push(e);
 					for (let t = next(e, e.dtStart); t && t.dtStart < dt; t = next(t, e.dtStart)) {
 						if (df <= t.dtStart) cal.push(t);
 					}
