@@ -7,17 +7,24 @@
 </script>
 
 {#if data.user}
-	<div id="header"><a href="/p">{data.user.name}</a></div>
+	<header><a href="/p">{data.user.name}</a></header>
 {/if}
-{@render children()}
+<main>
+	{@render children()}
+</main>
 
 <style lang="postcss">
-	#header {
+	header {
+		display: flex;
+		direction: rtl;
 		background-color: #222;
-		text-align: right;
-		padding-right: 10px;
+		top: 0;
+		width: 100%;
+		height: 1.5rem;
+	}
+	header a {
+		display: inline-block;
 		padding-top: 2px;
-		padding-bottom: 2px;
-		margin-bottom: 5px;
+		padding-right: 10px;
 	}
 </style>

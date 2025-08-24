@@ -107,10 +107,14 @@
 		<button formaction="?/save" disabled={!tod.id} type="submit" style="background-color: green;">Save</button>
 	</Control>
 </form>
-{#each data.tod.items as item}
+<ul>
 	<!-- {#each [...Array(100).keys()].map((v) => ({ id: v, title: "false " + v })) as i} -->
-	<ListItem {item} />
-{/each}
+	{#each data.tod.items as item}
+		<li>
+			<ListItem {item} />
+		</li>
+	{/each}
+</ul>
 
 <style lang="postcss">
 	#header {
@@ -119,5 +123,10 @@
 		border-radius: 1em;
 		padding: 0.5em;
 		margin: 1em 0em 0.7em 0em;
+	}
+	ul {
+		text-decoration: none;
+		/* Control height */
+		padding-bottom: 3em;
 	}
 </style>

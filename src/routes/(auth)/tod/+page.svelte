@@ -112,10 +112,8 @@
 		margin-bottom: 1em;
 	}
 
-	/* TODO Make Control not fixed, and everything in flex */
 	#cont {
-		max-height: calc(100vh - 6em);
-		overflow-y: auto;
-		overflow-x: hidden;
+		/* Control height */
+		padding-bottom: 3em;
 	}
 </style>
