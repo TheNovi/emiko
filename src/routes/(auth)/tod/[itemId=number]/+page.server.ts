@@ -51,16 +51,9 @@ export const actions: Actions = {
 				title: v.pipe(v.string("Title must be string"), v.trim(), v.nonEmpty("Title must not be empty"), v.maxLength(250, "Title is too long")),
 				description: v.pipe(v.string("Description must be string"), v.trim(), v.maxLength(2500, "Description is too long")),
 				dtStart: v.union([vFormEmpty, vFormDate]),
-				dtEnd: v.nullish(v.union([vFormEmpty, vFormDate])),
-				rInterval: v.nullish(
-					v.union([
-						vFormEmpty,
-						v.pipe(
-							vFormNumber,
-							v.transform((e) => e * 24 * 3600 * 1000)
-						),
-					])
-				),
+				dtEnd: v.union([vFormEmpty, vFormDate]),
+				rFreq: v.union([vFormEmpty, vFormNumber]),
+				rInterval: v.nullish(v.union([vFormEmpty, vFormNumber])),
 			}),
 			Object.fromEntries(await request.formData())
 		);

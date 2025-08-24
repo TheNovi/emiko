@@ -81,20 +81,21 @@
 
 <Header title="Tod Calendar" />
 
-{#each cal as item, i}
-	<div>
-		{#if i == 0 || cal[i - 1].dtStart < item.dtStart}
-			<!-- TODO Better start of the day   -->
-			<DateView date={toStartOfDay(item.dtStart)} />
+<div id="cont">
+	{#each cal as item, i}
+		<div>
+			{#if i == 0 || cal[i - 1].dtStart < item.dtStart}
+				<!-- TODO Better start of the day   -->
+				<DateView date={toStartOfDay(item.dtStart)} />
+			{/if}
+		</div>
+		<ListItem {item} />
+	{:else}
+		{#if !loading}
+			<div>No events found</div>
 		{/if}
-	</div>
-	<ListItem {item} />
-{:else}
-	{#if !loading}
-		<div>No events found</div>
-	{/if}
-{/each}
-<!-- else if content here -->
+	{/each}
+</div>
 
 <Control>
 	<a style="background-color: #333;" href="/tod/0">List</a>
@@ -105,5 +106,12 @@
 		text-align: center;
 		margin-top: 1em;
 		margin-bottom: 1em;
+	}
+
+	/* TODO Make Control not fixed, and everything in flex */
+	#cont {
+		max-height: calc(100vh - 6em);
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
 </style>

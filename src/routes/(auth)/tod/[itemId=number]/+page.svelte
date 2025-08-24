@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import Header from "$lib/components/Header.svelte";
+	import InputDate from "$lib/components/InputDate.svelte";
 	import { formDatesToISO, formParseInputDate } from "$lib/util";
 	import Control from "../Control.svelte";
 	import ListItem from "../ListItem.svelte";
@@ -65,22 +66,11 @@
 		</div>
 		<div>
 			<label for="dtStart">from</label>
-			<!-- TODO Better (most likely make inputDate component just for this conversion) -->
-			<input
-				type="datetime-local"
-				name="dtStart"
-				id="dtStart"
-				bind:value={
-					() => formParseInputDate(tod.dtStart),
-					(v) => {
-						tod.dtStart = v ? new Date(v) : null;
-					}
-				}
-			/>
+			<InputDate name="dtStart" bind:value={tod.dtStart} />
 		</div>
 		<div>
-			<label for="dateEnd">To</label>
-			<input type="datetime-local" name="dateEnd" id="dateEnd" disabled={!tod.dtStart} value={formParseInputDate(tod.dtEnd)} />
+			<label for="dtEnd">To</label>
+			<InputDate name="dtEnd" disabled={!tod.dtStart} value={tod.dtEnd} />
 		</div>
 		<div>
 			<label for="rFreq">Repeats</label>
@@ -97,7 +87,7 @@
 			<!-- Daily -->
 			<div>
 				<label for="rInterval">Interval</label>
-				<input type="number" min="0" name="rInterval" id="rInterval" disabled={!tod.dtStart} value={tod.rInterval ? tod.rInterval / (24 * 3600 * 1000) : null} />
+				<input type="number" min="0" name="rInterval" id="rInterval" disabled={!tod.dtStart} value={tod.rInterval} />
 			</div>
 		{:else}
 			<div>
