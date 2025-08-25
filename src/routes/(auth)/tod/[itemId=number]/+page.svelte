@@ -13,7 +13,6 @@
 		let v = $state(data.tod);
 		return v;
 	});
-	//TODO Don't reverse, loop backwards
 	let parents = $derived(tod.id ? [...tod.parents, { id: 0, title: "Tod" }].reverse() : []);
 	let lastP = $derived(tod.parents.length ? tod.parents[0].id : 0);
 

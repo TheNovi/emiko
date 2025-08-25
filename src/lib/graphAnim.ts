@@ -77,18 +77,3 @@ export class Points {
 		console.log(this.oi, this.length, this.d.toString());
 	}
 }
-
-//TODO Unit tests
-// let p = new Points(3);
-// p.push(1, 0);
-// p.push(2, 0);
-// p.push(3, 0);
-// p.push(4, 0);
-// p.push(5, 0);
-// p.push(6, 0);
-// p.push(7, 0);
-// p.push(8, 0);
-// for (let i = 0; i < p.length; i++) {
-// 	console.log(p.get(i));
-// }
-// p.debug();

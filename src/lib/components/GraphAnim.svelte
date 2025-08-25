@@ -92,7 +92,7 @@
 				points.push(new GPoint({ xyz: [320, 321, 322], center, size, scale }, { m: 3 }, getFun(points.length)));
 				break;
 		}
-		frame();
+		frame(); //FIXME Sometimes it lags whole app, check if it stops after unmount
 	});
 </script>
 

@@ -34,7 +34,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		//TODO Logger
 		//TODO Better Error handling
 		//TODO Video
-		// Checks
+		// Checks //TODO Are these checks enough? Can this be changed in file object?
 		if (!file || !file.size) continue;
 		if (file.size > 50 * 1000 * 1000) {
 			//50 MB (yes its in bytes)
