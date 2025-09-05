@@ -41,7 +41,6 @@ export const actions: Actions = {
 		let errors: string[] = [];
 		// console.log(await request.formData());
 
-		//TODO Make some tests for this
 		const item = v.safeParse(
 			v.object({
 				id: vFormNumber,

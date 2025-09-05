@@ -32,6 +32,7 @@
 					//! All dates in r are ISO Strings!
 					e.dtStart = new Date(e.dtStart);
 					if (e.dtEnd) e.dtEnd = new Date(e.dtEnd);
+					if (e.rUntil) e.rUntil = new Date(e.rUntil);
 
 					if (df <= e.dtStart || (e.dtEnd && df <= e.dtEnd)) cal.push(e);
 					for (let t = next(e, e.dtStart); t && t.dtStart < dt; t = next(t, e.dtStart)) {
@@ -66,7 +67,7 @@
 			default:
 				return;
 		}
-		//TODO rUntil
+		if (item.rUntil && item.rUntil < df) return;
 		return {
 			...item,
 			dtStart: df,
@@ -89,7 +90,6 @@
 	{#each cal as item, i}
 		<div>
 			{#if i == 0 || cal[i - 1].dtStart < item.dtStart}
-				<!-- TODO Better start of the day   -->
 				<DateView date={toStartOfDay(item.dtStart)} />
 			{/if}
 		</div>
