@@ -17,6 +17,7 @@
 	let canvas: HTMLCanvasElement;
 	let cx: CanvasRenderingContext2D;
 	let points: GPoint[] = [];
+	let running = $state(true);
 
 	function recenter() {
 		cx.strokeStyle = color;
@@ -27,6 +28,7 @@
 
 	function frame() {
 		//TODO As shader
+		if (!running) return;
 		cx.clearRect(0, 0, innerWidth, innerHeight);
 		if (center[0] !== innerWidth / 2 || center[1] !== innerHeight / 2) recenter();
 		for (let i = 0; i < points.length; i++) points[i].step((p) => draw(p, i));
@@ -92,7 +94,10 @@
 				points.push(new GPoint({ xyz: [320, 321, 322], center, size, scale }, { m: 3 }, getFun(points.length)));
 				break;
 		}
-		frame(); //FIXME Sometimes it lags whole app, check if it stops after unmount
+		frame();
+		return () => {
+			running = false;
+		};
 	});
 </script>
 
@@ -110,5 +115,6 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
+		pointer-events: none;
 	}
 </style>
