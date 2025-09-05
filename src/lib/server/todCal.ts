@@ -47,7 +47,7 @@ export type CallItem = Awaited<ReturnType<typeof queryAll.all>>[0] & { dtStart: 
  */
 export async function getCal(userId: number, dateFrom: Date, dateTo: Date) {
 	if (dateFrom >= dateTo) return [];
-	console.debug("cal", userId, dateFrom, dateTo);
+	// console.debug("cal", userId, dateFrom, dateTo);
 	//Get all events
 	const all = (await queryAll.all({ userId, dateFrom: Math.floor(dateFrom.getTime() / 1000), dateTo: Math.floor(dateTo.getTime() / 1000) })) as CallItem[];
 	// const all = test;
