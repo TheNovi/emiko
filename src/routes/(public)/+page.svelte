@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import GraphAnim from "$lib/components/GraphAnim.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import { GraphMode } from "$lib/graphAnim";
@@ -34,6 +35,9 @@
 		<li>&gt;<a href="/lorenz">lorenz</a>&lt;</li>
 		<!-- <li>&gt;<a href="/threebody">Three Body</a>&lt;</li> -->
 	</ul>
+	{#if !data.user}
+		<button id="login" aria-label="hidden login" onclick={() => goto("/login")}></button>
+	{/if}
 </div>
 
 <style lang="postcss">
@@ -67,6 +71,17 @@
 		margin-bottom: 8px;
 		opacity: 0;
 		animation: appear 5s forwards 3s;
+	}
+
+	#login {
+		display: block;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		height: 50px;
+		width: 100%;
+		opacity: 0;
+		/* background-color: green; */
 	}
 
 	/* ul {
