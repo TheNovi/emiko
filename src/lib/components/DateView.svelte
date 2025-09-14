@@ -22,14 +22,15 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <span
-	onclick={() => {
+	onclick={(e) => {
+		e.preventDefault(); //Prevents following link when inside <a>
 		s = (s + 1) % (langs.length * 2);
 	}}
 	title={date.toString()}
 >
-	<span>{date.toLocaleDateString(locale, useOpts ? dateOpts : {})}</span>
+	{date.toLocaleDateString(locale, useOpts ? dateOpts : {})}
 	{#if date.getHours() > 0 || date.getMinutes() > 0}
-		<span>{date.toLocaleTimeString(locale, { hour12: false })}</span>
+		{date.toLocaleTimeString(locale, { hour12: false })}
 	{/if}
 </span>
 
