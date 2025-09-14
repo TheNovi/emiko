@@ -3,15 +3,18 @@
 
 	type TItem = { id: number; title: string; state: number; dtStart: Date | null; dtEnd: Date | null };
 	let { item }: { item: TItem } = $props();
+
+	// TODO 2 Better states (return from server)
+	let states = ["Done", "Open", "In Process"];
 </script>
 
+<!-- TODO 10 Internet says its not good idea to have other clickable items inside <a>. So either make only title part link. Or inspire from how reddit has done it -->
 <!-- TODO 0 Quick change state -->
-<!-- TODO 5 Better states (return from server) -->
 <!-- TODO 5 event rFreq + rInterval -->
 <!-- TODO 5 event rUntil -->
 <a class="item" href={`/tod/${item.id}`}>
 	<span>{item.title}</span>
-	<span>{item.state}</span>
+	<span>{states[item.state]}</span>
 	<span>
 		{#if item.dtStart}
 			<DateView date={item.dtStart} />
