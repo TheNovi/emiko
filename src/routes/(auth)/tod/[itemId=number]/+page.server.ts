@@ -1,4 +1,4 @@
-import { checkIfItemBelongsUser, getItemDetail, insertItem, updateItem } from "$lib/server/tod";
+import { checkIfItemBelongsUser, deleteItem, getItemDetail, insertItem, updateItem } from "$lib/server/tod";
 import { fail, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
 import type { Actions, PageServerLoad } from "./$types";
@@ -34,6 +34,13 @@ export const actions: Actions = {
 		if (!locals.user) return redirect(303, "/login");
 		if (!(await checkIfItemBelongsUser(locals.user.id, +itemId))) return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
 		let n = await insertItem(locals.user.id, +itemId || null, "New Item");
+		return redirect(303, `/tod/${n}`);
+	},
+	delete: async ({ locals, params: { itemId } }) => {
+		// console.log("delete");
+		// return {};
+		if (!locals.user) return redirect(303, "/login");
+		let n = await deleteItem(locals.user.id, +itemId);
 		return redirect(303, `/tod/${n}`);
 	},
 	save: async ({ locals, request }) => {

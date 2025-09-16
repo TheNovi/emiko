@@ -79,8 +79,8 @@ export async function checkIfItemBelongsUser(userId: number, itemId?: number | n
 }
 
 /**
- * Check if parentId belongs to user before running this
- * @param item
+ * Updates item in db and returns its id.
+ * Check if parentId belongs to user before running this.
  */
 export async function updateItem(item: Partial<typeof todItem.$inferSelect> & { id: number; userId: number }) {
 	//TODO Do this date checks in db (before update trigger)
@@ -98,10 +98,30 @@ export async function updateItem(item: Partial<typeof todItem.$inferSelect> & { 
 }
 
 /**
- * Check if parentId belongs to user before running this
- * @param item
+ * Creates new item in db and returns its id.
+ * Check if parentId belongs to user before running this.
  */
 export async function insertItem(userId: number, parentId: number | null, title: string) {
 	const d = await db.insert(todItem).values({ userId, parentId, title }).returning({ id: todItem.id }).get();
 	return d.id;
+}
+
+/**
+ * Deletes item in db, including all children (recursive).
+ * @returns parentId
+ */
+export async function deleteItem(userId: number, itemId: number) {
+	const d = await db
+		.update(todItem)
+		.set({ deletedAt: new Date() }) /*
+		.set({ updatedAt: new Date() }) // */
+		.where(basicWhere(userId, eq(todItem.id, itemId)))
+		// .returning({ parentId: todItem.parentId }) /*
+		.returning({ title: todItem.title, parentId: todItem.parentId }) // */
+		.get();
+	if (!d) return itemId; //TODO Error
+	// console.log(d);
+	//TODO Don't return from children
+	for (const c of await getChildren(userId, itemId)) deleteItem(userId, c.id);
+	return d.parentId || 0;
 }

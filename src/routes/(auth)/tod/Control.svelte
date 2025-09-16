@@ -3,7 +3,7 @@
 </script>
 
 <div id="control">
-	{@render children()}
+	{@render children?.()}
 </div>
 
 <style lang="postcss">
@@ -17,7 +17,8 @@
 		line-height: 3em;
 	}
 	#control :global(*) {
-		background-color: #222;
+		background-color: #444;
+		color: white;
 		text-align: center;
 		flex-grow: 1;
 		border: 0;

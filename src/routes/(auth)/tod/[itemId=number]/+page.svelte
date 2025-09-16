@@ -15,6 +15,12 @@
 	});
 	let parents = $derived(tod.id ? [...tod.parents, { id: 0, title: "Tod" }].reverse() : []);
 	let lastP = $derived(tod.parents.length ? tod.parents[0].id : 0);
+	let deleteConfirm = $state(false);
+
+	$effect(() => {
+		// console.log("effect");
+		if (deleteConfirm) setTimeout(() => (deleteConfirm = false), 2000);
+	});
 
 	// $inspect(tod.parents);
 </script>
@@ -100,9 +106,11 @@
 		</div>
 	{/if}
 	<Control>
-		<a style="background-color: #333;" href="/tod">Calendar</a>
-		<a style="background-color: red;" href={`/tod/${lastP}`}>Parent</a>
+		<a href="/tod" style="background-color: maroon;">Calendar</a>
+		<a href={`/tod/${lastP}`} style="background-color: blueviolet;">Parent</a>
 		<button formaction="?/add" type="submit" style="background-color: blue;">Add</button>
+		<button disabled={!tod.id} class:hidden={deleteConfirm} type="button" onclick={() => (deleteConfirm = true)} style="background-color: red;">Delete</button>
+		<button formaction="?/delete" disabled={!tod.id} class:hidden={!deleteConfirm} type="submit" style="background-color: red;">You sure?</button>
 		<button formaction="?/save" disabled={!tod.id} type="submit" style="background-color: green;">Save</button>
 	</Control>
 </form>
@@ -127,5 +135,9 @@
 		text-decoration: none;
 		/* Control height */
 		padding-bottom: 3em;
+	}
+
+	.hidden {
+		display: none;
 	}
 </style>
