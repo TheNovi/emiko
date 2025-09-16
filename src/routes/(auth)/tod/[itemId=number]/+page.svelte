@@ -100,8 +100,8 @@
 		</div>
 	{/if}
 	<Control>
-		<a style="background-color: red;" href={`/tod/${lastP}`}>Parent</a>
 		<a style="background-color: #333;" href="/tod">Calendar</a>
+		<a style="background-color: red;" href={`/tod/${lastP}`}>Parent</a>
 		<button formaction="?/add" type="submit" style="background-color: blue;">Add</button>
 		<button formaction="?/save" disabled={!tod.id} type="submit" style="background-color: green;">Save</button>
 	</Control>

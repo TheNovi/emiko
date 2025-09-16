@@ -1,6 +1,6 @@
 import { db } from "$lib/server/db";
 import { todItem } from "$lib/server/db/schema";
-import { and, eq, isNull, sql, type SQLWrapper } from "drizzle-orm";
+import { and, desc, eq, isNull, sql, type SQLWrapper } from "drizzle-orm";
 
 //Type for empty Root and SmartItemDetail select (it auto switches based on value in id) (discriminated unions)
 type SmartItemDetail = ({ id: null; title: string } | typeof todItem.$inferSelect) & {
@@ -64,7 +64,8 @@ async function getChildren(userId: number, parentId: number | null) {
 	return await db
 		.select({ id: todItem.id, title: todItem.title, state: todItem.state, dtStart: todItem.dtStart, dtEnd: todItem.dtEnd })
 		.from(todItem)
-		.where(basicWhere(userId, parentId ? eq(todItem.parentId, parentId) : isNull(todItem.parentId)));
+		.where(basicWhere(userId, parentId ? eq(todItem.parentId, parentId) : isNull(todItem.parentId)))
+		.orderBy(todItem.dtStart, desc(todItem.state), desc(todItem.id));
 	// .toSQL().sql;
 }
 

@@ -12,14 +12,14 @@
 <!-- TODO 0 Quick change state -->
 <!-- TODO 5 event rFreq + rInterval -->
 <!-- TODO 5 event rUntil -->
-<a class="item" href={`/tod/${item.id}`}>
+<a href={`/tod/${item.id}`} class={["item", ["done", "open", "process"][item.state]]}>
 	<span>{item.title}</span>
-	<span>{states[item.state]}</span>
+	<!-- <span>{states[item.state]}</span> -->
 	<span>
 		{#if item.dtStart}
 			<DateView date={item.dtStart} />
 			{#if item.dtEnd}
-				- <DateView date={item.dtStart} />
+				- <DateView date={item.dtEnd} />
 			{/if}
 		{/if}
 	</span>
@@ -35,5 +35,15 @@
 		border-radius: 0.5em;
 		padding: 0.5em;
 		margin-bottom: 0.5em;
+	}
+
+	.done {
+		color: green;
+	}
+	.open {
+		color: inherit;
+	}
+	.process {
+		color: yellow;
 	}
 </style>
