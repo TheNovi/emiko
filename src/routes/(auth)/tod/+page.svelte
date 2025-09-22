@@ -71,7 +71,7 @@
 		return {
 			...item,
 			dtStart: df,
-			dtEnd: new Date(df.getTime() + edt),
+			dtEnd: edt ? new Date(df.getTime() + edt) : null,
 		};
 	}
 
