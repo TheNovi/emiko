@@ -31,6 +31,8 @@ const vFormEmpty = v.pipe(
 
 export const actions: Actions = {
 	add: async ({ locals, params: { itemId } }) => {
+		// console.log("add");
+		// return;
 		if (!locals.user) return redirect(303, "/login");
 		if (!(await checkIfItemBelongsUser(locals.user.id, +itemId))) return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
 		let n = await insertItem(locals.user.id, +itemId || null, "New Item");
@@ -38,12 +40,14 @@ export const actions: Actions = {
 	},
 	delete: async ({ locals, params: { itemId } }) => {
 		// console.log("delete");
-		// return {};
+		// return;
 		if (!locals.user) return redirect(303, "/login");
 		let n = await deleteItem(locals.user.id, +itemId);
 		return redirect(303, `/tod/${n}`);
 	},
 	save: async ({ locals, request }) => {
+		// console.log("save");
+		// return;
 		if (!locals.user) return redirect(303, "/login");
 		let errors: string[] = [];
 		// console.log(await request.formData());
