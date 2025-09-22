@@ -8,7 +8,9 @@
 </script>
 
 <script lang="ts">
-	let { date }: { date: Date } = $props();
+	import type { HTMLAttributes } from "svelte/elements";
+
+	let { date, ...props }: { date: Date } & HTMLAttributes<HTMLSpanElement> = $props();
 	let langs = $state(navigator.languages);
 	let locale = $derived(langs[Math.floor(s / langs.length)]);
 	let useOpts = $derived(s % 2 == 1);
@@ -27,6 +29,7 @@
 		s = (s + 1) % (langs.length * 2);
 	}}
 	title={date.toString()}
+	{...props}
 >
 	{date.toLocaleDateString(locale, useOpts ? dateOpts : {})}
 	{#if date.getHours() > 0 || date.getMinutes() > 0}
