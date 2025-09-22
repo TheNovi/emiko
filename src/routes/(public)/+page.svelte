@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { PUBLIC_VERSION } from "$env/static/public";
 	import GraphAnim from "$lib/components/GraphAnim.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import { GraphMode } from "$lib/graphAnim";
@@ -20,7 +21,8 @@
 		{/if}
 	</h1>
 	{#if data.user}
-		<span id="shruge">{data.user.name}</span>
+		<!-- <span id="shruge">{data.user.name}</span> -->
+		<span id="shruge">{PUBLIC_VERSION}</span>
 	{:else}
 		<span id="shruge">¯\_(ツ)_/¯</span>
 	{/if}

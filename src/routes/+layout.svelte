@@ -7,7 +7,10 @@
 </script>
 
 {#if data.user}
-	<header><a href="/p">{data.user.name}</a></header>
+	<header>
+		<a href="/">Emiko</a>
+		<a href="/p">{data.user.name}</a>
+	</header>
 {/if}
 <main>
 	{@render children()}
@@ -16,7 +19,8 @@
 <style lang="postcss">
 	header {
 		display: flex;
-		direction: rtl;
+		align-items: center;
+		justify-content: space-between;
 		background-color: #222;
 		top: 0;
 		width: 100%;
@@ -25,6 +29,7 @@
 	header a {
 		display: inline-block;
 		padding-top: 2px;
-		padding-right: 10px;
+		padding-left: 8px;
+		padding-right: 8px;
 	}
 </style>

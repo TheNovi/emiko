@@ -1,7 +1,7 @@
 {
 	"name": "emiko",
 	"private": true,
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"type": "module",
 	"pnpm": {
 		"onlyBuiltDependencies": [
@@ -22,17 +22,17 @@
 	"devDependencies": {
 		"@lucide/svelte": "^0.544.0",
 		"@sveltejs/adapter-node": "^5.3.2",
-		"@sveltejs/kit": "^2.41.0",
+		"@sveltejs/kit": "^2.43.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.0",
 		"@types/bcrypt": "^6.0.0",
 		"@types/jsonwebtoken": "^9.0.10",
 		"drizzle-kit": "^0.31.4",
 		"prettier": "^3.6.2",
 		"prettier-plugin-svelte": "^3.4.0",
-		"svelte": "^5.38.10",
-		"svelte-check": "^4.3.1",
+		"svelte": "^5.39.4",
+		"svelte-check": "^4.3.2",
 		"typescript": "^5.9.2",
-		"vite": "^7.1.5",
+		"vite": "^7.1.7",
 		"vitest": "^3.2.4"
 	},
 	"dependencies": {
@@ -40,7 +40,7 @@
 		"bcrypt": "^6.0.0",
 		"drizzle-orm": "^0.44.5",
 		"jsonwebtoken": "^9.0.2",
-		"sharp": "^0.34.3",
+		"sharp": "^0.34.4",
 		"valibot": "^1.1.0"
 	}
 }
