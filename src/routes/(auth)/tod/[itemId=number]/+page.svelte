@@ -43,6 +43,7 @@
 <form
 	method="post"
 	use:enhance={({ formData }) => {
+		deleteConfirm = false;
 		formDatesToISO(formData, ["dtStart", "dtEnd"]);
 		//TODO Send only changed (mainly description)
 		// console.log(formData.get("dtStart"));
