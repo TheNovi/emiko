@@ -1,4 +1,5 @@
 ARG NODE_VERSION="24"
+# TODO User
 
 FROM node:${NODE_VERSION}-alpine AS build
 WORKDIR /app
@@ -7,10 +8,6 @@ COPY package*.json pnpm-lock.yaml ./
 RUN npm i -g pnpm && pnpm i
 
 COPY . .
-# Only for build
-ENV DB_URL=file:_.db
-ENV DATA_PATH=/_
-ENV JWT_SECRET=_
 # RUN mkdir data && pnpm db:push --force
 RUN pnpm build && pnpm prune --prod
 

@@ -4,6 +4,8 @@ import { user } from "$lib/server/db/schema";
 import type { Handle } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 
+console.log(APP_VERSION);
+
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.user = undefined;
 	const j = await getUserFromCookie(event.cookies);

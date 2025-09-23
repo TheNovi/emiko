@@ -3,11 +3,12 @@ import { bobImage } from "$lib/server/db/schema";
 import { eq } from "drizzle-orm";
 import type { RequestHandler } from "./$types";
 // import { writeFile } from 'fs/promises';
+import { building } from "$app/environment";
 import { env } from "$env/dynamic/private";
 import { error } from "@sveltejs/kit";
-import sharp from "sharp";
 import { join as pJoin } from "path";
-if (!env.DATA_PATH) throw new Error("DATA_PATH is not set");
+import sharp from "sharp";
+if (!building && !env.DATA_PATH) throw new Error("DATA_PATH is not set");
 
 const resize = (f: sharp.Sharp, path: string, width: number, height: number, folder: string = "resized") =>
 	f

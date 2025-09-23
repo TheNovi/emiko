@@ -1,3 +1,4 @@
+import { building } from "$app/environment";
 import { env } from "$env/dynamic/private";
 import { db } from "$lib/server/db";
 import { bobImage } from "$lib/server/db/schema";
@@ -7,7 +8,7 @@ import { readFileSync } from "fs";
 import path from "path";
 import * as v from "valibot";
 import type { RequestHandler } from "./$types";
-if (!env.DATA_PATH) throw new Error("DATA_PATH is not set");
+if (!building && !env.DATA_PATH) throw new Error("DATA_PATH is not set");
 
 const Id = v.pipe(
 	v.string(),

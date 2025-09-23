@@ -1,11 +1,12 @@
+import { building } from "$app/environment";
 import { env } from "$env/dynamic/private";
-import { redirect, type Cookies } from "@sveltejs/kit";
+import { type Cookies } from "@sveltejs/kit";
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
 import { db } from "./db";
 import { user } from "./db/schema";
-if (!env.JWT_SECRET) throw new Error("JWT_SECRET is not set");
+if (!building && !env.JWT_SECRET) throw new Error("JWT_SECRET is not set");
 
 const COOKIE_NAME = "emiko";
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { PUBLIC_VERSION } from "$env/static/public";
 	import GraphAnim from "$lib/components/GraphAnim.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import { GraphMode } from "$lib/graphAnim";
@@ -15,17 +14,12 @@
 <div id="c">
 	<h1>
 		{#if data.user}
-			<span id="the">Welcome to</span><span id="novi">&nbsp;Emiko</span>
+			<span id="first">Welcome to</span><span id="second">&nbsp;Emiko</span>
 		{:else}
-			<span id="the">The</span><span id="novi">Novi</span>
+			<span id="first">The</span><span id="second">Novi</span>
 		{/if}
 	</h1>
-	{#if data.user}
-		<!-- <span id="shruge">{data.user.name}</span> -->
-		<span id="shruge">{PUBLIC_VERSION}</span>
-	{:else}
-		<span id="shruge">¯\_(ツ)_/¯</span>
-	{/if}
+	<span id="shruge">{APP_VERSION}</span>
 	<ul>
 		{#if data.user}
 			<li>&gt;<a href="/ebob">Ebob</a>&lt;</li>
@@ -59,10 +53,10 @@
 		margin: 0;
 	}
 
-	#the {
+	#first {
 		animation: appear 5s;
 	}
-	#novi {
+	#second {
 		opacity: 0;
 		animation: appear 5s forwards 1s;
 	}
