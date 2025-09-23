@@ -65,7 +65,7 @@ async function getChildren(userId: number, parentId: number | null) {
 		.select({ id: todItem.id, title: todItem.title, state: todItem.state, dtStart: todItem.dtStart, dtEnd: todItem.dtEnd })
 		.from(todItem)
 		.where(basicWhere(userId, parentId ? eq(todItem.parentId, parentId) : isNull(todItem.parentId)))
-		.orderBy(todItem.dtStart, desc(todItem.state), todItem.title, desc(todItem.id));
+		.orderBy(desc(todItem.state), todItem.dtStart, todItem.title, desc(todItem.id));
 	// .toSQL().sql;
 }
 

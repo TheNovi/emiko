@@ -9,9 +9,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const day = 3600000 * 24;
 	const n = +params.date;
 	if (!n || isNaN(n)) return error(400, "Invalid date param: " + params.date);
-	if (n < 7 * day) return error(400, "Date param too low: " + n);
+	if (n < 3 * day) return error(400, "Date param too low: " + n);
 
-	const from = new Date(n - day * 7);
+	const from = new Date(n - day * 3);
 	// const from = new Date(n);
 	const to = new Date(n + day * 31);
 	return json({ cal: await getCal(locals.user.id, from, to), from, to });

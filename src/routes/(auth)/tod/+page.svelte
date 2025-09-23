@@ -14,8 +14,7 @@
 	function fetchData() {
 		loading = true;
 		// console.log('fetching', currentOffset);
-		const d = new Date();
-		d.setHours(0, 0, 0, 0); //This part is crucial, because it creates date with client's timezone. And its main reason why this cant be send in props
+		const d = toStartOfDay(new Date()); //This part is crucial, because it creates date with client's timezone. And its main reason why this cant be send in props
 		let q = new URL("/tod/api/" + d.getTime(), page.url);
 		fetch(q) //TODO As svelte remote function (when they become stable)
 			.then((r) => r.json()) // TODO Errors
@@ -81,6 +80,11 @@
 		return o;
 	}
 
+	function isToday(d: Date) {
+		// TODO 0 Optimize
+		return toStartOfDay(d).getTime() == toStartOfDay(new Date()).getTime();
+	}
+
 	onMount(fetchData);
 </script>
 
@@ -90,7 +94,7 @@
 	{#each cal as item, i}
 		<div>
 			{#if i == 0 || cal[i - 1].dtStart < item.dtStart}
-				<DateView date={toStartOfDay(item.dtStart)} />
+				<DateView date={toStartOfDay(item.dtStart)} style={isToday(item.dtStart) ? "color: magenta" : ""} />
 			{/if}
 		</div>
 		<ListItem {item} />
