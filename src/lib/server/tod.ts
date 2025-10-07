@@ -62,7 +62,7 @@ async function getParents(userId: number, itemId: number | null): Promise<{ id: 
 
 async function getChildren(userId: number, parentId: number | null) {
 	return await db
-		.select({ id: todItem.id, title: todItem.title, state: todItem.state, dtStart: todItem.dtStart, dtEnd: todItem.dtEnd })
+		.select({ id: todItem.id, title: todItem.title, state: todItem.state, dtStart: todItem.dtStart, dtEnd: todItem.dtEnd, rFreq: todItem.rFreq, rInterval: todItem.rInterval, rUntil: todItem.rUntil })
 		.from(todItem)
 		.where(basicWhere(userId, parentId ? eq(todItem.parentId, parentId) : isNull(todItem.parentId)))
 		.orderBy(desc(todItem.state), todItem.dtStart, todItem.title, desc(todItem.id));
