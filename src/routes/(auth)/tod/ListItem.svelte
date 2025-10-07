@@ -13,7 +13,7 @@
 		{#if item.dtStart}
 			<DateView date={item.dtStart} />
 			{#if item.dtEnd}
-				- <DateView date={item.dtEnd} />
+				- <DateView date={item.dtEnd} onlyTime={item.dtStart.toDateString() == item.dtEnd.toDateString()} />
 			{/if}
 		{/if}
 	</span>

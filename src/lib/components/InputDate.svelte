@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from "$app/environment";
 	import { formParseInputDate } from "$lib/util";
 	import type { HTMLInputAttributes } from "svelte/elements";
 	import { SvelteDate } from "svelte/reactivity";
@@ -9,23 +10,25 @@
 	let showButton = $derived(value && (value.getHours() > 0 || value.getMinutes() > 0));
 </script>
 
-<input
-	type="datetime-local"
-	{name}
-	id={name}
-	bind:value={
-		() => formParseInputDate(value),
-		(v) => {
-			value = v ? new SvelteDate(v) : null;
+{#if !value || browser}
+	<input
+		type="datetime-local"
+		{name}
+		id={name}
+		bind:value={
+			() => formParseInputDate(value),
+			(v) => {
+				value = v ? new SvelteDate(v) : null;
+			}
 		}
-	}
-	{...opts}
-/>
-{#if showButton}
-	<button type="button" hidden={!showButton} onclick={() => value?.setHours(0, 0, 0, 0)}>Clear Time</button>
-{/if}
-{#if value}
-	<DateView date={value} style="margin-left: 0.5em" />
+		{...opts}
+	/>
+	{#if showButton}
+		<button type="button" hidden={!showButton} onclick={() => value?.setHours(0, 0, 0, 0)}>Clear Time</button>
+	{/if}
+	{#if value}
+		<DateView date={value} style="margin-left: 0.5em" />
+	{/if}
 {/if}
 
 <style lang="postcss">

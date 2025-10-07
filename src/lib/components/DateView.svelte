@@ -10,12 +10,13 @@
 <script lang="ts">
 	import type { HTMLAttributes } from "svelte/elements";
 
-	let { date, ...props }: { date: Date } & HTMLAttributes<HTMLSpanElement> = $props();
+	let { date, onlyTime = false, ...props }: { date: Date; onlyTime?: boolean } & HTMLAttributes<HTMLSpanElement> = $props();
 	let langs = $state(navigator.languages);
 	let locale = $derived(langs[Math.floor(s / langs.length)]);
 	let useOpts = $derived(s % 2 == 1);
 
 	const dateOpts: Intl.DateTimeFormatOptions = { weekday: "short", day: "numeric", month: "long", year: "numeric" };
+	const timeOpts: Intl.DateTimeFormatOptions = { hour12: false, timeStyle: "short" };
 
 	// $inspect(s, locale, useOpts);
 </script>
@@ -31,9 +32,13 @@
 	title={date.toString()}
 	{...props}
 >
-	{date.toLocaleDateString(locale, useOpts ? dateOpts : {})}
-	{#if date.getHours() > 0 || date.getMinutes() > 0}
-		{date.toLocaleTimeString(locale, { hour12: false })}
+	{#if onlyTime}
+		{date.toLocaleTimeString(locale, timeOpts)}
+	{:else}
+		{date.toLocaleDateString(locale, useOpts ? dateOpts : {})}
+		{#if date.getHours() > 0 || date.getMinutes() > 0}
+			{date.toLocaleTimeString(locale, timeOpts)}
+		{/if}
 	{/if}
 </span>
 
