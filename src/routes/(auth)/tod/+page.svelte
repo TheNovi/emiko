@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import DateView from "$lib/components/DateView.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import type { CallItem } from "$lib/server/todCal";
 	import { onMount } from "svelte";
 	import Control from "./Control.svelte";
 	import ListItem from "./ListItem.svelte";
-	import DateView from "$lib/components/DateView.svelte";
 
 	// let { data }: PageProps = $props();
 	let cal: CallItem[] = $state([]);
@@ -13,10 +13,9 @@
 
 	function fetchData() {
 		loading = true;
-		// console.log('fetching', currentOffset);
 		const d = toStartOfDay(new Date()); //This part is crucial, because it creates date with client's timezone. And its main reason why this cant be send in props
 		let q = new URL("/tod/api/" + d.getTime(), page.url);
-		fetch(q) //TODO As svelte remote function (when they become stable)
+		fetch(q) //TODO As svelte remote function (when they become stable) (beware of ssr timezone diff)
 			.then((r) => r.json()) // TODO Errors
 			.then((r: { cal: CallItem[]; from: string; to: string }) => {
 				//! All dates are ISO Strings!
@@ -50,6 +49,7 @@
 		switch (item.rFreq) {
 			case 1:
 				if (!item.rInterval) return;
+				//TODO 999 This will not work. Not all days have 24 hours, I love timesaving :)
 				df = new Date(df.getTime() + item.rInterval * 24 * 60 * 60000); //Skip days
 				break;
 			case 2: //Week //TODO
@@ -93,7 +93,8 @@
 <div id="cont">
 	{#each cal as item, i}
 		<div>
-			{#if i == 0 || cal[i - 1].dtStart < item.dtStart}
+			<!-- TODO 0 Optimize -->
+			{#if i == 0 || toStartOfDay(cal[i - 1].dtStart) < toStartOfDay(item.dtStart)}
 				<DateView date={toStartOfDay(item.dtStart)} style={isToday(item.dtStart) ? "color: magenta" : ""} />
 			{/if}
 		</div>
