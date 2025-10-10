@@ -49,8 +49,7 @@
 		switch (item.rFreq) {
 			case 1:
 				if (!item.rInterval) return;
-				//TODO 999 This will not work. Not all days have 24 hours, I love timesaving :)
-				df = new Date(df.getTime() + item.rInterval * 24 * 60 * 60000); //Skip days
+				df.setDate(df.getDate() + item.rInterval); //Skip days
 				break;
 			case 2: //Week //TODO
 				return;

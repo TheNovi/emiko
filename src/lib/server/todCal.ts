@@ -40,6 +40,8 @@ export type CallItem = Awaited<ReturnType<typeof queryAll.all>>[0] & { dtStart: 
 
 /**
  * Main function
+ * All calculations are in UTC
+ * Be careful of DST, UTC doesn't have DST. But dateFrom and dateTo (if they are from client's timezone) could have.
  * @param userId Id of current user
  * @param dateFrom Date of oldest events to return
  * @param dateTo Date of newest events to return
@@ -64,7 +66,7 @@ export function parseCalls(calls: CallItem[], dateFrom: Date, dateTo: Date) {
 		// pD(e.dateFrom.getTime(), e.dateTo);
 		// console.log(" mode: ", e.dateCopyMode);
 		switch (e.rFreq) {
-			case 1: //Days //TODO Do this in select?
+			case 1: //Days
 				return rangeModeDay(e, dateFrom, dateTo);
 			case 2: //Weeks //TODO
 				return false;
@@ -167,7 +169,7 @@ function getEdt(e: CallItem): number {
  *
  * @param ds Item.dateFrom from last repetition where Item.dateFrom < dateFrom
  * @param nds Item.dateFrom from first repetition where nds >= dateFrom
- * @param edt Item.dateTo
+ * @param edt Item.dateTo Offset (for multi day events)
  * @param dateFrom dateFrom
  * @param dateTo dateTo
  * @returns
