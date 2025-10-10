@@ -24,7 +24,6 @@ RUN mkdir /data
 ENV NODE_ENV=production
 ENV DB_URL=file:/data/emiko.db
 ENV DATA_PATH=/data
-# TODO Test
 ENV TZ=utc
 
 EXPOSE 3000
