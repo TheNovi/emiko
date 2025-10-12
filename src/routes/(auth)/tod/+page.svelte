@@ -11,13 +11,15 @@
 	let cal: CallItem[] = $state([]);
 	let loading = $state(true);
 
+	//TODO Do this in load (or maybe try new remote functions? Hmmm)
 	function fetchData() {
 		loading = true;
-		const d = toStartOfDay(new Date()); //This part is crucial, because it creates date with client's timezone. And its main reason why this cant be send in props
+		const d = toStartOfDay(new Date());
 		let q = new URL("/tod/api/" + d.getTime(), page.url);
-		fetch(q) //TODO As svelte remote function (when they become stable) (beware of ssr timezone diff)
+		fetch(q)
 			.then((r) => r.json()) // TODO Errors
 			.then((r: { cal: CallItem[]; from: string; to: string }) => {
+				//TODO Use luxon?
 				//! All dates are ISO Strings!
 				const df = new Date(r.from);
 				const dt = new Date(r.to);

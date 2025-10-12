@@ -1,15 +1,13 @@
 import { describe, expect, test } from "vitest";
 import { parseCalls } from "./todCal";
+import { DateTime } from "luxon";
 
-function p(
-	e: { ds: string | Date | number; de: string | Date | number | null; interval: number | null; until: string | Date | number | null | undefined },
-	dateFrom: string | Date | number,
-	dateTo: string | Date | number,
-	rFreq: number,
-	result: boolean
-) {
+const tz = "Europe/Prague"; //Random tz with DST
+process.env.TZ = tz;
+
+function p(e: { ds: DateTime; de: DateTime | null; interval: number | null; until: DateTime | null | undefined }, dateFrom: DateTime, dateTo: DateTime, rFreq: number, result: boolean) {
 	const name = () => {
-		let o = e.ds + " ";
+		let o = e.ds.toString() + " ";
 		o += "+" + e.interval;
 		switch (rFreq) {
 			case 1:
@@ -36,34 +34,44 @@ function p(
 					state: 1,
 					rFreq,
 					rInterval: e.interval,
-					rUntil: e.until ? new Date(e.until) : null,
-					dtStart: new Date(e.ds),
-					dtEnd: e.de ? new Date(e.de) : null,
+					rUntil: e.until ? e.until.toJSDate() : null,
+					dtStart: e.ds.toJSDate(),
+					dtEnd: e.de ? e.de.toJSDate() : null,
 				},
 			],
-			new Date(dateFrom),
-			new Date(dateTo)
+			process.env.TZ || "",
+			dateFrom,
+			dateTo
 		);
 		expect(o.length > 0).toBe(result);
 	});
 }
 
 //TODO More tests
-//TODO Test dateTo
 
 describe("parseCalls", () => {
+	describe("Config", () => {
+		test("tz", () => {
+			expect(process.env.TZ).toBe(tz);
+			expect(DateTime.now().zoneName).toBe(tz);
+		});
+	});
 	describe("Days", () => {
 		const m = 1;
-		p({ interval: null, ds: "2025-01-01T00:00:00.000Z", de: "2025-01-05T00:00:00.000Z", until: null }, "2025-01-05T00:00:00.000Z", "2025-02-05T00:00:00.000Z", m, true);
-		p({ interval: 7, ds: "2025-06-07T00:00:00.000Z", de: null, until: null }, "2025-08-13T00:00:00.000Z", "2025-09-13T00:00:00.000Z", m, true);
+		p({ interval: null, ds: DateTime.local(2025, 1, 1), de: DateTime.local(2025, 1, 5), until: null }, DateTime.local(2025, 1, 5), DateTime.local(2025, 2, 5), m, true);
+		p({ interval: 0, ds: DateTime.local(2025, 1, 1), de: null, until: null }, DateTime.local(2025, 1, 5), DateTime.local(2025, 2, 5), m, false);
+		p({ interval: 7, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 13), DateTime.local(2025, 9, 13), m, true);
 	});
 	describe("Month days", () => {
 		const m = 3;
-		p({ interval: 0, ds: "2025-06-07T00:00:00.000Z", de: null, until: null }, "2025-08-13T00:00:00.000Z", "2025-09-13T00:00:00.000Z", m, true);
+		p({ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 13), DateTime.local(2025, 9, 8), m, true);
+		p({ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 7), DateTime.local(2025, 9, 1), m, true);
+		p({ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 8), DateTime.local(2025, 9, 1), m, false);
+		p({ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 13), DateTime.local(2025, 9, 7), m, false);
 	});
 	describe("Years", () => {
 		const m = 4;
-		p({ interval: 1, ds: "2024-09-07T00:00:00.000Z", de: null, until: null }, "2025-08-13T00:00:00.000Z", "2025-09-13T00:00:00.000Z", m, true);
+		p({ interval: 1, ds: DateTime.local(2024, 9, 7), de: null, until: null }, DateTime.local(2025, 8, 13), DateTime.local(2025, 9, 13), m, true);
 	});
 });
 
