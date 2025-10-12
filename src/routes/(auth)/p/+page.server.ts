@@ -18,10 +18,11 @@ export const actions: Actions = {
 	},
 	edit: async ({ locals, request }) => {
 		if (!locals.user) return redirect(303, "/");
-		let out: { name?: string; password?: string } = {};
+		let out: { name?: string; tz?: string; password?: string } = {};
 		const o = v.safeParse(
 			v.object({
 				name: v.pipe(v.string("Name can't be empty"), v.trim(), v.minLength(3, "Name is too short"), v.maxLength(25, "Name is too long")),
+				tz: v.pipe(v.string("Timezone can't be empty"), v.trim(), v.minLength(3, "Timezone is too short"), v.maxLength(25, "Timezone is too long")),
 				newPassword: v.optional(
 					v.pipe(v.string("Password must be string"), v.trim(), v.union([v.literal(""), v.pipe(v.string(), v.minLength(5, "Password is too short"), v.maxLength(250, "Password is too long"))]))
 				),
@@ -33,22 +34,27 @@ export const actions: Actions = {
 		if (!o.success) {
 			return fail(400, { errors: o.issues.map((e) => e.message) });
 		}
-		const { name, newPassword, newPasswordAgain } = o.output;
+		const { name, tz, newPassword, newPasswordAgain } = o.output;
 
 		if (name !== locals.user.name) {
 			const u = await db.selectDistinct({ id: user.id }).from(user).where(eq(user.name, name)).get();
 			if (u) return fail(400, { errors: ["User with this name already exists."] });
-			out["name"] = name;
+			out.name = name;
+		}
+		if (tz !== locals.user.tz) {
+			//TODO Test if valid tz
+			out.tz = tz;
 		}
 		if (newPassword) {
 			if (newPassword !== newPasswordAgain) return fail(400, { errors: ["Passwords are not the same"] });
-			out["password"] = hash(newPassword);
+			out.password = hash(newPassword);
 		}
 
-		if (out.name || out.password) {
-			const u = await db.update(user).set(out).where(eq(user.id, locals.user.id)).returning({ name: user.name }).get();
+		if (out.name || out.tz || out.password) {
+			const u = await db.update(user).set(out).where(eq(user.id, locals.user.id)).returning({ name: user.name, tz: user.tz }).get();
 			if (u) {
 				locals.user.name = u.name;
+				locals.user.tz = u.tz;
 				return {
 					success: true,
 					// name: u.name,

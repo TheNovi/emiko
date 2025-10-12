@@ -32,6 +32,14 @@
 		<label for="name">name</label>
 		<input type="text" autocomplete="username" name="name" id="name" required value={data.user.name} />
 	</div>
+	<div>
+		<label for="tz">TimeZone</label>
+		<select name="tz" id="tz" value={data.user.tz}>
+			{#each Intl.supportedValuesOf("timeZone") as v}
+				<option value={v}>{v}</option>
+			{/each}
+		</select>
+	</div>
 
 	<div>
 		<label for="newPassword">New Password</label>

@@ -28,6 +28,7 @@ export const user = sqliteTable(
 	{
 		id: integer("id").primaryKey(),
 		...timestamps,
+		tz: text("tz", { length: 100 }).notNull().default(""),
 		name: text("name", { length: 100 }).notNull().unique("user_name_unique"),
 		password: text("password", { length: 100 }).notNull(),
 	}

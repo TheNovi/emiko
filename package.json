@@ -1,7 +1,7 @@
 {
 	"name": "emiko",
 	"private": true,
-	"version": "1.0.12",
+	"version": "1.1.0",
 	"type": "module",
 	"pnpm": {
 		"onlyBuiltDependencies": [
@@ -38,6 +38,7 @@
 	"dependencies": {
 		"@libsql/client": "^0.15.15",
 		"bcrypt": "^6.0.0",
+		"dayjs": "^1.11.18",
 		"drizzle-orm": "^0.44.6",
 		"jsonwebtoken": "^9.0.2",
 		"sharp": "^0.34.4",
