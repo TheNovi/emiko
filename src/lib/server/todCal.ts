@@ -15,7 +15,7 @@ const queryAll = db
 		dtEnd: todItem.dtEnd,
 		rFreq: todItem.rFreq,
 		rInterval: todItem.rInterval,
-		rUntil: todItem.rUntil, //TODO Implement in checks
+		rUntil: todItem.rUntil, //TODO Test
 	})
 	.from(todItem)
 	.where(
@@ -134,7 +134,7 @@ const test: CallItem[] = [
 
 function rangeModeDay(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
 	if (!e.rInterval) return false; //Days to skip
-	//Check if difference between dateFrom and dateTo is larger than interval (if yes, then it must repeats).
+	//Check if diff between dateFrom and dateTo is larger than interval (if yes, then it must repeats).
 	if ((!e.rUntil || e.rUntil >= dateTo) && e.rInterval < dateTo.diff(dateFrom, ["days"]).days) return true; //TODO Test these
 	if (e.rUntil && e.rInterval <= e.rUntil.diff(dateFrom, ["days"]).days) return true;
 
@@ -146,11 +146,11 @@ function rangeModeDay(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
 	return isBetweenRange(ds, ds.plus(e.edt), ds.plus({ day: offset }), e.rUntil, dateFrom, dateTo);
 }
 
-//Backup slower, but more readable
+//Backup: slower, but more readable
 // function rangeModeDay(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
 // if (!e.rInterval) return false; //Days to skip
-// //Check if difference between dateFrom and dateTo is larger than interval (if yes, then it must repeats).
-// if ((!e.rUntil || e.rUntil >= dateTo) && e.rInterval < dateTo.diff(dateFrom, ["days"]).days) return true; //TODO Test these
+// //Check if diff between dateFrom and dateTo is larger than interval (if yes, then it must repeats).
+// if ((!e.rUntil || e.rUntil >= dateTo) && e.rInterval < dateTo.diff(dateFrom, ["days"]).days) return true;
 // if (e.rUntil && e.rInterval <= e.rUntil.diff(dateFrom, ["days"]).days) return true;
 
 // 	let ds = e.dtStart;
@@ -190,9 +190,8 @@ function rangeModeYear(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
 	let ds = e.dtStart;
 	const y = dateFrom.year - ds.year;
 	ds = ds.set({ year: Math.floor(y / e.rInterval) * e.rInterval + ds.year });
-	const nds = ds.set({ year: ds.year + e.rInterval });
 
-	return isBetweenRange(ds, ds.plus(e.edt), nds, e.rUntil, dateFrom, dateTo);
+	return isBetweenRange(ds, ds.plus(e.edt), ds.set({ year: ds.year + e.rInterval }), e.rUntil, dateFrom, dateTo);
 }
 
 /**

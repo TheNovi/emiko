@@ -44,7 +44,7 @@
 	method="post"
 	use:enhance={({ formData }) => {
 		deleteConfirm = false;
-		formDatesToISO(formData, ["dtStart", "dtEnd"]);
+		formDatesToISO(formData, ["dtStart", "dtEnd", "rUntil"]);
 		//TODO Send only changed (mainly description)
 		// console.log(formData.get("dtStart"));
 		return async ({ update }) => {
@@ -80,7 +80,7 @@
 		</div>
 		<div>
 			<label for="rFreq">Repeats</label>
-			<select name="rFreq" id="rFreq" bind:value={tod.rFreq}>
+			<select name="rFreq" disabled={!tod.dtStart} bind:value={tod.rFreq}>
 				<option value={null}></option>
 				<option value={1}>Daily</option>
 				<option value={2} disabled>Weekly</option>
@@ -101,6 +101,10 @@
 				<input type="number" min="0" name="rInterval" id="rInterval" disabled />
 			</div>
 		{/if}
+		<div>
+			<label for="rUntil">Until</label>
+			<InputDate name="rUntil" disabled={!tod.dtStart || !tod.rFreq} value={tod.rUntil} />
+		</div>
 		<div>
 			<label for="description">description</label>
 			<textarea name="description" id="description" maxlength="2500" value={tod.description}></textarea>
