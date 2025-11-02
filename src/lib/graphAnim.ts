@@ -1,47 +1,59 @@
 export enum GraphMode {
 	Lorenz,
-	ThreeBody,
+	LorenzButterFly,
 }
 
 export type LorenzConsts = { o: number; p: number; b: number };
-export type ThreeBodyConsts = { m: number };
 
 export const LorenzDefaults = {
 	BASIC: { o: 10, p: 28, b: 8 / 3 },
-	IDK: { o: 10, p: 14, b: 8 / 3 },
 };
 
 export class GPoint {
 	x = 0;
 	y = 0;
 	z = 0;
-	center = [0, 0];
-	scale = 1;
-	size = 100;
 	points: Points;
 	consts: any;
-
-	fun = (self: GPoint, c: any, dt: number) => {
-		// self.x += dt;
-		// self.y += dt;
-		// self.z += dt;
+	config = {
+		center: [0, 0],
+		offsetCenter: [0, 0],
+		scale: 1,
+		size: 100,
+		rotateDeg: 0,
+		fun: (self: GPoint, c: any, dt: number) => {},
 	};
 
-	constructor(init: { xyz?: number[]; center?: number[]; size?: number; scale?: number }, consts: any, fun?: (self: GPoint, consts: any, dt: number) => void) {
-		if (init.xyz) [this.x, this.y, this.z] = init.xyz;
-		if (init.center) this.center = init.center;
-		if (init.scale) this.scale = init.scale;
-		if (init.size) this.size = init.size;
+	constructor(xyz: number[], config: GPoint["config"], consts?: any) {
+		[this.x, this.y, this.z] = xyz;
+		this.config = config;
 		this.consts = consts;
-		if (fun) this.fun = fun;
 
 		this.points = new Points(this.size);
 	}
 
 	step(callback: (points: Points) => void, dt = 0.01) {
 		this.fun(this, this.consts, dt);
-		this.points.push(this.x * this.scale + this.center[0], this.y * this.scale + this.center[1]);
+		const x = this.rotateDeg ? this.x * Math.cos(this.rotateDeg) - this.y * Math.sin(this.rotateDeg) : this.x;
+		const y = this.rotateDeg ? this.x * Math.sin(this.rotateDeg) + this.y * Math.cos(this.rotateDeg) : this.y;
+		this.points.push(x * this.scale + this.center(0), y * this.scale + this.center(1));
 		callback(this.points);
+	}
+
+	center(id: number) {
+		return this.config.center[id] + this.config.offsetCenter[id];
+	}
+	get scale() {
+		return this.config.scale;
+	}
+	get size() {
+		return this.config.size;
+	}
+	get rotateDeg() {
+		return this.config.rotateDeg;
+	}
+	get fun() {
+		return this.config.fun;
 	}
 }
 /**

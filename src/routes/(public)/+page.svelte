@@ -26,10 +26,11 @@
 			<li>&gt;<a href="/tod">Tod</a>&lt;</li>
 		{/if}
 		<!-- <li>&gt;<a href="/bob">bob</a>&lt;</li> -->
-		<li>&gt;<a href="/stroll">stroll</a>&lt;</li>
+		<li>&gt;<a href="/stroll">Stroll</a>&lt;</li>
 		<!-- TODO All GraphAnims as one page with query -->
-		<li>&gt;<a href="/lorenz">lorenz</a>&lt;</li>
-		<!-- <li>&gt;<a href="/threebody">Three Body</a>&lt;</li> -->
+		<li>&gt;<a href="/lorenz">Lorenz</a>&lt;</li>
+		<li>&gt;<a href="/butterfly">Butterfly</a>&lt;</li>
+		<!-- <li>&gt;<a href="/ranim">Random Anim</a>&lt;</li> -->
 	</ul>
 	{#if !data.user}
 		<button id="login" aria-label="hidden login" onclick={() => goto("/login")}></button>
