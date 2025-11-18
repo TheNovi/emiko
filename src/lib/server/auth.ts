@@ -38,7 +38,7 @@ export function createCookie(cookies: Cookies, user: { id: number }) {
 		secure: true,
 		httpOnly: true,
 		sameSite: "strict",
-		maxAge: 60 * 60 * 24,
+		maxAge: 60 * 60 * 24 * 7,
 	});
 }
 
@@ -49,7 +49,7 @@ export async function logoutUser(cookies: Cookies) {
 		secure: true,
 		httpOnly: true,
 		sameSite: "strict",
-		maxAge: 60 * 60 * 24,
+		maxAge: 60 * 60 * 24 * 7,
 	});
 }
 
