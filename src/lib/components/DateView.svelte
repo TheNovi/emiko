@@ -12,13 +12,12 @@
 
 	let { date, onlyTime = false, ...props }: { date: Date; onlyTime?: boolean } & HTMLAttributes<HTMLSpanElement> = $props();
 	let langs = $state(navigator.languages);
-	let locale = $derived(langs[Math.floor(s / langs.length)]);
-	let useOpts = $derived(s % 2 == 1);
+	let locale = $derived(langs[s]);
 
 	const dateOpts: Intl.DateTimeFormatOptions = { weekday: "short", day: "numeric", month: "long", year: "numeric" };
 	const timeOpts: Intl.DateTimeFormatOptions = { hour12: false, timeStyle: "short" };
 
-	// $inspect(s, locale, useOpts);
+	// $inspect(s, locale);
 </script>
 
 <!-- FIXME a11y span onlick. onclick is also not ideal, its very difficult to select text -->
@@ -27,15 +26,15 @@
 <span
 	onclick={(e) => {
 		e.preventDefault(); //Prevents following link when inside <a>
-		s = (s + 1) % (langs.length * 2);
+		s = (s + 1) % langs.length;
 	}}
-	title={date.toString()}
+	title={date.toISOString()}
 	{...props}
 >
 	{#if onlyTime}
 		{date.toLocaleTimeString(locale, timeOpts)}
 	{:else}
-		{date.toLocaleDateString(locale, useOpts ? dateOpts : {})}
+		{date.toLocaleDateString(locale, dateOpts)}
 		{#if date.getHours() > 0 || date.getMinutes() > 0}
 			{date.toLocaleTimeString(locale, timeOpts)}
 		{/if}
