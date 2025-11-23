@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { dev } from "$app/environment";
 	import { enhance } from "$app/forms";
 	import Title from "$lib/components/Title.svelte";
 	import type { PageProps } from "./$types";
@@ -7,7 +6,6 @@
 	let { form }: PageProps = $props();
 	let name = $state("");
 	let password = $state("");
-	if (dev) name = password = "admin";
 </script>
 
 <Title title="Login" />
