@@ -69,14 +69,14 @@ export const todItem = sqliteTable("tod_item", {
 	...basicCols,
 	parentId: integer("parent_id").references((): AnySQLiteColumn => todItem.id, { onDelete: "cascade", onUpdate: "cascade" }),
 	title: text("title", { length: 250 }).notNull(),
-	state: integer("state").notNull().default(1), //0 Done, 1 Open, 2 Process, ...stateSet
-	// stateSet: idk("stateSet"), //List of other states
+	state: integer("state").notNull().default(1), //0 Done, 1 Open, 2 Process
 	description: text("description", { length: 5000 }).notNull().default(""),
 	// Calendar stuff
 	dtStart: integer("dt_start", { mode: "timestamp" }),
-	dtEnd: integer("dt_end", { mode: "timestamp" }),
+	dtEnd: integer("dt_end", { mode: "timestamp" }), //TODO Make as number of days. Or maybe as luxon interval string. Dst makes this very buggy
 	rFreq: integer("r_freq"), //1=day, 2=weekly, 3=month, 4=year
 	rInterval: integer("r_interval"),
 	rUntil: integer("r_until", { mode: "timestamp" }),
+	eventType: integer("event_type").notNull().default(0), // 0=normal/not event 1=Task (repeat from date completed) 2=Task (repeat from dtStart)
 });
 // export type TodItem = typeof todItem.$inferSelect;

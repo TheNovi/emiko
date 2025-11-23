@@ -37,6 +37,7 @@ function p(e: { ds: DateTime; de: DateTime | null; interval: number | null; unti
 					rUntil: e.until ? e.until.toJSDate() : null,
 					dtStart: e.ds.toJSDate(),
 					dtEnd: e.de ? e.de.toJSDate() : null,
+					eventType: 0,
 				},
 			],
 			process.env.TZ || "",

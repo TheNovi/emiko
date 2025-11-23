@@ -3,12 +3,14 @@
 	import DateView from "$lib/components/DateView.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import type { CallItem } from "$lib/server/todCal";
+	import { todIsTask, todNext } from "$lib/todUtil";
 	import { onMount } from "svelte";
 	import Control from "./Control.svelte";
 	import ListItem from "./ListItem.svelte";
 
 	// let { data }: PageProps = $props();
 	let cal: CallItem[] = $state([]);
+	let tasks: CallItem[] = $state([]);
 	let loading = $state(true);
 
 	//TODO Do this in load (or maybe try new remote functions? Hmmm)
@@ -33,46 +35,22 @@
 					e.dtStart = new Date(e.dtStart);
 					if (e.dtEnd) e.dtEnd = new Date(e.dtEnd);
 					if (e.rUntil) e.rUntil = new Date(e.rUntil);
-
+					//In range
 					if (df <= e.dtStart || (e.dtEnd && df <= e.dtEnd)) cal.push(e);
-					for (let t = next(e, e.dtStart); t && t.dtStart < dt; t = next(t, e.dtStart)) {
+					//Tasks outside range
+					else if (todIsTask(e)) {
+						tasks.push(e);
+						continue;
+					}
+					//Repeats
+					for (let t = todNext(e, e.dtStart); t && t.dtStart < dt; t = todNext(t, e.dtStart)) {
 						if (df <= t.dtStart) cal.push(t);
 					}
 				}
 				cal.sort((a, b) => a.dtStart.getTime() - b.dtStart.getTime()); //TODO Optimize?
+				tasks.sort((a, b) => a.dtStart.getTime() - b.dtStart.getTime());
 				loading = false;
 			});
-	}
-
-	function next(item: CallItem, orgBf: Date): CallItem | undefined {
-		if (!item.rFreq) return;
-		let df = new Date(item.dtStart);
-		const edt = item.dtEnd ? new Date(item.dtEnd.getTime() - df.getTime()).getTime() : 0;
-		switch (item.rFreq) {
-			case 1:
-				if (!item.rInterval) return;
-				df.setDate(df.getDate() + item.rInterval); //Skip days
-				break;
-			case 2: //Week //TODO
-				return;
-			case 3:
-				if (!item.rInterval)
-					df.setMonth(df.getMonth() + 1, orgBf.getDate()); //Date of month
-				else return; //Day of month (second friday, etc.)
-				break;
-			case 4:
-				if (!item.rInterval) return;
-				df.setFullYear(df.getFullYear() + item.rInterval, orgBf.getMonth(), orgBf.getDate()); //Skip years
-				break;
-			default:
-				return;
-		}
-		if (item.rUntil && item.rUntil < df) return;
-		return {
-			...item,
-			dtStart: df,
-			dtEnd: edt ? new Date(df.getTime() + edt) : null,
-		};
 	}
 
 	function toStartOfDay(d: Date) {
@@ -91,6 +69,14 @@
 
 <Title title="Tod Calendar" />
 
+{#if tasks.length}
+	<div id="tasks">
+		<div>Tasks:</div>
+		{#each tasks as item, i}
+			<ListItem {item} />
+		{/each}
+	</div>
+{/if}
 <div id="cont">
 	{#each cal as item, i}
 		<div>

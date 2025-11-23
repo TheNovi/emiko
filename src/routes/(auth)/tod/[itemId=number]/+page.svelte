@@ -2,6 +2,8 @@
 	import { enhance } from "$app/forms";
 	import InputDate from "$lib/components/InputDate.svelte";
 	import Title from "$lib/components/Title.svelte";
+	import type { CallItem } from "$lib/server/todCal";
+	import { todIsTask, todTaskComplete } from "$lib/todUtil";
 	import { formDatesToISO } from "$lib/util";
 	import Control from "../Control.svelte";
 	import ListItem from "../ListItem.svelte";
@@ -64,7 +66,7 @@
 		</div>
 		<div>
 			<label for="state">state</label>
-			<select name="state" id="state" required value={tod.state}>
+			<select name="state" id="state" required bind:value={tod.state}>
 				<option value={1}>Open</option>
 				<option value={2}>In Process</option>
 				<option value={0}>Done</option>
@@ -77,6 +79,14 @@
 		<div>
 			<label for="dtEnd">To</label>
 			<InputDate name="dtEnd" disabled={!tod.dtStart} value={tod.dtEnd} />
+		</div>
+		<div>
+			<label for="eventType">Event Type</label>
+			<select name="eventType" disabled={!tod.dtStart} bind:value={tod.eventType}>
+				<option value={0}>Event</option>
+				<option value={1}>Task repeat from completion</option>
+				<option value={2}>Task repeat from own date</option>
+			</select>
 		</div>
 		<div>
 			<label for="rFreq">Repeats</label>
@@ -109,6 +119,14 @@
 			<label for="description">description</label>
 			<textarea name="description" id="description" maxlength="2500" value={tod.description}></textarea>
 		</div>
+		{#if todIsTask(tod)}
+			<button
+				type="button"
+				onclick={() => {
+					todTaskComplete(tod as CallItem);
+				}}>Task Complete</button
+			>
+		{/if}
 	{/if}
 	<Control>
 		<a href="/tod" style="background-color: maroon;">Calendar</a>

@@ -16,6 +16,7 @@ const queryAll = db
 		rFreq: todItem.rFreq,
 		rInterval: todItem.rInterval,
 		rUntil: todItem.rUntil, //TODO Test
+		eventType: todItem.eventType, //TODO Tests
 	})
 	.from(todItem)
 	.where(
@@ -23,14 +24,11 @@ const queryAll = db
 		and(
 			eq(todItem.userId, sql.placeholder('userId')), isNull(todItem.deletedAt), //Basic
 			isNotNull(todItem.dtStart), lt(todItem.dtStart, sql.placeholder('dateTo')), //Is event, and is not in far future
+			or(isNull(todItem.rFreq), isNull(todItem.rUntil), gte(todItem.rUntil, sql.placeholder('dateFrom'))), //Until is in range
 			or(
+				isNotNull(todItem.rFreq), //Repeats
 				or(gte(todItem.dtStart, sql.placeholder('dateFrom')), and(isNotNull(todItem.dtEnd), gte(todItem.dtEnd, sql.placeholder('dateFrom')))), //Is in date range
-				and(
-					isNotNull(todItem.rFreq), //Is before dateFrom, but repeats
-					or(
-						isNull(todItem.rUntil), gte(todItem.rUntil, sql.placeholder('dateFrom')), //Until is in range
-					),
-				)
+				and(gte(todItem.state, 1), or(eq(todItem.eventType, 1), eq(todItem.eventType, 2))), //Not repeating tasks
 			)
 		)
 	)
@@ -63,6 +61,7 @@ export async function getCal(userId: number, tz: string, dateFrom: DateTime, dat
 //Exported for tests
 export function parseCalls(calls: CallItem[], tz: string, dateFrom: DateTime, dateTo: DateTime) {
 	return calls.filter((v) => {
+		if (v.eventType > 0) return true; //Task
 		const e = parseItemToLuxon(v, tz);
 		if (e.dtStart >= dateFrom || (e.dtEnd && e.dtEnd >= dateFrom)) return true; //Already in range
 		switch (e.rFreq) {
@@ -88,6 +87,7 @@ function parseItemToLuxon(e: CallItem, tz: string) {
 	return {
 		// id: e.id,
 		name: e.title, //For debug
+		eventType: e.eventType,
 		rFreq: e.rFreq,
 		rInterval: e.rInterval,
 		dtStart,
@@ -108,6 +108,7 @@ const test: CallItem[] = [
 		rUntil: null,
 		dtStart: new Date(2025, 7 - 1, 20),
 		dtEnd: null,
+		eventType: 0,
 	},
 	{
 		id: 2,
@@ -119,6 +120,7 @@ const test: CallItem[] = [
 		// dateFrom: new Date(2024, 4 - 1, 13),
 		dtStart: new Date("2025-08-13T18:53:33.004Z"),
 		dtEnd: null,
+		eventType: 0,
 	},
 	{
 		id: 3,
@@ -129,6 +131,7 @@ const test: CallItem[] = [
 		rUntil: null,
 		dtStart: new Date(2021, 8 - 1, 20),
 		dtEnd: null,
+		eventType: 0,
 	},
 ];
 

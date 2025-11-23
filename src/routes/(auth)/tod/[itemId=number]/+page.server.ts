@@ -26,7 +26,7 @@ const vFormDate = v.pipe(
 
 const vFormEmpty = v.pipe(
 	v.literal(""),
-	v.transform(() => null)
+	v.transform(() => undefined)
 );
 
 export const actions: Actions = {
@@ -61,10 +61,11 @@ export const actions: Actions = {
 				title: v.pipe(v.string("Title must be string"), v.trim(), v.nonEmpty("Title must not be empty"), v.maxLength(250, "Title is too long")),
 				description: v.pipe(v.string("Description must be string"), v.trim(), v.maxLength(2500, "Description is too long")),
 				dtStart: v.union([vFormEmpty, vFormDate]),
-				dtEnd: v.nullish(v.union([vFormEmpty, vFormDate])),
-				rFreq: v.nullish(v.union([vFormEmpty, vFormNumber])),
-				rInterval: v.nullish(v.union([vFormEmpty, vFormNumber])),
-				rUntil: v.nullish(v.union([vFormEmpty, vFormDate])),
+				dtEnd: v.optional(v.union([vFormEmpty, vFormDate])),
+				rFreq: v.optional(v.union([vFormEmpty, vFormNumber])),
+				eventType: v.optional(v.union([vFormEmpty, vFormNumber])),
+				rInterval: v.optional(v.union([vFormEmpty, vFormNumber])),
+				rUntil: v.optional(v.union([vFormEmpty, vFormDate])),
 			}),
 			Object.fromEntries(await request.formData())
 		);
