@@ -8,9 +8,10 @@
 </script>
 
 <script lang="ts">
+	import type { DateTime } from "luxon";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	let { date, onlyTime = false, ...props }: { date: Date; onlyTime?: boolean } & HTMLAttributes<HTMLSpanElement> = $props();
+	let { date, onlyTime = false, ...props }: { date: DateTime; onlyTime?: boolean } & HTMLAttributes<HTMLSpanElement> = $props();
 	let langs = $state(navigator.languages);
 	let locale = $derived(langs[s]);
 
@@ -28,15 +29,15 @@
 		e.preventDefault(); //Prevents following link when inside <a>
 		s = (s + 1) % langs.length;
 	}}
-	title={date.toISOString()}
+	title={date.toISO()}
 	{...props}
 >
 	{#if onlyTime}
-		{date.toLocaleTimeString(locale, timeOpts)}
+		{date.toLocaleString({ ...timeOpts }, { locale })}
 	{:else}
-		{date.toLocaleDateString(locale, dateOpts)}
-		{#if date.getHours() > 0 || date.getMinutes() > 0}
-			{date.toLocaleTimeString(locale, timeOpts)}
+		{date.toLocaleString({ ...dateOpts }, { locale })}
+		{#if date.get("hour") > 0 || date.get("minute") > 0}
+			{date.toLocaleString({ ...timeOpts }, { locale })}
 		{/if}
 	{/if}
 </span>

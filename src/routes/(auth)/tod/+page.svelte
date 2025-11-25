@@ -7,6 +7,7 @@
 	import { onMount } from "svelte";
 	import Control from "./Control.svelte";
 	import ListItem from "./ListItem.svelte";
+	import { DateTime } from "luxon";
 
 	// let { data }: PageProps = $props();
 	let cal: CallItem[] = $state([]);
@@ -16,15 +17,15 @@
 	//TODO Do this in load (or maybe try new remote functions? Hmmm)
 	function fetchData() {
 		loading = true;
-		const d = toStartOfDay(new Date());
-		let q = new URL("/tod/api/" + d.getTime(), page.url);
+		const d = toStartOfDay(DateTime.now());
+		let q = new URL("/tod/api/" + d.toMillis(), page.url);
 		fetch(q)
 			.then((r) => r.json()) // TODO Errors
 			.then((r: { cal: CallItem[]; from: string; to: string }) => {
 				//TODO Use luxon?
 				//! All dates are ISO Strings!
-				const df = new Date(r.from);
-				const dt = new Date(r.to);
+				const df = DateTime.fromISO(r.from);
+				const dt = DateTime.fromISO(r.to);
 				// console.log({ df, dt });
 				// console.log(r.cal);
 
@@ -32,9 +33,11 @@
 				cal = [];
 				for (const e of r.cal) {
 					//! All dates in r are ISO Strings!
-					e.dtStart = new Date(e.dtStart);
-					if (e.dtEnd) e.dtEnd = new Date(e.dtEnd);
-					if (e.rUntil) e.rUntil = new Date(e.rUntil);
+					e.dtStart = DateTime.fromISO(e.dtStart as unknown as string);
+					if (e.dtEnd) e.dtEnd = DateTime.fromISO(e.dtEnd as unknown as string);
+					if (e.rUntil) e.rUntil = DateTime.fromISO(e.rUntil as unknown as string);
+					// console.log(e.dtStart.zoneName); //TODO
+
 					//In range
 					if (df <= e.dtStart || (e.dtEnd && df <= e.dtEnd)) cal.push(e);
 					//Tasks outside range
@@ -47,21 +50,18 @@
 						if (df <= t.dtStart) cal.push(t);
 					}
 				}
-				cal.sort((a, b) => a.dtStart.getTime() - b.dtStart.getTime()); //TODO Optimize?
-				tasks.sort((a, b) => a.dtStart.getTime() - b.dtStart.getTime());
+				cal.sort((a, b) => a.dtStart.diff(b.dtStart).milliseconds); //TODO Optimize?
+				tasks.sort((a, b) => a.dtStart.diff(b.dtStart).milliseconds);
 				loading = false;
 			});
 	}
 
-	function toStartOfDay(d: Date) {
-		const o = new Date(d);
-		o.setHours(0, 0, 0, 0);
-		return o;
+	function toStartOfDay(d: DateTime) {
+		return d.startOf("day");
 	}
 
-	function isToday(d: Date) {
-		// TODO 0 Optimize
-		return toStartOfDay(d).getTime() == toStartOfDay(new Date()).getTime();
+	function isToday(d: DateTime) {
+		return toStartOfDay(d) == toStartOfDay(DateTime.now());
 	}
 
 	onMount(fetchData);

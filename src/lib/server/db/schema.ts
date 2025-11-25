@@ -1,5 +1,18 @@
 import { sql } from "drizzle-orm";
-import { sqliteTable, text, integer, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, customType, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
+import { DateTime } from "luxon";
+
+const LuxonDateTime = customType<{ data: DateTime; driverData: number }>({
+	dataType() {
+		return "integer";
+	},
+	toDriver(value) {
+		return value.toSeconds();
+	},
+	fromDriver(value: number): DateTime {
+		return DateTime.fromSeconds(value, { zone: "UTC" }); //TODO Save timezone as well somehow (while not breaking todCal query)
+	},
+});
 
 const timestamps = {
 	createdAt: integer("created_at", { mode: "timestamp" })
@@ -72,11 +85,11 @@ export const todItem = sqliteTable("tod_item", {
 	state: integer("state").notNull().default(1), //0 Done, 1 Open, 2 Process
 	description: text("description", { length: 5000 }).notNull().default(""),
 	// Calendar stuff
-	dtStart: integer("dt_start", { mode: "timestamp" }),
-	dtEnd: integer("dt_end", { mode: "timestamp" }), //TODO Make as number of days. Or maybe as luxon interval string. Dst makes this very buggy
+	dtStart: LuxonDateTime("dt_start"),
+	dtEnd: LuxonDateTime("dt_end"), //TODO Make as number of days. Or maybe as luxon interval string. Dst makes this very buggy
 	rFreq: integer("r_freq"), //1=day, 2=weekly, 3=month, 4=year
 	rInterval: integer("r_interval"),
-	rUntil: integer("r_until", { mode: "timestamp" }),
+	rUntil: LuxonDateTime("r_until"),
 	eventType: integer("event_type").notNull().default(0), // 0=normal/not event 1=Task (repeat from date completed) 2=Task (repeat from dtStart)
 });
 // export type TodItem = typeof todItem.$inferSelect;

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import DateView from "$lib/components/DateView.svelte";
+	import type { DateTime } from "luxon";
 
-	type TItem = { id: number; title: string; state: number; dtStart: Date | null; dtEnd: Date | null; rFreq: number | null; rInterval: number | null; rUntil: Date | null };
+	type TItem = { id: number; title: string; state: number; dtStart: DateTime | null; dtEnd: DateTime | null; rFreq: number | null; rInterval: number | null; rUntil: DateTime | null };
 	let { item }: { item: TItem } = $props();
 
 	let freq = $derived.by(() => {
@@ -28,7 +29,7 @@
 		<span>
 			<DateView date={item.dtStart} />
 			{#if item.dtEnd}
-				- <DateView date={item.dtEnd} onlyTime={item.dtStart.toDateString() == item.dtEnd.toDateString()} />
+				- <DateView date={item.dtEnd} onlyTime={item.dtEnd.diff(item.dtStart, "days").days < 1} />
 			{/if}
 		</span>
 		{#if freq}

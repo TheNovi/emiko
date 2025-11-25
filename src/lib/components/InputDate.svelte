@@ -2,12 +2,12 @@
 	import { browser } from "$app/environment";
 	import { formParseInputDate } from "$lib/util";
 	import type { HTMLInputAttributes } from "svelte/elements";
-	import { SvelteDate } from "svelte/reactivity";
 	import DateView from "./DateView.svelte";
+	import { DateTime } from "luxon";
 
-	let { name, value = $bindable(), ...opts }: { name: string; value: Date | SvelteDate | null } & Omit<HTMLInputAttributes, "value"> = $props();
+	let { name, value = $bindable(), ...opts }: { name: string; value: DateTime | null } & Omit<HTMLInputAttributes, "value"> = $props();
 
-	let showButton = $derived(value && (value.getHours() > 0 || value.getMinutes() > 0));
+	let showButton = $derived(value && (value.get("hour") > 0 || value.get("minute") > 0));
 </script>
 
 {#if !value || browser}
@@ -16,15 +16,15 @@
 		{name}
 		id={name}
 		bind:value={
-			() => formParseInputDate(value),
+			() => formParseInputDate(value?.toJSDate()),
 			(v) => {
-				value = v ? new SvelteDate(v) : null;
+				value = v ? DateTime.fromISO(v, { zone: value?.zone }) : null;
 			}
 		}
 		{...opts}
 	/>
 	{#if showButton}
-		<button type="button" hidden={!showButton} onclick={() => value?.setHours(0, 0, 0, 0)}>Clear Time</button>
+		<button type="button" hidden={!showButton} onclick={() => value?.startOf("day")}>Clear Time</button>
 	{/if}
 	{#if value}
 		<DateView date={value} style="margin-left: 0.5em" />

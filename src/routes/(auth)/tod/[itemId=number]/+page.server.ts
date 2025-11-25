@@ -2,10 +2,18 @@ import { checkIfItemBelongsUser, deleteItem, getItemDetail, insertItem, updateIt
 import { fail, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
 import type { Actions, PageServerLoad } from "./$types";
+import { DateTime } from "luxon";
 
 export const load = (async (event) => {
 	if (!event.locals.user) redirect(303, "/login");
 	let tod = await getItemDetail(event.locals.user.id, +event.params.itemId);
+
+	if (tod && tod.id) {
+		tod.dtStart = tod.dtStart?.setZone(event.locals.user.tz) || null;
+		tod.dtEnd = tod.dtEnd?.setZone(event.locals.user.tz) || null;
+		tod.rUntil = tod.rUntil?.setZone(event.locals.user.tz) || null;
+	}
+
 	return tod ? { tod } : redirect(303, "/tod");
 }) satisfies PageServerLoad;
 
@@ -20,8 +28,8 @@ const vFormNumber = v.pipe(
 const vFormDate = v.pipe(
 	v.string(),
 	v.isoTimestamp("Not valid date format"),
-	v.transform((e) => new Date(e)),
-	v.date()
+	v.transform((e) => DateTime.fromISO(e)),
+	v.check((e) => e.isValid) //TODO 999 Test
 );
 
 const vFormEmpty = v.pipe(

@@ -1,5 +1,6 @@
 import { db } from "$lib/server/db";
 import { todItem } from "$lib/server/db/schema";
+import { getEdt, todIsTask } from "$lib/todUtil";
 import { and, eq, gte, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 import { DateTime } from "luxon";
 
@@ -35,7 +36,7 @@ const queryAll = db
 	.orderBy(todItem.dtStart) //Is this necessary
 	.prepare();
 
-export type CallItem = Awaited<ReturnType<typeof queryAll.all>>[0] & { dtStart: Date };
+export type CallItem = Awaited<ReturnType<typeof queryAll.all>>[0] & { dtStart: DateTime };
 
 /**
  * Main function
@@ -52,7 +53,6 @@ export async function getCal(userId: number, tz: string, dateFrom: DateTime, dat
 	// console.debug("cal", userId, dateFrom, dateTo);
 	//Get all events
 	const all = (await queryAll.all({ userId, dateFrom: dateFrom.toUnixInteger(), dateTo: dateTo.toUnixInteger() })) as CallItem[];
-	// const all = test;
 	const out = parseCalls(all, tz, dateFrom, dateTo);
 	// console.debug(out);
 	return out;
@@ -60,9 +60,13 @@ export async function getCal(userId: number, tz: string, dateFrom: DateTime, dat
 
 //Exported for tests
 export function parseCalls(calls: CallItem[], tz: string, dateFrom: DateTime, dateTo: DateTime) {
-	return calls.filter((v) => {
-		if (v.eventType > 0) return true; //Task
-		const e = parseItemToLuxon(v, tz);
+	return calls.filter((e) => {
+		// if (!e.dtEnd) return false; //TODO Del me
+		if (todIsTask(e)) return true; //Task
+		e.dtStart = e.dtStart.setZone(tz);
+		if (e.dtEnd) e.dtEnd = e.dtEnd.setZone(tz);
+		if (e.rUntil) e.rUntil = e.rUntil.setZone(tz);
+
 		if (e.dtStart >= dateFrom || (e.dtEnd && e.dtEnd >= dateFrom)) return true; //Already in range
 		switch (e.rFreq) {
 			case 1: //Days
@@ -80,62 +84,7 @@ export function parseCalls(calls: CallItem[], tz: string, dateFrom: DateTime, da
 	});
 }
 
-function parseItemToLuxon(e: CallItem, tz: string) {
-	const c = { zone: tz };
-	const dtStart = DateTime.fromJSDate(e.dtStart, c);
-	const dtEnd = e.dtEnd ? DateTime.fromJSDate(e.dtEnd, c) : null;
-	return {
-		// id: e.id,
-		name: e.title, //For debug
-		eventType: e.eventType,
-		rFreq: e.rFreq,
-		rInterval: e.rInterval,
-		dtStart,
-		dtEnd,
-		rUntil: e.rUntil ? DateTime.fromJSDate(e.rUntil, c) : null,
-		edt: dtEnd ? dtEnd.diff(dtStart) : {}, //TODO This doesn't work for dst. (its added to newly calculated date). Also test it, if it even works
-	};
-}
-type CallItemLuxon = ReturnType<typeof parseItemToLuxon>;
-
-const test: CallItem[] = [
-	{
-		id: 1,
-		title: "20.7 + 7d",
-		state: 0,
-		rFreq: 1,
-		rInterval: 7,
-		rUntil: null,
-		dtStart: new Date(2025, 7 - 1, 20),
-		dtEnd: null,
-		eventType: 0,
-	},
-	{
-		id: 2,
-		title: "13.X",
-		state: 0,
-		rFreq: 3,
-		rInterval: 0,
-		rUntil: null,
-		// dateFrom: new Date(2024, 4 - 1, 13),
-		dtStart: new Date("2025-08-13T18:53:33.004Z"),
-		dtEnd: null,
-		eventType: 0,
-	},
-	{
-		id: 3,
-		title: "20.8 + 2y",
-		state: 0,
-		rFreq: 4,
-		rInterval: 2,
-		rUntil: null,
-		dtStart: new Date(2021, 8 - 1, 20),
-		dtEnd: null,
-		eventType: 0,
-	},
-];
-
-function rangeModeDay(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
+function rangeModeDay(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
 	if (!e.rInterval) return false; //Days to skip
 	//Check if diff between dateFrom and dateTo is larger than interval (if yes, then it must repeats).
 	if ((!e.rUntil || e.rUntil >= dateTo) && e.rInterval < dateTo.diff(dateFrom, ["days"]).days) return true; //TODO Test these
@@ -146,7 +95,7 @@ function rangeModeDay(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
 	const f = Math.floor(df / offset) * offset;
 	const ds = e.dtStart.plus({ day: f });
 
-	return isBetweenRange(ds, ds.plus(e.edt), ds.plus({ day: offset }), e.rUntil, dateFrom, dateTo);
+	return isBetweenRange(ds, ds.plus(getEdt(e)), ds.plus({ day: offset }), e.rUntil, dateFrom, dateTo);
 }
 
 //Backup: slower, but more readable
@@ -166,7 +115,7 @@ function rangeModeDay(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
 // 	return isBetweenRange(ds, ds.plus(e.edt), dse, e.rUntil, dateFrom, dateTo);
 // }
 
-function rangeModeMonth(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
+function rangeModeMonth(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
 	if (!e.rInterval) {
 		//Date of the month
 		const d = e.dtStart.day;
@@ -177,24 +126,24 @@ function rangeModeMonth(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) 
 		if (dateFrom.day <= d) nds = nds.set({ day: d });
 		else nds = nds.set({ month: nds.month + 1, day: d });
 
-		return isBetweenRange(ds, ds.plus(e.edt), nds, e.rUntil, dateFrom, dateTo);
+		return isBetweenRange(ds, ds.plus(getEdt(e)), nds, e.rUntil, dateFrom, dateTo);
 	}
 	return rangeModeMonthWeek(e, dateFrom, dateTo);
 }
 
-function rangeModeMonthWeek(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
+function rangeModeMonthWeek(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
 	if (!e.rInterval) return false; //Day of the month
 	//First friday, 4. sunday, last monday etc.
 	return false;
 }
 
-function rangeModeYear(e: CallItemLuxon, dateFrom: DateTime, dateTo: DateTime) {
+function rangeModeYear(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
 	if (!e.rInterval) return false; //Years to skip
 	let ds = e.dtStart;
 	const y = dateFrom.year - ds.year;
 	ds = ds.set({ year: Math.floor(y / e.rInterval) * e.rInterval + ds.year });
 
-	return isBetweenRange(ds, ds.plus(e.edt), ds.set({ year: ds.year + e.rInterval }), e.rUntil, dateFrom, dateTo);
+	return isBetweenRange(ds, ds.plus(getEdt(e)), ds.set({ year: ds.year + e.rInterval }), e.rUntil, dateFrom, dateTo);
 }
 
 /**
