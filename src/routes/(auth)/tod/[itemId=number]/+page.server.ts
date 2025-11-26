@@ -26,7 +26,11 @@ const vFormDate = v.pipe(
 
 const vFormEmpty = v.pipe(
 	v.literal(""),
-	v.transform(() => undefined)
+	v.transform(() => null)
+);
+const vFormEmptyZero = v.pipe(
+	v.literal(""),
+	v.transform(() => 0)
 );
 
 export const actions: Actions = {
@@ -50,8 +54,11 @@ export const actions: Actions = {
 		// return;
 		if (!locals.user) return redirect(303, "/login");
 		let errors: string[] = [];
-		// console.log(await request.formData());
+		// const d = await request.formData();
+		// console.log(d);
 
+		//TODO Add some tests and make this somehow make sense please
+		//Inputs: Empty => '', Disabled/Hidden => undefined (nullish() means null or undefined)
 		const item = v.safeParse(
 			v.object({
 				id: vFormNumber,
@@ -61,13 +68,25 @@ export const actions: Actions = {
 				title: v.pipe(v.string("Title must be string"), v.trim(), v.nonEmpty("Title must not be empty"), v.maxLength(250, "Title is too long")),
 				description: v.pipe(v.string("Description must be string"), v.trim(), v.maxLength(2500, "Description is too long")),
 				dtStart: v.union([vFormEmpty, vFormDate]),
-				dtEnd: v.optional(v.union([vFormEmpty, vFormDate])),
-				rFreq: v.optional(v.union([vFormEmpty, vFormNumber])),
-				eventType: v.optional(v.union([vFormEmpty, vFormNumber])),
-				rInterval: v.optional(v.union([vFormEmpty, vFormNumber])),
-				rUntil: v.optional(v.union([vFormEmpty, vFormDate])),
+				dtEnd: v.nullish(v.union([vFormEmpty, vFormDate]), null),
+				rFreq: v.nullish(v.union([vFormEmpty, vFormNumber]), null),
+				eventType: v.nullish(
+					v.union([
+						vFormEmptyZero,
+						vFormNumber,
+						//Idk man, when scheme doesn't start with nullish(), undefined value just returns error (no matter what I do). Also there is no undefined() scheme (I mean there is, but it does the exact opposite)
+						v.pipe(
+							v.any(),
+							v.transform(() => 0)
+						),
+					]),
+					0 //I love how you can use null or undefined default on "nullish" value without a problem, no matter what types schemes returns. BUT GOD FORBID YOU USE A 0 WHEN SOME SCHEME DOESNT RETURN A NUMBER!!!
+				),
+				rInterval: v.nullish(v.union([vFormEmpty, vFormNumber]), null),
+				rUntil: v.nullish(v.union([vFormEmpty, vFormDate]), null),
 			}),
 			Object.fromEntries(await request.formData())
+			// Object.fromEntries(d)
 		);
 		if (!item.success) return fail(400, { errors: item.issues.map((i) => i.message) });
 		item.output.userId = locals.user.id;
