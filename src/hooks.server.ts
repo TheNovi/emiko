@@ -3,8 +3,10 @@ import { db } from "$lib/server/db";
 import { user } from "$lib/server/db/schema";
 import type { Handle } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
+import { Settings } from "luxon";
 
 console.log(APP_VERSION);
+Settings.defaultZone = "utc"; //Just for consistency and better debugging
 
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.user = undefined;

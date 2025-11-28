@@ -19,6 +19,7 @@
 	const timeOpts: Intl.DateTimeFormatOptions = { hour12: false, timeStyle: "short" };
 
 	// $inspect(s, locale);
+	// $inspect(date.zoneName);
 </script>
 
 <!-- FIXME a11y span onlick. onclick is also not ideal, its very difficult to select text -->

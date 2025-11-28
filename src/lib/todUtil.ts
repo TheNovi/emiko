@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import type { CallItem } from "./server/todCal";
 
 export function getEdt(e: CallItem) {
-	return e.dtEnd ? e.dtEnd.diff(e.dtStart) : {}; //TODO This doesn't work for dst. (its added to newly calculated date).
+	return e.dtEnd ? e.dtEnd.diff(e.dtStart) : {}; //TODO 999 This doesn't work for dst
 }
 
 export function todNext(item: CallItem, orgBf: DateTime | undefined = undefined): CallItem | undefined {
@@ -62,7 +62,6 @@ export function todTaskComplete(item: CallItem) {
 	}
 }
 
-//TODO Type
 export function todIsTask(item: { eventType: number; dtStart: any }) {
 	return item.dtStart && (item.eventType === 1 || item.eventType === 2);
 }

@@ -7,7 +7,7 @@
  */
 export function formParseInputDate(d: Date | null | undefined) {
 	if (!d) return null;
-	return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, -1);
+	return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, -1); //TODO This have some problems when changing timezone in browser
 	// return d.toISOString().slice(0, -1);
 }
 

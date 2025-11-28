@@ -50,6 +50,7 @@ export async function getCal(userId: number, tz: string, dateFrom: DateTime, dat
 
 	dateFrom = dateFrom.setZone(tz);
 	dateTo = dateTo.setZone(tz);
+
 	// console.debug("cal", userId, dateFrom, dateTo);
 	//Get all events
 	const all = (await queryAll.all({ userId, dateFrom: dateFrom.toUnixInteger(), dateTo: dateTo.toUnixInteger() })) as CallItem[];

@@ -47,7 +47,7 @@
 	use:enhance={({ formData }) => {
 		deleteConfirm = false;
 		formDatesToISO(formData, ["dtStart", "dtEnd", "rUntil"]);
-		//TODO Send only changed (mainly description)
+		//TODO Try to not to send description every time (others doesn't matter too much)
 		// console.log(formData.get("dtStart"));
 		return async ({ update }) => {
 			update({ reset: false });
