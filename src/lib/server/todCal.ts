@@ -25,7 +25,7 @@ const queryAll = db
 		and(
 			eq(todItem.userId, sql.placeholder('userId')), isNull(todItem.deletedAt), //Basic
 			isNotNull(todItem.dtStart), lt(todItem.dtStart, sql.placeholder('dateTo')), //Is event, and is not in far future
-			or(isNull(todItem.rFreq), isNull(todItem.rUntil), gte(todItem.rUntil, sql.placeholder('dateFrom'))), //Until is in range
+			or(/*isNull(todItem.rFreq),*/ isNull(todItem.rUntil), gte(todItem.rUntil, sql.placeholder('dateFrom'))), //Until is in range
 			or(
 				isNotNull(todItem.rFreq), //Repeats
 				or(gte(todItem.dtStart, sql.placeholder('dateFrom')), and(isNotNull(todItem.dtEnd), gte(todItem.dtEnd, sql.placeholder('dateFrom')))), //Is in date range
@@ -46,7 +46,7 @@ export type CallItem = Awaited<ReturnType<typeof queryAll.all>>[0] & { dtStart: 
  * @returns List of events
  */
 export async function getCal(userId: number, tz: string, dateFrom: DateTime, dateTo: DateTime) {
-	if (dateFrom >= dateTo) return [];
+	if (dateFrom >= dateTo) return { events: [], tasks: [] };
 
 	dateFrom = dateFrom.setZone(tz);
 	dateTo = dateTo.setZone(tz);
@@ -60,28 +60,40 @@ export async function getCal(userId: number, tz: string, dateFrom: DateTime, dat
 
 //Exported for tests
 export function parseCalls(calls: CallItem[], tz: string, dateFrom: DateTime, dateTo: DateTime) {
-	return calls.filter((e) => {
-		// if (!e.dtEnd) return false; //TODO Del me
-		if (todIsTask(e)) return true; //Task
+	const today = DateTime.now().setZone(tz).startOf("day");
+	const tasks: CallItem[] = [];
+	const events: CallItem[] = [];
+	for (const e of calls) {
 		e.dtStart = e.dtStart.setZone(tz);
 		if (e.dtEnd) e.dtEnd = e.dtEnd.setZone(tz);
 		if (e.rUntil) e.rUntil = e.rUntil.setZone(tz);
-
-		if (e.dtStart >= dateFrom || (e.dtEnd && e.dtEnd >= dateFrom)) return true; //Already in range
-		switch (e.rFreq) {
-			case 1: //Days
-				return rangeModeDay(e, dateFrom, dateTo);
-			case 2: //Weeks //TODO
-				return false;
-			case 3: //Month
-				return rangeModeMonth(e, dateFrom, dateTo);
-			case 4: //Years
-				return rangeModeYear(e, dateFrom, dateTo);
-			default:
-				console.error("Tod getCal | Unknown dateCopyMode", e.rFreq);
-				break;
+		//Task
+		if (todIsTask(e)) {
+			if (e.dtStart.startOf("day") <= today) tasks.push(e);
+			else events.push(e); //TODO Test. Should be already in range, thanks to sql query?
+			continue;
 		}
-	});
+		//Event
+		if (checkEvent(e, dateFrom, dateTo)) events.push(e);
+	}
+	return { events, tasks };
+}
+
+function checkEvent(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
+	if (e.dtStart >= dateFrom || (e.dtEnd && e.dtEnd >= dateFrom)) return true; //Already in range
+	switch (e.rFreq) {
+		case 1: //Days
+			return rangeModeDay(e, dateFrom, dateTo);
+		case 2: //Weeks //TODO
+			return false;
+		case 3: //Month
+			return rangeModeMonth(e, dateFrom, dateTo);
+		case 4: //Years
+			return rangeModeYear(e, dateFrom, dateTo);
+		default:
+			console.error("Tod getCal | Unknown dateCopyMode", e.rFreq);
+			break;
+	}
 }
 
 function rangeModeDay(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {

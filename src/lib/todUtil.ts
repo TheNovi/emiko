@@ -18,7 +18,7 @@ export function todNext(item: CallItem, orgBf: DateTime | undefined = undefined)
 		case 2: //Week //TODO
 			return;
 		case 3:
-			console.log(item.title, df.toISO(), df.plus({ month: 1 }).toISO());
+			// console.log(item.title, df.toISO(), df.plus({ month: 1 }).toISO());
 			if (!item.rInterval)
 				// df.setMonth(df.getMonth() + 1, orgBf.getDate()); //Date of month
 				df = df.plus({ month: 1 });
