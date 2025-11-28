@@ -99,8 +99,8 @@
 			</select>
 		</div>
 
-		{#if tod.rFreq == 1}
-			<!-- Daily -->
+		{#if tod.rFreq == 1 || tod.rFreq == 4}
+			<!-- Daily, Yearly -->
 			<div>
 				<label for="rInterval">Interval</label>
 				<input type="number" min="0" name="rInterval" id="rInterval" disabled={!tod.dtStart} value={tod.rInterval} />
