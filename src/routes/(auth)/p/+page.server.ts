@@ -55,16 +55,8 @@ export const actions: Actions = {
 			if (u) {
 				locals.user.name = u.name;
 				locals.user.tz = u.tz;
-				return {
-					success: true,
-					// name: u.name,
-				};
-			}
-			//TODO SQL Error
-		}
-		return {
-			errors: ["SQL Error"],
-			// name: name,
-		};
+				return { success: true };
+			} else return fail(400, { errors: ["SQL Error"] }); //TODO What error
+		} else return { success: true };
 	},
 };
