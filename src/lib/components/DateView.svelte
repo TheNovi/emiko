@@ -22,7 +22,7 @@
 	// $inspect(date.zoneName);
 </script>
 
-<!-- FIXME a11y span onlick. onclick is also not ideal, its very difficult to select text -->
+<!-- FIXME a11y span onclick. onclick is also not ideal, its very difficult to select text -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <span

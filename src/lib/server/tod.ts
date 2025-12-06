@@ -12,8 +12,8 @@ function basicWhere(userId: number, ...other: SQLWrapper[]) {
 	return and(eq(todItem.userId, userId), isNull(todItem.deletedAt), ...other);
 }
 
-export async function getItemDetail(userId: number, itemId: number): Promise<SmartItemDetail | undefined> {
-	if (!itemId) return await getRootItemDetail(userId);
+export async function getItemDetail(userId: number, itemId: number, tz: string): Promise<SmartItemDetail | undefined> {
+	if (!itemId) return await getRootItemDetail(userId, tz);
 	return await db
 		.select() //TODO Remove unused fields (userId and deletedAt?)
 		.from(todItem)
@@ -21,19 +21,21 @@ export async function getItemDetail(userId: number, itemId: number): Promise<Sma
 		.get()
 		.then(async (e) => {
 			if (e) {
-				// if (e.dateFrom && e.dateTo) (e as ItemDetail).dateTo = new Date(e.dateFrom.getTime() + e.dateTo);
 				(e as SmartItemDetail).parents = await getParents(userId, e.id);
-				(e as SmartItemDetail).items = await getChildren(userId, e.id);
+				(e as SmartItemDetail).items = await getChildren(userId, e.id, tz);
+				e.dtStart = e.dtStart?.setZone(tz) || null;
+				e.dtEnd = e.dtEnd?.setZone(tz) || null;
+				e.rUntil = e.rUntil?.setZone(tz) || null;
 			}
 			return e as SmartItemDetail | undefined;
 		});
 }
 
-export async function getRootItemDetail(userId: number): Promise<SmartItemDetail> {
+export async function getRootItemDetail(userId: number, tz: string): Promise<SmartItemDetail> {
 	return {
 		id: null,
 		// userId, //Not needed?
-		items: await getChildren(userId, null),
+		items: await getChildren(userId, null, tz),
 		parents: [],
 		title: "Tod",
 	};
@@ -60,12 +62,19 @@ async function getParents(userId: number, itemId: number | null): Promise<{ id: 
 		});
 }
 
-async function getChildren(userId: number, parentId: number | null) {
+async function getChildren(userId: number, parentId: number | null, tz: string) {
 	return await db
 		.select({ id: todItem.id, title: todItem.title, state: todItem.state, dtStart: todItem.dtStart, dtEnd: todItem.dtEnd, rFreq: todItem.rFreq, rInterval: todItem.rInterval, rUntil: todItem.rUntil })
 		.from(todItem)
 		.where(basicWhere(userId, parentId ? eq(todItem.parentId, parentId) : isNull(todItem.parentId)))
-		.orderBy(desc(todItem.state), todItem.dtStart, todItem.title, desc(todItem.id));
+		.orderBy(desc(todItem.state), todItem.dtStart, todItem.title, desc(todItem.id)).then((all) => { 
+			for (const e of all) {
+				e.dtStart = e.dtStart?.setZone(tz) || null;
+				e.dtEnd = e.dtEnd?.setZone(tz) || null;
+				e.rUntil = e.rUntil?.setZone(tz) || null;
+			}
+			return all;
+		});
 	// .toSQL().sql;
 }
 
@@ -122,6 +131,6 @@ export async function deleteItem(userId: number, itemId: number) {
 	if (!d) return itemId; //TODO Error
 	// console.log(d);
 	//TODO Don't return from children
-	for (const c of await getChildren(userId, itemId)) deleteItem(userId, c.id);
+	for (const c of await getChildren(userId, itemId, '')) deleteItem(userId, c.id);
 	return d.parentId || 0;
 }

@@ -6,12 +6,9 @@ import { DateTime } from "luxon";
 
 export const load = (async (event) => {
 	if (!event.locals.user) redirect(303, "/login");
-	let tod = await getItemDetail(event.locals.user.id, +event.params.itemId);
+	let tod = await getItemDetail(event.locals.user.id, +event.params.itemId, event.locals.user.tz);
 
 	if (tod && tod.id) {
-		tod.dtStart = tod.dtStart?.setZone(event.locals.user.tz) || null;
-		tod.dtEnd = tod.dtEnd?.setZone(event.locals.user.tz) || null;
-		tod.rUntil = tod.rUntil?.setZone(event.locals.user.tz) || null;
 	}
 
 	return tod ? { tod } : redirect(303, "/tod");
@@ -88,7 +85,7 @@ export const actions: Actions = {
 							v.transform(() => 0)
 						),
 					]),
-					0 //I love how you can use null or undefined default on "nullish" value without a problem, no matter what types schemes returns. BUT GOD FORBID YOU USE A 0 WHEN SOME SCHEME DOESNT RETURN A NUMBER!!!
+					0 //I love how you can use null or undefined default on "nullish" value without a problem, no matter what types schemes returns. BUT GOD FORBID YOU USE A 0 WHEN SOME SCHEME DOESN'T RETURN A NUMBER!!!
 				),
 				rInterval: v.nullish(v.union([vFormEmpty, vFormNumber]), null),
 				rUntil: v.nullish(v.union([vFormEmpty, vFormDate]), null),
