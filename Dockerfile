@@ -15,6 +15,9 @@ RUN pnpm build && pnpm prune --prod
 FROM node:${NODE_VERSION}-alpine AS run
 WORKDIR /app
 
+# This should remove most of CVE's
+RUN npm r -g npm
+
 COPY --from=build /app/build build
 COPY --from=build /app/package.json .
 COPY --from=build /app/node_modules node_modules
