@@ -31,7 +31,7 @@ export async function loginUser(cookies: Cookies, creds: { name?: string; passwo
 }
 
 export function createCookie(cookies: Cookies, user: { id: number }) {
-	let token = jwt.sign({ id: user.id }, env.JWT_SECRET, { expiresIn: "1d", algorithm: "HS256" });
+	let token = jwt.sign({ id: user.id }, env.JWT_SECRET, { expiresIn: "7d", algorithm: "HS256" });
 	//`Bearer ${token}`
 	cookies.set(COOKIE_NAME, token, {
 		path: "/",
