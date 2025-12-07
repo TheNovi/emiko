@@ -84,6 +84,7 @@ export const todItem = sqliteTable("tod_item", {
 	title: text("title", { length: 250 }).notNull(),
 	state: integer("state").notNull().default(1), //0 Done, 1 Open, 2 Process
 	description: text("description", { length: 5000 }).notNull().default(""),
+	//TODO Add place (like address)
 	// Calendar stuff
 	dtStart: LuxonDateTime("dt_start"),
 	dtEnd: LuxonDateTime("dt_end"), //TODO Make as number of days. Or maybe as luxon interval string. Dst makes this very buggy

@@ -1,12 +1,9 @@
 <script lang="ts">
 	import "../app.pcss"; //TODO Test postcss
-	import { browser } from "$app/environment";
-	import { Settings } from "luxon";
 	import type { Snippet } from "svelte";
 	import type { LayoutData } from "./$types";
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
-	if (browser) Settings.defaultZone = data.user?.tz || ""; //Lets pray this works
 </script>
 
 {#if data.user}
