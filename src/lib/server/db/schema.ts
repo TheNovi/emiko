@@ -10,7 +10,7 @@ const LuxonDateTime = customType<{ data: DateTime; driverData: number }>({
 		return value.toSeconds();
 	},
 	fromDriver(value: number): DateTime {
-		return DateTime.fromSeconds(value, { zone: "UTC" }); //TODO Save timezone as well somehow (while not breaking todCal query)
+		return DateTime.fromSeconds(value);
 	},
 });
 
