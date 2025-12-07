@@ -1,9 +1,10 @@
 import { describe, expect, test } from "vitest";
 import { parseCalls } from "./todCal";
-import { DateTime } from "luxon";
+import { DateTime, Settings } from "luxon";
 
 const tz = "Europe/Prague"; //Random tz with DST
 process.env.TZ = tz;
+Settings.defaultZone = tz;
 
 function p(e: { ds: DateTime; de: DateTime | null; interval: number | null; until: DateTime | null | undefined }, dateFrom: DateTime, dateTo: DateTime, rFreq: number, result: boolean) {
 	const name = () => {
@@ -34,9 +35,9 @@ function p(e: { ds: DateTime; de: DateTime | null; interval: number | null; unti
 					state: 1,
 					rFreq,
 					rInterval: e.interval,
-					rUntil: e.until ? e.until.toJSDate() : null,
-					dtStart: e.ds.toJSDate(),
-					dtEnd: e.de ? e.de.toJSDate() : null,
+					rUntil: e.until ? e.until : null,
+					dtStart: e.ds,
+					dtEnd: e.de ? e.de : null,
 					eventType: 0,
 				},
 			],
@@ -44,7 +45,7 @@ function p(e: { ds: DateTime; de: DateTime | null; interval: number | null; unti
 			dateFrom,
 			dateTo
 		);
-		expect(o.length > 0).toBe(result);
+		expect(o.events.length > 0).toBe(result);
 	});
 }
 

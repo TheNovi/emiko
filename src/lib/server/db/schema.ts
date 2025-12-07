@@ -13,6 +13,7 @@ const LuxonDateTime = customType<{ data: DateTime; driverData: number }>({
 		return DateTime.fromSeconds(value);
 	},
 });
+//TODO Add drizzle customType for toggles number -> object -> number (most likely make them inline in tables)
 
 const timestamps = {
 	createdAt: integer("created_at", { mode: "timestamp" })
