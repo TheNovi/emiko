@@ -2,7 +2,7 @@
 	import DateView from "$lib/components/DateView.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import type { CallItem } from "$lib/server/todCal";
-	import { todNext } from "$lib/todUtil";
+	import { todIsTask, todNext } from "$lib/todUtil";
 	import Control from "./Control.svelte";
 	import ListItem from "./ListItem.svelte";
 	import { DateTime } from "luxon";
@@ -15,7 +15,6 @@
 		const dt = data.to;
 		// console.log(dt.zoneName, df.zoneName);
 		// console.log({ df, dt });
-		// console.log(r.cal);
 		//Repeat all
 		const cal = [];
 		for (const e of data.events) {
@@ -23,6 +22,7 @@
 			//In range
 			if (df <= e.dtStart || (e.dtEnd && df <= e.dtEnd)) cal.push(e);
 			//Repeats
+			if (todIsTask(e)) continue; //Don't repeat task (show only once in events)
 			for (let t = todNext(e, e.dtStart); t && t.dtStart < dt; t = todNext(t, e.dtStart)) {
 				if (df <= t.dtStart) cal.push(t);
 			}
