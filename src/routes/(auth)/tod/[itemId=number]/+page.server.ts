@@ -71,6 +71,7 @@ export const actions: Actions = {
 				parentId: v.union([vFormEmpty, vFormNumber]), //Empty means root
 				state: vFormNumber,
 				title: v.pipe(v.string("Title must be string"), v.trim(), v.nonEmpty("Title must not be empty"), v.maxLength(250, "Title is too long")),
+				place: v.pipe(v.string("Place must be string"), v.trim(), v.maxLength(250, "Place is too long")),
 				description: v.pipe(v.string("Description must be string"), v.trim(), v.maxLength(2500, "Description is too long")),
 				dtStart: v.union([vFormEmpty, vFormDate]),
 				dtEnd: v.nullish(v.union([vFormEmpty, vFormDate]), null),

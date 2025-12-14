@@ -116,6 +116,10 @@
 			<InputDate name="rUntil" disabled={!tod.dtStart || !tod.rFreq} value={tod.rUntil} />
 		</div>
 		<div>
+			<label for="place">Place</label>
+			<input type="text" name="place" id="place" required maxlength="250" value={tod.place} />
+		</div>
+		<div>
 			<label for="description">description</label>
 			<textarea name="description" id="description" maxlength="2500" value={tod.description}></textarea>
 		</div>

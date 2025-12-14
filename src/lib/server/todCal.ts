@@ -12,6 +12,7 @@ const queryAll = db
 		id: todItem.id,
 		title: todItem.title,
 		state: todItem.state,
+		toggles: todItem.toggles,
 		dtStart: todItem.dtStart,
 		dtEnd: todItem.dtEnd,
 		rFreq: todItem.rFreq,

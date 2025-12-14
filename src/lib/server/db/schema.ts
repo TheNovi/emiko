@@ -2,6 +2,36 @@ import { sql } from "drizzle-orm";
 import { sqliteTable, text, integer, customType, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
 import { DateTime } from "luxon";
 
+function getToggles<T extends readonly string[]>(name: string, keys: [...T]) {
+	//Type copied from stackoverflow, have no idea what is this black magic
+	type Toggles<T extends readonly string[]> = {
+		[Key in T[number]]: boolean;
+	};
+	return customType<{ data: Toggles<T>; driverData: number; notNull: true; default: true }>({
+		dataType: () => "integer",
+		toDriver(value) {
+			let exp = 1;
+			let out = 0;
+			for (const k of keys) {
+				out |= value[k] ? exp : 0;
+				exp *= 2;
+			}
+			return out;
+		},
+		fromDriver(value: number) {
+			let exp = 1;
+			let out: { [key: string]: boolean } = {};
+			for (const k of keys) {
+				out[k] = !!(value & exp);
+				exp *= 2;
+			}
+			return out as Toggles<T>;
+		},
+	})(name)
+		.notNull()
+		.default(0 as any);
+}
+
 const LuxonDateTime = customType<{ data: DateTime; driverData: number }>({
 	dataType() {
 		return "integer";
@@ -13,7 +43,6 @@ const LuxonDateTime = customType<{ data: DateTime; driverData: number }>({
 		return DateTime.fromSeconds(value);
 	},
 });
-//TODO Add drizzle customType for toggles number -> object -> number (most likely make them inline in tables)
 
 const timestamps = {
 	createdAt: integer("created_at", { mode: "timestamp" })
@@ -85,13 +114,15 @@ export const todItem = sqliteTable("tod_item", {
 	title: text("title", { length: 250 }).notNull(),
 	state: integer("state").notNull().default(1), //0 Done, 1 Open, 2 Process
 	description: text("description", { length: 5000 }).notNull().default(""),
-	//TODO Add place (like address)
+	place: text("place", { length: 250 }).notNull().default(""),
+	toggles: getToggles("toggles", ["pin"]),
 	// Calendar stuff
 	dtStart: LuxonDateTime("dt_start"),
 	dtEnd: LuxonDateTime("dt_end"), //TODO Make as number of days. Or maybe as luxon interval string. Dst makes this very buggy
 	rFreq: integer("r_freq"), //1=day, 2=weekly, 3=month, 4=year
 	rInterval: integer("r_interval"),
 	rUntil: LuxonDateTime("r_until"),
+	//TODO Maybe as 2 toggles? "Task" and "Repeat from start date"
 	eventType: integer("event_type").notNull().default(0), // 0=normal/not event 1=Task (repeat from date completed) 2=Task (repeat from dtStart)
 });
 // export type TodItem = typeof todItem.$inferSelect;
