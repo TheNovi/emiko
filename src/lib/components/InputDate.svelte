@@ -24,7 +24,13 @@
 		{...opts}
 	/>
 	{#if showButton}
-		<button type="button" hidden={!showButton} onclick={() => value?.startOf("day")}>Clear Time</button>
+		<button
+			type="button"
+			hidden={!showButton}
+			onclick={() => {
+				value = value?.startOf("day") || null;
+			}}>Clear Time</button
+		>
 	{/if}
 	{#if value}
 		<DateView date={value} style="margin-left: 0.5em" />
