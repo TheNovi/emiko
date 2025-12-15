@@ -117,12 +117,13 @@
 		</div>
 		<div>
 			<label for="place">Place</label>
-			<input type="text" name="place" id="place" required maxlength="250" value={tod.place} />
+			<input type="text" name="place" id="place" maxlength="250" value={tod.place} />
 		</div>
 		<div>
 			<label for="description">description</label>
 			<textarea name="description" id="description" maxlength="2500" value={tod.description}></textarea>
 		</div>
+		<!-- TODO Add toggles -->
 		{#if todIsTask(tod)}
 			<button
 				type="button"
