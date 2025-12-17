@@ -1,7 +1,7 @@
 {
 	"name": "emiko",
 	"private": true,
-	"version": "1.4.1",
+	"version": "1.4.2",
 	"type": "module",
 	"pnpm": {
 		"onlyBuiltDependencies": [
@@ -29,12 +29,12 @@
 		"@types/luxon": "^3.7.1",
 		"drizzle-kit": "^0.31.8",
 		"prettier": "^3.7.4",
-		"prettier-plugin-svelte": "^3.4.0",
+		"prettier-plugin-svelte": "^3.4.1",
 		"svelte": "^5.46.0",
 		"svelte-check": "^4.3.4",
 		"typescript": "^5.9.3",
-		"vite": "^7.2.7",
-		"vitest": "^4.0.15"
+		"vite": "^7.3.0",
+		"vitest": "^4.0.16"
 	},
 	"dependencies": {
 		"@libsql/client": "^0.15.15",

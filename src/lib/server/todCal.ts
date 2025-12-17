@@ -71,7 +71,7 @@ export function parseCalls(calls: CallItem[], tz: string, dateFrom: DateTime, da
 		if (e.rUntil) e.rUntil = e.rUntil.setZone(tz);
 		//Task
 		if (todIsTask(e)) {
-			if (e.dtStart.startOf("day") <= today) tasks.push(e);
+			if (e.state > 0 && e.dtStart.startOf("day") <= today) tasks.push(e);
 			else events.push(e); //TODO Test. Should be already in range, thanks to sql query?
 			continue;
 		}
