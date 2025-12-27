@@ -37,7 +37,7 @@
 	}
 
 	function isToday(d: DateTime) {
-		return toStartOfDay(d) == toStartOfDay(DateTime.now());
+		return d.hasSame(DateTime.now(), "day"); //TODO Check next month?
 	}
 </script>
 

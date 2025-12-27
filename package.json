@@ -1,7 +1,7 @@
 {
 	"name": "emiko",
 	"private": true,
-	"version": "1.4.2",
+	"version": "1.4.3",
 	"type": "module",
 	"pnpm": {
 		"onlyBuiltDependencies": [
@@ -30,8 +30,8 @@
 		"drizzle-kit": "^0.31.8",
 		"prettier": "^3.7.4",
 		"prettier-plugin-svelte": "^3.4.1",
-		"svelte": "^5.46.0",
-		"svelte-check": "^4.3.4",
+		"svelte": "^5.46.1",
+		"svelte-check": "^4.3.5",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.0",
 		"vitest": "^4.0.16"
