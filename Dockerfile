@@ -1,4 +1,4 @@
-ARG NODE_VERSION="24"
+ARG NODE_VERSION="25"
 # TODO User
 
 FROM node:${NODE_VERSION}-alpine AS build
