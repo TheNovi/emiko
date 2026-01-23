@@ -130,19 +130,19 @@ function rangeModeDay(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
 // }
 
 function rangeModeMonth(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
-	if (!e.rInterval) {
-		//Date of the month
-		const d = e.dtStart.day;
-		let ds = dateFrom;
-		if (d < dateFrom.day) ds = ds.set({ day: d });
-		else ds = ds.set({ month: dateFrom.month - 1, day: d });
-		let nds = dateFrom;
-		if (dateFrom.day <= d) nds = nds.set({ day: d });
-		else nds = nds.set({ month: nds.month + 1, day: d });
+	// if (!e.rInterval) {
+	//Date of the month
+	const d = e.dtStart.day;
+	let ds = dateFrom;
+	if (d < dateFrom.day) ds = ds.set({ day: d });
+	else ds = ds.set({ month: dateFrom.month - 1, day: d });
+	let nds = dateFrom;
+	if (dateFrom.day <= d) nds = nds.set({ day: d });
+	else nds = nds.set({ month: nds.month + 1, day: d });
 
-		return isBetweenRange(ds, ds.plus(getEdt(e)), nds, e.rUntil, dateFrom, dateTo);
-	}
-	return rangeModeMonthWeek(e, dateFrom, dateTo);
+	return isBetweenRange(ds, ds.plus(getEdt(e)), nds, e.rUntil, dateFrom, dateTo);
+	// }
+	// return rangeModeMonthWeek(e, dateFrom, dateTo);
 }
 
 function rangeModeMonthWeek(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
@@ -152,12 +152,12 @@ function rangeModeMonthWeek(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
 }
 
 function rangeModeYear(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
-	if (!e.rInterval) return false; //Years to skip
 	let ds = e.dtStart;
+	const int = e.rInterval ? e.rInterval : 1; //Years to skip
 	const y = dateFrom.year - ds.year;
-	ds = ds.set({ year: Math.floor(y / e.rInterval) * e.rInterval + ds.year });
+	ds = ds.set({ year: Math.floor(y / int) * int + ds.year });
 
-	return isBetweenRange(ds, ds.plus(getEdt(e)), ds.set({ year: ds.year + e.rInterval }), e.rUntil, dateFrom, dateTo);
+	return isBetweenRange(ds, ds.plus(getEdt(e)), ds.set({ year: ds.year + int }), e.rUntil, dateFrom, dateTo);
 }
 
 /**

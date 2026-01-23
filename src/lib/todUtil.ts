@@ -12,22 +12,18 @@ export function todNext(item: CallItem, orgBf: DateTime | undefined = undefined)
 	const edt = getEdt(item);
 	switch (item.rFreq) {
 		case 1:
-			if (!item.rInterval) return;
-			df = df.plus({ days: item.rInterval }); //Skip days
+			df = df.plus({ days: item.rInterval ? item.rInterval : 1 }); //Skip days
 			break;
 		case 2: //Week //TODO
 			return;
 		case 3:
 			// console.log(item.title, df.toISO(), df.plus({ month: 1 }).toISO());
-			if (!item.rInterval)
-				// df.setMonth(df.getMonth() + 1, orgBf.getDate()); //Date of month
-				df = df.plus({ month: 1 });
-			else return; //Day of month (second friday, etc.)
+			// if (!item.rInterval)
+			df = df.plus({ month: 1 });
+			// else return; //Day of month (second friday, etc.)
 			break;
 		case 4:
-			if (!item.rInterval) return;
-			// df.setFullYear(df.getFullYear() + item.rInterval, orgBf.getMonth(), orgBf.getDate()); //Skip years
-			df = df.plus({ year: item.rInterval }); //Skip days
+			df = df.plus({ year: item.rInterval ? item.rInterval : 1 }); //Skip years
 			break;
 		default:
 			return;
