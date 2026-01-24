@@ -79,25 +79,6 @@ export const user = sqliteTable(
 );
 export type User = typeof user.$inferSelect;
 
-//* Bob
-export const bobImage = sqliteTable(
-	"bob_image",
-	{
-		...basicCols,
-		path: text("path", { length: 250 }).notNull(),
-		type: text("type", { length: 50 }).notNull(),
-		size: integer("size").notNull(),
-		takenAt: integer("taken_at", { mode: "timestamp" }).notNull(),
-		favorite: integer("favorite", { mode: "boolean" }).notNull().default(false),
-		public: integer("public", { mode: "boolean" }).notNull().default(false), //TODO View
-		description: text("description", { length: 5000 }).notNull().default(""),
-		//TODO Geolocation
-		//TODO Tags
-	}
-	// (table) => ({})
-);
-// export type BobImage = typeof bobImage.$inferSelect;
-
 //* Stroll
 export const stroll = sqliteTable("stroll", {
 	id: integer("id").primaryKey(),
@@ -108,6 +89,7 @@ export const stroll = sqliteTable("stroll", {
 });
 // export type Stroll = typeof stroll.$inferSelect;
 
+//* Tod
 export const todItem = sqliteTable("tod_item", {
 	...basicCols,
 	parentId: integer("parent_id").references((): AnySQLiteColumn => todItem.id, { onDelete: "cascade", onUpdate: "cascade" }),

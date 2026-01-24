@@ -22,10 +22,8 @@
 	<span id="shruge">{APP_VERSION}</span>
 	<ul>
 		{#if data.user}
-			<li>&gt;<a href="/ebob">Ebob</a>&lt;</li>
 			<li>&gt;<a href="/tod">Tod</a>&lt;</li>
 		{/if}
-		<!-- <li>&gt;<a href="/bob">bob</a>&lt;</li> -->
 		<li>&gt;<a href="/stroll">Stroll</a>&lt;</li>
 		<!-- TODO All GraphAnims as one page with query -->
 		<li>&gt;<a href="/lorenz">Lorenz</a>&lt;</li>
