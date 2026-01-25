@@ -32,3 +32,10 @@ export function random(min: number, max: number) {
 export function sleep(ms: number) {
 	return new Promise((r) => setTimeout(r, ms));
 }
+
+export function shuffle(arr: any[]) {
+	for (let i = arr.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[arr[i], arr[j]] = [arr[j], arr[i]];
+	}
+}

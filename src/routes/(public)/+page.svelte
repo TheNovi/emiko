@@ -29,6 +29,7 @@
 		<li>&gt;<a href="/lorenz">Lorenz</a>&lt;</li>
 		<li>&gt;<a href="/butterfly">Butterfly</a>&lt;</li>
 		<!-- <li>&gt;<a href="/ranim">Random Anim</a>&lt;</li> -->
+		<li>&gt;<a href="/chimp">Chimp</a>&lt;</li>
 	</ul>
 	{#if !data.user}
 		<button id="login" aria-label="hidden login" onclick={() => goto("/login")}></button>
