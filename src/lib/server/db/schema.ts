@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { sqliteTable, text, integer, customType, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, customType, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
 import { DateTime } from "luxon";
 
 function getToggles<T extends readonly string[]>(name: string, keys: [...T]) {
@@ -58,6 +58,9 @@ const timestamps = {
 const basicCols = {
 	id: integer("id").primaryKey(),
 	...timestamps,
+};
+const basicColsWithUserId = {
+	...basicCols,
 	userId: integer("user_id")
 		.references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" })
 		.notNull(),
@@ -66,23 +69,17 @@ const basicCols = {
 //* Text length most likely does nothing, use it only for reference and enforce it on endpoint
 
 //* Root
-export const user = sqliteTable(
-	"user",
-	{
-		id: integer("id").primaryKey(),
-		...timestamps,
-		tz: text("tz", { length: 100 }).notNull().default(""),
-		name: text("name", { length: 100 }).notNull().unique("user_name_unique"),
-		password: text("password", { length: 100 }).notNull(),
-	}
-	// (table) => ({})
-);
+export const user = sqliteTable("user", {
+	...basicCols,
+	tz: text("tz", { length: 100 }).notNull().default(""),
+	name: text("name", { length: 100 }).notNull().unique("user_name_unique"),
+	password: text("password", { length: 100 }).notNull(),
+});
 export type User = typeof user.$inferSelect;
 
 //* Stroll
 export const stroll = sqliteTable("stroll", {
-	id: integer("id").primaryKey(),
-	...timestamps,
+	...basicCols,
 	name: text("name").default("").notNull(),
 	region: text("region").default("").notNull(),
 	tz: integer("tz"),
@@ -91,12 +88,16 @@ export const stroll = sqliteTable("stroll", {
 
 //* Tod
 export const todItem = sqliteTable("tod_item", {
-	...basicCols,
-	parentId: integer("parent_id").references((): AnySQLiteColumn => todItem.id, { onDelete: "cascade", onUpdate: "cascade" }),
+	...basicColsWithUserId,
+	parentId: integer("parent_id").references((): AnySQLiteColumn => todItem.id, {
+		onDelete: "cascade",
+		onUpdate: "cascade",
+	}),
 	title: text("title", { length: 250 }).notNull(),
 	state: integer("state").notNull().default(1), //0 Done, 1 Open, 2 Process
 	description: text("description", { length: 5000 }).notNull().default(""),
 	place: text("place", { length: 250 }).notNull().default(""),
+	//TODO url
 	toggles: getToggles("toggles", ["pin"]),
 	// Calendar stuff
 	dtStart: LuxonDateTime("dt_start"),
@@ -108,3 +109,30 @@ export const todItem = sqliteTable("tod_item", {
 	eventType: integer("event_type").notNull().default(0), // 0=normal/not event 1=Task (repeat from date completed) 2=Task (repeat from dtStart)
 });
 // export type TodItem = typeof todItem.$inferSelect;
+
+//* Workout //TODO Better name
+export const woMachine = sqliteTable("workout_machine", {
+	...basicColsWithUserId,
+	name: text("name", { length: 60 }).notNull(),
+	reps: integer("reps").notNull().default(10), //Also used as duration (10min)
+	sets: integer("sets").notNull().default(2),
+	value: real("value").notNull().default(0), //50kg, 7km/h ...
+	unit: integer("unit").notNull().default(0), //TODO As enum?
+	pause: integer("pause").notNull().default(0), //Pause duration between sets
+	// Okay, next two columns could and should be separate tables, ...but, that would be overkill (at least for foreseeable future).
+	// Every machine is going to have 1 qr code.
+	// And I am not going to struggle with tag's many-to-many rel. for max +-50 rows per user.
+	qrCode: text("qr_code", { length: 250 }).notNull().default(""),
+	tags: text("tags", { length: 250 }).notNull().default(""), //Space separated
+});
+
+export const woActivity = sqliteTable("workout_activity", {
+	...basicColsWithUserId,
+	machineId: integer("machineId")
+		.references((): AnySQLiteColumn => woMachine.id, { onDelete: "cascade", onUpdate: "cascade" })
+		.notNull(),
+	//Actual activity values
+	reps: integer("reps").notNull().default(10), //Also used as duration (10min)
+	sets: integer("sets").notNull().default(2),
+	value: real("value").notNull().default(0), //50kg, 7km/h ...
+});
