@@ -23,6 +23,7 @@
 	<ul>
 		{#if data.user}
 			<li>&gt;<a href="/tod">Tod</a>&lt;</li>
+			<li>&gt;<a href="/workout">Workout</a>&lt;</li>
 		{/if}
 		<li>&gt;<a href="/stroll">Stroll</a>&lt;</li>
 		<!-- TODO All GraphAnims as one page with query -->
