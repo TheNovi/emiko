@@ -20,9 +20,16 @@ export async function insertMachine(m: typeof woMachine.$inferInsert) {
 
 export async function getDailyActivity(userId: number, tz: string) {
 	return await db
-		.select() //TODO Remove unused fields
+		.select({
+			id: woActivity.id,
+			mName: woMachine.name,
+			reps: woActivity.reps,
+			sets: woActivity.sets,
+			value: woActivity.value,
+			updatedAt: woActivity.updatedAt,
+		})
 		.from(woActivity)
-		.leftJoin(woMachine, eq(woActivity.machineId, woMachine.id))
+		.innerJoin(woMachine, eq(woActivity.machineId, woMachine.id))
 		.where(
 			and(
 				eq(woActivity.userId, userId),
@@ -31,4 +38,41 @@ export async function getDailyActivity(userId: number, tz: string) {
 			)
 		)
 		.orderBy(desc(woActivity.createdAt));
+}
+
+export async function getActivity(userId: number, id: number) {
+	return await db
+		.select({
+			id: woActivity.id,
+			mName: woMachine.name,
+			mText: woMachine.text,
+			mUnit: woMachine.unit,
+			mPause: woMachine.pause,
+			reps: woActivity.reps,
+			sets: woActivity.sets,
+			value: woActivity.value,
+			updatedAt: woActivity.updatedAt,
+		})
+		.from(woActivity)
+		.innerJoin(woMachine, eq(woActivity.machineId, woMachine.id))
+		.where(
+			and(
+				eq(woActivity.userId, userId),
+				// isNull(woActivity.deletedAt),
+				eq(woActivity.id, id)
+			)
+		)
+		.orderBy(desc(woActivity.createdAt))
+		.get();
+}
+
+export async function insertActivity(m: typeof woActivity.$inferInsert) {
+	if (m.id)
+		return await db.update(woActivity).set(m).where(eq(woActivity.id, m.id)).returning({ id: woActivity.id }).get();
+	else
+		return await db
+			.insert(woActivity)
+			.values({ ...m, id: undefined })
+			.returning({ id: woActivity.id })
+			.get();
 }

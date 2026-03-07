@@ -3,6 +3,7 @@
 	import FormInput from "$lib/components/FormInput.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import type { WoMachine } from "$lib/server/workout";
+	import { DateTime } from "luxon";
 	import { SvelteSet } from "svelte/reactivity";
 	import type { PageProps } from "./$types";
 
@@ -103,25 +104,22 @@
 		<FormInput name="text" type="text" value={selectedMachine.text} />
 		<!-- TODO Bigger buttons -->
 		<button formaction="?/machineSave" type="submit" style="background-color: green;">Save</button>
+		<button formaction="?/activityAdd" type="submit" style="background-color: blue;">Activity</button>
 		<button command="close" commandfor="machine" type="button">Close</button>
-		<!-- TODO Add as Activity -->
-		<!-- TODO Save and Add as Activity -->
 		<!-- TODO Delete -->
 	</form>
 </dialog>
 <!-- Activity -->
-{#each data.act as act (act.workout_activity.id)}
-	<div></div>
+{#each data.act as act (act.id)}
+	<a href={`/workout/act/${act.id}`} class="activity">
+		{act.mName} -
+		{DateTime.fromJSDate(act.updatedAt).toFormat("HH:mm")}
+	</a>
 {:else}
 	<h2>Get to work!</h2>
 {/each}
 
 <style lang="postcss">
-	:global(main) {
-		/* TODO As context */
-		width: 95vw;
-		margin: auto;
-	}
 	h1,
 	h2 {
 		margin: 5vw;
@@ -130,7 +128,8 @@
 	#search {
 		border: 0;
 		display: block;
-		width: 100%;
+		width: 99vw;
+		margin: auto;
 		height: 3vh;
 		font-size: 2vh;
 		background-color: #333;
@@ -156,19 +155,31 @@
 	button#Add {
 		border-radius: 25px;
 		display: block;
-		width: 100%;
+		width: 95vw;
+		margin: auto;
 		height: 4vh;
 		background-color: green;
 		margin-top: 5vh;
+		margin-bottom: 2vh;
 	}
 
-	button.machine {
+	.machine {
 		border-radius: 25px;
 		display: block;
 		width: 100%;
 		height: 4vh;
 		background-color: #222;
 		margin-bottom: 1vh;
+	}
+	.activity {
+		border-radius: 25px;
+		display: block;
+		width: 95vw;
+		margin: auto;
+		padding: 1vh;
+		background-color: #222;
+		margin-bottom: 1vh;
+		text-align: center;
 	}
 
 	dialog {

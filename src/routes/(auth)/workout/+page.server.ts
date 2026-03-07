@@ -1,4 +1,4 @@
-import { getAllMachines, getDailyActivity, insertMachine } from "$lib/server/workout";
+import { getAllMachines, getDailyActivity, insertActivity, insertMachine } from "$lib/server/workout";
 import { fail, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
 import type { Actions, PageServerLoad } from "./$types";
@@ -33,7 +33,7 @@ const vFormEmptyZero = v.pipe(
 
 export const actions: Actions = {
 	machineSave: async ({ locals, request }) => {
-		// console.log("save");
+		// console.log("saveMachine");
 		// return;
 		if (!locals.user) return redirect(303, "/login");
 		let errors: string[] = [];
@@ -67,6 +67,44 @@ export const actions: Actions = {
 		await insertMachine(item.output); //Update/Insert //TODO Catch errors
 
 		if (errors.length == 0) return { success: true };
+		else return fail(400, { errors });
+	},
+	activityAdd: async ({ locals, request }) => {
+		// console.log("activityAdd");
+		// return;
+		if (!locals.user) return redirect(303, "/login");
+		let errors: string[] = [];
+		// const d = await request.formData();
+		// console.log(d);
+
+		//Inputs: Empty => '', Disabled/Hidden => undefined (nullish() means null or undefined)
+		const item = v.safeParse(
+			v.looseObject({
+				id: vFormNumber,
+				userId: v.optional(v.number(), -1), //Filled below
+				name: v.pipe(v.string("Name must be string"), v.trim(), v.maxLength(60, "Name is too long")),
+				reps: vFormNumber,
+				sets: vFormNumber,
+				value: vFormNumber, //TODO Test float
+			}),
+			Object.fromEntries(await request.formData())
+			// Object.fromEntries(d)
+		);
+		if (!item.success) return fail(400, { errors: item.issues.map((i) => i.message) });
+		// console.log(item.output);
+		// return;
+
+		const o = await insertActivity({
+			userId: locals.user.id,
+			machineId: item.output.id,
+			reps: item.output.reps,
+			sets: item.output.sets,
+			value: item.output.value,
+		}); //TODO Catch errors
+
+		if (!o) errors.push("Empty result from db");
+
+		if (errors.length == 0) return redirect(303, `/workout/act/${o?.id}`);
 		else return fail(400, { errors });
 	},
 };
