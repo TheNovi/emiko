@@ -46,6 +46,7 @@ export const actions: Actions = {
 				id: vFormNumber,
 				userId: v.optional(v.number(), -1), //Filled below
 				name: v.pipe(v.string("Name must be string"), v.trim(), v.maxLength(60, "Name is too long")),
+				text: v.pipe(v.string("Text must be string"), v.trim(), v.maxLength(250, "Text is too long")),
 				reps: vFormNumber,
 				sets: vFormNumber,
 				value: vFormNumber, //TODO Test float
@@ -60,10 +61,10 @@ export const actions: Actions = {
 		);
 		if (!item.success) return fail(400, { errors: item.issues.map((i) => i.message) });
 		item.output.userId = locals.user.id;
-		console.log(item.output);
+		// console.log(item.output);
 		// return;
 
-		const r = await insertMachine(item.output); //Update/Insert
+		await insertMachine(item.output); //Update/Insert //TODO Catch errors
 
 		if (errors.length == 0) return { success: true };
 		else return fail(400, { errors });

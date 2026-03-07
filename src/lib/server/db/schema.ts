@@ -114,6 +114,7 @@ export const todItem = sqliteTable("tod_item", {
 export const woMachine = sqliteTable("workout_machine", {
 	...basicColsWithUserId,
 	name: text("name", { length: 60 }).notNull(),
+	text: text("text", { length: 250 }).notNull().default(""),
 	reps: integer("reps").notNull().default(10), //Also used as duration (10min)
 	sets: integer("sets").notNull().default(2),
 	value: real("value").notNull().default(0), //50kg, 7km/h ...

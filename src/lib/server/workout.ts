@@ -3,7 +3,7 @@ import { woMachine, woActivity } from "$lib/server/db/schema";
 import { and, desc, eq, gt, isNull } from "drizzle-orm";
 import { DateTime } from "luxon";
 
-export type Machine = Omit<typeof woMachine.$inferSelect, "userId" | "createdAt" | "deletedAt" | "updatedAt">;
+export type WoMachine = Omit<typeof woMachine.$inferSelect, "userId" | "createdAt" | "deletedAt" | "updatedAt">;
 
 export async function getAllMachines(userId: number) {
 	return await db
