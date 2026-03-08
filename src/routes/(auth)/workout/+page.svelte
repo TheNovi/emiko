@@ -103,6 +103,7 @@
 		<!-- TODO As textarea? -->
 		<FormInput name="text" type="text" value={selectedMachine.text} />
 		<!-- TODO Bigger buttons -->
+		<!-- TODO 9999 Update id -->
 		<button formaction="?/machineSave" type="submit" style="background-color: green;">Save</button>
 		<button formaction="?/activityAdd" type="submit" style="background-color: blue;">Activity</button>
 		<button command="close" commandfor="machine" type="button">Close</button>

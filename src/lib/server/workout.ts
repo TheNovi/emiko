@@ -13,9 +13,26 @@ export async function getAllMachines(userId: number) {
 		.orderBy(woMachine.name);
 }
 
-export async function insertMachine(m: typeof woMachine.$inferInsert) {
-	if (m.id) return await db.update(woMachine).set(m).where(eq(woMachine.id, m.id));
-	else await db.insert(woMachine).values({ ...m, id: undefined });
+export async function insertMachine(userId: number, r: typeof woMachine.$inferInsert) {
+	r.userId = userId;
+	return await db
+		.insert(woMachine)
+		.values({ ...r, id: undefined })
+		.returning({ id: woMachine.id })
+		.get();
+}
+export async function updateMachine(userId: number, r: Partial<typeof woMachine.$inferSelect> & { id: number }) {
+	r.userId = userId;
+	return await db
+		.update(woMachine)
+		.set(r)
+		.where(and(eq(woMachine.userId, r.userId), eq(woMachine.id, r.id)));
+}
+export async function deleteMachine(userId: number, id: number) {
+	return await db
+		.update(woMachine)
+		.set({ deletedAt: new Date() })
+		.where(and(eq(woMachine.userId, userId), eq(woMachine.id, id)));
 }
 
 export async function getDailyActivity(userId: number, tz: string) {
@@ -55,24 +72,28 @@ export async function getActivity(userId: number, id: number) {
 		})
 		.from(woActivity)
 		.innerJoin(woMachine, eq(woActivity.machineId, woMachine.id))
-		.where(
-			and(
-				eq(woActivity.userId, userId),
-				// isNull(woActivity.deletedAt),
-				eq(woActivity.id, id)
-			)
-		)
+		.where(and(eq(woActivity.userId, userId), isNull(woActivity.deletedAt), eq(woActivity.id, id)))
 		.orderBy(desc(woActivity.createdAt))
 		.get();
 }
-
-export async function insertActivity(m: typeof woActivity.$inferInsert) {
-	if (m.id)
-		return await db.update(woActivity).set(m).where(eq(woActivity.id, m.id)).returning({ id: woActivity.id }).get();
-	else
-		return await db
-			.insert(woActivity)
-			.values({ ...m, id: undefined })
-			.returning({ id: woActivity.id })
-			.get();
+export async function insertActivity(userId: number, r: typeof woActivity.$inferInsert) {
+	r.userId = userId;
+	return await db
+		.insert(woActivity)
+		.values({ ...r, id: undefined })
+		.returning({ id: woActivity.id })
+		.get();
+}
+export async function updateActivity(userId: number, r: Partial<typeof woActivity.$inferSelect> & { id: number }) {
+	r.userId = userId;
+	return await db
+		.update(woActivity)
+		.set(r)
+		.where(and(eq(woActivity.userId, r.userId), eq(woActivity.id, r.id)));
+}
+export async function deleteActivity(userId: number, id: number) {
+	return await db
+		.update(woActivity)
+		.set({ deletedAt: new Date() })
+		.where(and(eq(woActivity.userId, userId), eq(woActivity.id, id)));
 }
