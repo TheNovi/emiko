@@ -5,7 +5,7 @@
 	import type { WoMachine } from "$lib/server/workout";
 	import { DateTime } from "luxon";
 	import { SvelteSet } from "svelte/reactivity";
-	import type { PageProps } from "./$types";
+	import type { ActionData, PageProps } from "./$types";
 
 	let { data, form }: PageProps = $props();
 	let searchText = $state("");
@@ -80,8 +80,13 @@
 			// deleteConfirm = false;
 			// formDatesToISO(formData, ["dtStart", "dtEnd", "rUntil"]);
 			//TODO Try to not to send text every time (others doesn't matter too much)
-			return async ({ update }) => {
-				update({ reset: false });
+			return async ({ update, result, formElement }) => {
+				await update({ reset: false });
+				if (result.type == "success" && result.data) {
+					const d: ActionData = result.data as any;
+					if (d?.o?.id) selectedMachine.id = (result.data as any).o.id;
+					if (d?.close) (formElement.parentElement as HTMLDialogElement).close();
+				}
 			};
 		}}
 	>
@@ -94,16 +99,17 @@
 		<FormInput name="tags" type="text" value={selectedMachine.tags} />
 		<FormInput name="reps" type="number" value={selectedMachine.reps} min="0" />
 		<FormInput name="sets" type="number" value={selectedMachine.sets} min="0" />
-		<FormInput name="value" type="number" value={selectedMachine.value} min="0" />
+		<FormInput name="value" type="number" value={selectedMachine.value} step="0.1" min="0" />
 		<FormInput name="unit" type="number" value={selectedMachine.unit} min="0" />
 		<!-- TODO As textarea? -->
 		<FormInput name="text" type="text" value={selectedMachine.text} />
+		<FormInput name="qrcode" type="text" value={selectedMachine.qrCode} />
 		<!-- TODO Bigger buttons -->
-		<!-- TODO 9999 Update id -->
-		<button formaction="?/machineSave" type="submit" style="background-color: green;">Save</button>
+		<button formaction="?/save" type="submit" style="background-color: green;">Save</button>
 		<button formaction="?/activityAdd" type="submit" style="background-color: blue;">Activity</button>
 		<button command="close" commandfor="machine" type="button">Close</button>
-		<!-- TODO Delete -->
+		<!-- TODO Delete confirm -->
+		<button formaction="?/delete" type="submit" style="background-color: red;">Delete</button>
 	</form>
 </dialog>
 <!-- Activity -->

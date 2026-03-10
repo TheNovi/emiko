@@ -18,6 +18,14 @@ const vFormNumber = v.pipe(
 	v.minValue(0),
 	v.maxValue(10000000) //10 mil
 );
+const vFormFloat = v.pipe(
+	v.string(),
+	v.decimal(),
+	v.transform((id) => +id),
+	v.number(),
+	v.minValue(0),
+	v.maxValue(10000000) //10 mil
+);
 
 export const actions: Actions = {
 	save: async ({ locals, request }) => {
@@ -35,7 +43,7 @@ export const actions: Actions = {
 				userId: v.optional(v.number(), -1), //Filled below
 				reps: vFormNumber,
 				sets: vFormNumber,
-				value: vFormNumber, //TODO Test float
+				value: vFormFloat,
 			}),
 			Object.fromEntries(await request.formData())
 			// Object.fromEntries(d)

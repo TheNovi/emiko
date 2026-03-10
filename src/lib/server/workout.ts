@@ -64,7 +64,6 @@ export async function getActivity(userId: number, id: number) {
 			mName: woMachine.name,
 			mText: woMachine.text,
 			mUnit: woMachine.unit,
-			mPause: woMachine.pause,
 			reps: woActivity.reps,
 			sets: woActivity.sets,
 			value: woActivity.value,

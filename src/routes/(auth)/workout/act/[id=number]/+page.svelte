@@ -28,7 +28,7 @@
 	<input type="hidden" name="id" id="id" value={act.id} />
 	<FormInput name="reps" type="number" bind:value={act.reps} min="0" />
 	<FormInput name="sets" type="number" bind:value={act.sets} min="0" />
-	<FormInput name="value" type="number" bind:value={act.value} min="0" />
+	<FormInput name="value" type="number" value={act.value} step="0.1" min="0" />
 	<!-- TODO {act.mUnit} -->
 	<div>{act.mText}</div>
 	<button formaction="?/save" type="submit" style="background-color: green;">Save</button>
