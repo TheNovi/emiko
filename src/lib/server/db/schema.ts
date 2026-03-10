@@ -124,7 +124,7 @@ export const woMachine = sqliteTable("workout_machine", {
 
 export const woActivity = sqliteTable("workout_activity", {
 	...basicColsWithUserId,
-	machineId: integer("machineId")
+	machineId: integer("machine_id")
 		.references((): AnySQLiteColumn => woMachine.id, { onDelete: "cascade", onUpdate: "cascade" })
 		.notNull(),
 	//Actual activity values
