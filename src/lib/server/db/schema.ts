@@ -44,7 +44,8 @@ const LuxonDateTime = customType<{ data: DateTime; driverData: number }>({
 	},
 });
 
-const timestamps = {
+const basicCols = {
+	id: integer("id").primaryKey(),
 	createdAt: integer("created_at", { mode: "timestamp" })
 		.notNull()
 		.default(sql`(UNIXEPOCH())`),
@@ -53,11 +54,6 @@ const timestamps = {
 		.default(sql`(UNIXEPOCH())`)
 		.$onUpdate(() => new Date()),
 	deletedAt: integer("deleted_at", { mode: "timestamp" }),
-};
-
-const basicCols = {
-	id: integer("id").primaryKey(),
-	...timestamps,
 };
 const basicColsWithUserId = {
 	...basicCols,
@@ -119,7 +115,6 @@ export const woMachine = sqliteTable("workout_machine", {
 	sets: integer("sets").notNull().default(2),
 	value: real("value").notNull().default(0), //50kg, 7km/h ...
 	unit: integer("unit").notNull().default(0), //TODO As enum?
-	pause: integer("pause").notNull().default(0), //Pause duration between sets
 	// Okay, next two columns could and should be separate tables, ...but, that would be overkill (at least for foreseeable future).
 	// Every machine is going to have 1 qr code.
 	// And I am not going to struggle with tag's many-to-many rel. for max +-50 rows per user.

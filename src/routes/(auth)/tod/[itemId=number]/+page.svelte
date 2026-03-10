@@ -46,7 +46,7 @@
 	method="post"
 	use:enhance={({ formData }) => {
 		deleteConfirm = false;
-		formDatesToISO(formData, ["dtStart", "dtEnd", "rUntil"]);
+		formDatesToISO(formData, ["dtStart", "dtEnd", "rUntil"]); //TODO Should not be needed (tz is saved in local.user.tz)
 		//TODO Try to not to send description every time (others doesn't matter too much)
 		// console.log(formData.get("dtStart"));
 		return async ({ update }) => {
@@ -138,8 +138,20 @@
 		<a href={`/tod/${lastP}`} style="background-color: blueviolet;">Parent</a>
 		<button formaction="?/save" disabled={!tod.id} type="submit" style="background-color: green;">Save</button>
 		<button formaction="?/add" type="submit" style="background-color: blue;">Add</button>
-		<button disabled={!tod.id} class:hidden={deleteConfirm} type="button" onclick={() => (deleteConfirm = true)} style="background-color: red;">Delete</button>
-		<button formaction="?/delete" disabled={!tod.id} class:hidden={!deleteConfirm} type="submit" style="background-color: red;">You sure?</button>
+		<button
+			disabled={!tod.id}
+			class:hidden={deleteConfirm}
+			type="button"
+			onclick={() => (deleteConfirm = true)}
+			style="background-color: red;">Delete</button
+		>
+		<button
+			formaction="?/delete"
+			disabled={!tod.id}
+			class:hidden={!deleteConfirm}
+			type="submit"
+			style="background-color: red;">You sure?</button
+		>
 	</Control>
 </form>
 <ul>

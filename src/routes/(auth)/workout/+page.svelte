@@ -28,9 +28,7 @@
 
 	let selectedMachine: WoMachine = $state(copyMachine());
 	function copyMachine(m?: (typeof data.machines)[0]): WoMachine {
-		return m
-			? { ...m }
-			: { id: 0, name: "", text: "", reps: 10, sets: 2, value: 0, unit: 0, pause: 0, qrCode: "", tags: "" };
+		return m ? { ...m } : { id: 0, name: "", text: "", reps: 10, sets: 2, value: 0, unit: 0, qrCode: "", tags: "" };
 	}
 
 	function clearFormVar() {
@@ -98,8 +96,6 @@
 		<FormInput name="sets" type="number" value={selectedMachine.sets} min="0" />
 		<FormInput name="value" type="number" value={selectedMachine.value} min="0" />
 		<FormInput name="unit" type="number" value={selectedMachine.unit} min="0" />
-		<!-- TODO Active only if sets > 0 -->
-		<FormInput name="pause" type="number" value={selectedMachine.pause} min="0" />
 		<!-- TODO As textarea? -->
 		<FormInput name="text" type="text" value={selectedMachine.text} />
 		<!-- TODO Bigger buttons -->
