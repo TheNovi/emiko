@@ -1,5 +1,4 @@
-# debian12 has less vulnerabilities
-FROM dhi.io/node:25-debian12-dev AS build
+FROM dhi.io/node:25-dev AS build
 RUN mkdir /data
 WORKDIR /app
 
@@ -9,7 +8,8 @@ RUN corepack enable pnpm && pnpm i
 COPY . .
 RUN pnpm build && pnpm prune --prod
 
-FROM dhi.io/node:25 AS run
+# debian12 has less vulnerabilities
+FROM dhi.io/node:25-debian12 AS run
 COPY --from=build /data /data
 WORKDIR /app
 
