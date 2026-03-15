@@ -1,19 +1,15 @@
-ARG NODE_VERSION="25"
-
-# FROM node:${NODE_VERSION}-alpine AS build
-FROM dhi.io/node:${NODE_VERSION}-dev AS build
+# debian12 has less vulnerabilities
+FROM dhi.io/node:25-debian12-dev AS build
 RUN mkdir /data
 WORKDIR /app
 
 COPY package*.json pnpm-lock.yaml ./
-# RUN npm i -g pnpm && pnpm i
 RUN corepack enable pnpm && pnpm i
 
 COPY . .
 RUN pnpm build && pnpm prune --prod
 
-# FROM node:${NODE_VERSION}-alpine AS run
-FROM dhi.io/node:${NODE_VERSION} AS run
+FROM dhi.io/node:25 AS run
 COPY --from=build /data /data
 WORKDIR /app
 
