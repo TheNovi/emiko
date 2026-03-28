@@ -93,17 +93,16 @@
 		{#each form?.errors || [] as e (e)}
 			<div class="error">{e}</div>
 		{/each}
-		<input type="hidden" name="id" id="id" value={selectedMachine.id} />
+		<FormInput type="hidden" name="id" value={selectedMachine.id} />
 		Machine {selectedMachine.id}
-		<FormInput name="name" type="text" value={selectedMachine.name} />
-		<FormInput name="tags" type="text" value={selectedMachine.tags} />
-		<FormInput name="reps" type="number" value={selectedMachine.reps} min="0" />
-		<FormInput name="sets" type="number" value={selectedMachine.sets} min="0" />
-		<FormInput name="value" type="number" value={selectedMachine.value} step="0.1" min="0" />
-		<FormInput name="unit" type="number" value={selectedMachine.unit} min="0" />
-		<!-- TODO As textarea? -->
-		<FormInput name="text" type="text" value={selectedMachine.text} />
-		<FormInput name="qrcode" type="text" value={selectedMachine.qrCode} />
+		<FormInput name="name" value={selectedMachine.name} type="text" />
+		<FormInput name="tags" value={selectedMachine.tags} type="text" />
+		<FormInput name="reps" value={selectedMachine.reps} type="number" min="0" />
+		<FormInput name="sets" value={selectedMachine.sets} type="number" min="0" />
+		<FormInput name="value" value={selectedMachine.value} type="number" step="0.1" min="0" />
+		<FormInput name="unit" value={selectedMachine.unit} type="number" min="0" />
+		<FormInput name="text" value={selectedMachine.text} type="textarea" />
+		<FormInput name="qrcode" value={selectedMachine.qrCode} type="text" />
 		<!-- TODO Bigger buttons -->
 		<button formaction="?/save" type="submit" style="background-color: green;">Save</button>
 		<button formaction="?/activityAdd" type="submit" style="background-color: blue;">Activity</button>

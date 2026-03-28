@@ -43,8 +43,9 @@ export const actions: Actions = {
 		// console.log("add");
 		// return;
 		if (!locals.user) return redirect(303, "/login");
-		if (!(await checkIfItemBelongsUser(locals.user.id, +itemId))) return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
-		let n = await insertItem(locals.user.id, +itemId || null, "New Item");
+		if (!(await checkIfItemBelongsUser(locals.user.id, +itemId)))
+			return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
+		let n = await insertItem(locals.user.id, +itemId || null, "");
 		return redirect(303, `/tod/${n}`);
 	},
 	delete: async ({ locals, params: { itemId } }) => {
@@ -70,9 +71,18 @@ export const actions: Actions = {
 				userId: v.optional(v.number(), -1), //Filled below
 				parentId: v.union([vFormEmpty, vFormNumber]), //Empty means root
 				state: vFormNumber,
-				title: v.pipe(v.string("Title must be string"), v.trim(), v.nonEmpty("Title must not be empty"), v.maxLength(250, "Title is too long")),
+				title: v.pipe(
+					v.string("Title must be string"),
+					v.trim(),
+					v.nonEmpty("Title must not be empty"),
+					v.maxLength(250, "Title is too long")
+				),
 				place: v.pipe(v.string("Place must be string"), v.trim(), v.maxLength(250, "Place is too long")),
-				description: v.pipe(v.string("Description must be string"), v.trim(), v.maxLength(2500, "Description is too long")),
+				description: v.pipe(
+					v.string("Description must be string"),
+					v.trim(),
+					v.maxLength(2500, "Description is too long")
+				),
 				dtStart: v.union([vFormEmpty, vFormDate]),
 				dtEnd: v.nullish(v.union([vFormEmpty, vFormDate]), null),
 				rFreq: v.nullish(v.union([vFormEmpty, vFormNumber]), null),
@@ -99,7 +109,8 @@ export const actions: Actions = {
 		// console.log(item.output);
 		// return;
 
-		if (!(await checkIfItemBelongsUser(item.output.userId, item.output.parentId))) return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
+		if (!(await checkIfItemBelongsUser(item.output.userId, item.output.parentId)))
+			return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
 		await updateItem(item.output);
 
 		if (errors.length == 0) return { success: true };

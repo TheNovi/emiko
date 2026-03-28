@@ -25,7 +25,7 @@
 	{#each form?.errors || [] as e (e)}
 		<div class="error">{e}</div>
 	{/each}
-	<input type="hidden" name="id" id="id" value={act.id} />
+	<FormInput type="hidden" name="id" value={act.id} />
 	<FormInput name="reps" type="number" bind:value={act.reps} min="0" />
 	<FormInput name="sets" type="number" bind:value={act.sets} min="0" />
 	<FormInput name="value" type="number" value={act.value} step="0.1" min="0" />

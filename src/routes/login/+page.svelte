@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import FormInput from "$lib/components/FormInput.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import type { PageProps } from "./$types";
 
@@ -22,16 +23,8 @@
 	{#each form?.errors || [] as e (e)}
 		<div class="error">{e}</div>
 	{/each}
-	<div>
-		<label for="name">name</label>
-		<input type="text" autocomplete="username" name="name" id="name" required value={name} />
-	</div>
-
-	<div>
-		<label for="password">Password</label>
-		<input type="password" autocomplete="current-password" name="password" id="password" required value={password} />
-	</div>
-
+	<FormInput name="name" value={name} type="text" autocomplete="username" required />
+	<FormInput name="password" value={password} type="password" autocomplete="current-password" required />
 	<div>
 		<button type="submit">Login</button>
 	</div>

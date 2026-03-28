@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import InputDate from "$lib/components/InputDate.svelte";
+	import FormInput from "$lib/components/FormInput.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import type { CallItem } from "$lib/server/todCal";
 	import { todIsTask, todTaskComplete } from "$lib/todUtil";
@@ -58,71 +58,41 @@
 		<div class="error">{e}</div>
 	{/each}
 	{#if tod.id}
-		<input type="hidden" name="id" id="id" value={tod.id} />
-		<input type="hidden" name="parentId" id="parentId" value={tod.parentId} />
-		<div>
-			<label for="title">title</label>
-			<input type="text" name="title" id="title" required maxlength="250" value={tod.title} />
-		</div>
-		<div>
-			<label for="state">state</label>
-			<select name="state" id="state" required bind:value={tod.state}>
-				<option value={1}>Open</option>
-				<option value={2}>In Process</option>
-				<option value={0}>Done</option>
-			</select>
-		</div>
-		<div>
-			<label for="dtStart">from</label>
-			<InputDate name="dtStart" bind:value={tod.dtStart} />
-		</div>
-		<div>
-			<label for="dtEnd">To</label>
-			<InputDate name="dtEnd" disabled={!tod.dtStart} value={tod.dtEnd} />
-		</div>
-		<div>
-			<label for="eventType">Event Type</label>
-			<select name="eventType" disabled={!tod.dtStart} bind:value={tod.eventType}>
-				<option value={0}>Event</option>
-				<option value={1}>Task repeat from completion</option>
-				<option value={2}>Task repeat from own date</option>
-			</select>
-		</div>
-		<div>
-			<label for="rFreq">Repeats</label>
-			<select name="rFreq" disabled={!tod.dtStart} bind:value={tod.rFreq}>
-				<option value={null}></option>
-				<option value={1}>Daily</option>
-				<option value={2} disabled>Weekly</option>
-				<option value={3}>Monthly</option>
-				<option value={4}>Yearly</option>
-			</select>
-		</div>
+		<FormInput type="hidden" name="id" value={tod.id} />
+		<FormInput type="hidden" name="parentId" value={tod.parentId} />
+		<FormInput name="title" value={tod.title} type="text" required maxlength={25} />
+		<FormInput name="state" value={tod.state} type="select" required>
+			<option value={1}>Open</option>
+			<option value={2}>In Process</option>
+			<option value={0}>Done</option>
+		</FormInput>
+		<FormInput label="from" name="dtStart" bind:value={tod.dtStart} type="datetime" />
+		<FormInput label="to" name="dtEnd" value={tod.dtEnd} type="datetime" disabled={!tod.dtStart} />
+		<FormInput label="Event Type" name="eventType" bind:value={tod.eventType} type="select" disabled={!tod.dtStart}>
+			<option value={0}>Event</option>
+			<option value={1}>Task repeat from completion</option>
+			<option value={2}>Task repeat from own date</option>
+		</FormInput>
+		<FormInput label="Repeats" name="rFreq" bind:value={tod.rFreq} type="select" disabled={!tod.dtStart}>
+			<option value={null}></option>
+			<option value={1}>Daily</option>
+			<option value={2} disabled>Weekly</option>
+			<option value={3}>Monthly</option>
+			<option value={4}>Yearly</option>
+		</FormInput>
 
-		{#if tod.rFreq == 1 || tod.rFreq == 4}
-			<!-- Daily, Yearly -->
-			<div>
-				<label for="rInterval">Interval</label>
-				<input type="number" min="0" name="rInterval" id="rInterval" disabled={!tod.dtStart} value={tod.rInterval} />
-			</div>
-		{:else}
-			<div>
-				<label for="rInterval">Interval</label>
-				<input type="number" min="0" name="rInterval" id="rInterval" disabled />
-			</div>
-		{/if}
-		<div>
-			<label for="rUntil">Until</label>
-			<InputDate name="rUntil" disabled={!tod.dtStart || !tod.rFreq} value={tod.rUntil} />
-		</div>
-		<div>
-			<label for="place">Place</label>
-			<input type="text" name="place" id="place" maxlength="250" value={tod.place} />
-		</div>
-		<div>
-			<label for="description">description</label>
-			<textarea name="description" id="description" maxlength="2500" value={tod.description}></textarea>
-		</div>
+		<FormInput
+			label="Interval"
+			name="rInterval"
+			value={tod.rInterval}
+			type="number"
+			min="0"
+			disabled={!tod.dtStart || !(tod.rFreq == 1 || tod.rFreq == 4)}
+		/>
+		<FormInput label="Until" name="rUntil" value={tod.rUntil} type="datetime" disabled={!tod.dtStart || !tod.rFreq} />
+		<FormInput name="place" value={tod.place} type="text" maxlength={250} />
+		<FormInput name="description" value={tod.description} type="textarea" maxlength={2500} />
+
 		<!-- TODO Add toggles -->
 		{#if todIsTask(tod)}
 			<button

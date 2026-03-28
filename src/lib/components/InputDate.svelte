@@ -5,7 +5,11 @@
 	import DateView from "./DateView.svelte";
 	import { DateTime } from "luxon";
 
-	let { name, value = $bindable(), ...opts }: { name: string; value: DateTime | null } & Omit<HTMLInputAttributes, "value"> = $props();
+	let {
+		name,
+		value = $bindable(),
+		...opts
+	}: { name: string; value: DateTime | null } & Omit<HTMLInputAttributes, "value"> = $props();
 
 	let showButton = $derived(value && (value.get("hour") > 0 || value.get("minute") > 0));
 </script>
@@ -14,7 +18,7 @@
 	<input
 		type="datetime-local"
 		{name}
-		id={name}
+		id={opts.id || name}
 		bind:value={
 			() => formParseInputDate(value?.toJSDate()),
 			(v) => {
