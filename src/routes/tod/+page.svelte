@@ -68,7 +68,14 @@
 </div>
 
 <Control>
+	<a style="background-color: blue;" href={`/tod?d=${data.from.set({ day: 1 }).minus({ month: 1 }).toISODate()}`}>
+		Prev
+	</a>
+	<a style="background-color: maroon;" href="/tod">Today</a>
 	<a style="background-color: #333;" href="/tod/0">List</a>
+	<a style="background-color: blue;" href={`/tod?d=${data.from.set({ day: 1 }).plus({ month: 1 }).toISODate()}`}>
+		Next
+	</a>
 </Control>
 
 <style lang="postcss">

@@ -3,13 +3,17 @@ import { error, redirect } from "@sveltejs/kit";
 import { DateTime } from "luxon";
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ locals }) => {
+export const load = (async ({ locals, url }) => {
 	if (!locals.user) redirect(303, "/login");
 
-	if (!locals.user || !locals.user.id) return error(403, "No user found");
-	const d = DateTime.now().setZone(locals.user.tz).startOf("day");
+	const s = url.searchParams.get("d");
 
-	const from = d.minus({ day: 3 });
+	let d: DateTime = DateTime.now();
+	if (s) d = DateTime.fromISO(s);
+	if (!d.isValid) return error(400, "Invalid Date");
+	d = d.setZone(locals.user.tz).startOf("day");
+
+	const from = d;
 	const to = d.plus({ month: 1 });
 
 	return { ...(await getCal(locals.user.id, locals.user.tz, from, to)), from, to };
