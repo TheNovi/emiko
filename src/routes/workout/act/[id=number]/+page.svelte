@@ -34,5 +34,5 @@
 	<button formaction="?/save" type="submit" style="background-color: green;">Save</button>
 	<!-- TODO Delete confirm -->
 	<button formaction="?/delete" type="submit" style="background-color: red;">Delete</button>
-	<a href="/workout">Exit</a>
+	<a href="/workout" class="button">Exit</a>
 </form>

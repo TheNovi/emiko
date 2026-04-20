@@ -103,12 +103,12 @@
 		<FormInput name="unit" value={selectedMachine.unit} type="number" min="0" />
 		<FormInput name="text" value={selectedMachine.text} type="textarea" />
 		<FormInput name="qrcode" value={selectedMachine.qrCode} type="text" />
+		<button formaction="?/activityAdd" type="submit" id="act">Activity</button>
 		<!-- TODO Bigger buttons -->
 		<button formaction="?/save" type="submit" style="background-color: green;">Save</button>
-		<button formaction="?/activityAdd" type="submit" style="background-color: blue;">Activity</button>
-		<button command="close" commandfor="machine" type="button">Close</button>
 		<!-- TODO Delete confirm -->
 		<button formaction="?/delete" type="submit" style="background-color: red;">Delete</button>
+		<button command="close" commandfor="machine" type="button">Close</button>
 	</form>
 </dialog>
 <!-- Activity -->
@@ -155,26 +155,24 @@
 	}
 
 	button#Add {
-		border-radius: 25px;
 		display: block;
 		width: 95vw;
 		margin: auto;
-		height: 4vh;
+		padding: 0.6em;
 		background-color: green;
 		margin-top: 5vh;
 		margin-bottom: 2vh;
 	}
 
 	.machine {
-		border-radius: 25px;
 		display: block;
-		width: 100%;
-		height: 4vh;
+		width: 95vw;
+		margin: auto;
+		padding: 0.6em;
 		background-color: #222;
 		margin-bottom: 1vh;
 	}
 	.activity {
-		border-radius: 25px;
 		display: block;
 		width: 95vw;
 		margin: auto;
@@ -182,10 +180,19 @@
 		background-color: #222;
 		margin-bottom: 1vh;
 		text-align: center;
+		border-radius: 25px;
 	}
 
-	dialog {
-		/* width: 90vw;
-		height: 90vh; */
+	dialog#machine {
+		margin-top: 2em;
+		/* width: 90vw; */
+		/* height: 90vh; */
+	}
+	dialog#machine button#act {
+		display: block;
+		margin-top: 1em;
+		margin-bottom: 1em;
+		width: 100%;
+		background-color: blue;
 	}
 </style>
