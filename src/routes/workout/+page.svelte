@@ -13,22 +13,24 @@
 		data.machines.filter((m) => {
 			// return searchText && (m.name + " " + m.tags).includes(searchText); //WIP :) //TODO
 			return (
-				searchText &&
-				searchText
-					.trim()
-					.split(" ")
-					.every((t) => {
-						return (m.name + " " + m.tags + " " + m.text).includes(t);
-					})
+				(searchText &&
+					searchText
+						.trim()
+						.split(" ")
+						.every((t) => {
+							return (m.name + " " + m.tags + " " + m.text).includes(t);
+						})) ||
+				(selectedTags.size > 0 && selectedTags.isSubsetOf(new Set(m.tags.split(" "))))
 			);
 		})
 	);
 	//Get tags from all machines or filtered machines (if searching). Remove repetition
-	let tags = $derived(new SvelteSet((searchText ? results : data.machines).flatMap((m) => m.tags.split(" "))));
+	let tags = $derived(new SvelteSet((results.length ? results : data.machines).flatMap((m) => m.tags.split(" "))));
+	let selectedTags = $state(new SvelteSet<string>());
 
 	let selectedMachine: WoMachine = $state(copyMachine());
 	function copyMachine(m?: (typeof data.machines)[0]): WoMachine {
-		return m ? { ...m } : { id: 0, name: "", text: "", reps: 10, sets: 2, value: 0, unit: 0, qrCode: "", tags: "" };
+		return m ? { ...m } : { id: 0, name: "", text: "", reps: 10, sets: 4, value: 0, unit: 0, qrCode: "", tags: "" };
 	}
 
 	function clearFormVar() {
@@ -49,14 +51,17 @@
 <input type="text" name="search" id="search" bind:value={searchText} />
 <!-- Search result -->
 <div id="tags">
+	{#each selectedTags as tag}
+		<button class="tag sel" onclick={() => selectedTags.delete(tag)}>{tag}</button>
+	{/each}
 	{#each tags as tag}
-		{#if tag && !searchText.includes(tag)}
-			<button class="tag" onclick={() => (searchText += " " + tag)}>{tag}</button>
+		{#if !selectedTags.has(tag)}
+			<button class="tag" onclick={() => selectedTags.add(tag)}>{tag}</button>
 		{/if}
 	{/each}
 </div>
 {results.length}/{data.machines.length}
-{#if searchText}
+{#if searchText || selectedTags.size > 0}
 	{#each results as m (m.id)}
 		<button
 			class="machine"
@@ -149,6 +154,9 @@
 		background-color: #333;
 		padding: 0.5em;
 		margin-left: 5px;
+	}
+	.tag.sel {
+		background-color: green;
 	}
 	#noRes {
 		text-align: center;
