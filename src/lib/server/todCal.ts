@@ -12,7 +12,7 @@ const queryAll = db
 		id: todItem.id,
 		title: todItem.title,
 		state: todItem.state,
-		toggles: todItem.toggles,
+		// toggles: todItem.toggles,
 		dtStart: todItem.dtStart,
 		dtEnd: todItem.dtEnd,
 		rFreq: todItem.rFreq,
@@ -54,7 +54,11 @@ export async function getCal(userId: number, tz: string, dateFrom: DateTime, dat
 
 	// console.debug("cal", userId, dateFrom, dateTo);
 	//Get all events
-	const all = (await queryAll.all({ userId, dateFrom: dateFrom.toUnixInteger(), dateTo: dateTo.toUnixInteger() })) as CallItem[];
+	const all = (await queryAll.all({
+		userId,
+		dateFrom: dateFrom.toUnixInteger(),
+		dateTo: dateTo.toUnixInteger(),
+	})) as CallItem[];
 	const out = parseCalls(all, tz, dateFrom, dateTo);
 	// console.debug(out);
 	return out;
@@ -170,7 +174,14 @@ function rangeModeYear(e: CallItem, dateFrom: DateTime, dateTo: DateTime) {
  * @param dateTo dateTo
  * @returns
  */
-function isBetweenRange(ds: DateTime, dse: DateTime, nds: DateTime, rUntil: DateTime | null, dateFrom: DateTime, dateTo: DateTime) {
+function isBetweenRange(
+	ds: DateTime,
+	dse: DateTime,
+	nds: DateTime,
+	rUntil: DateTime | null,
+	dateFrom: DateTime,
+	dateTo: DateTime
+) {
 	if (rUntil) return (dse >= dateFrom && ds <= rUntil) || (nds < dateTo && nds <= rUntil);
 	return dse >= dateFrom || nds < dateTo;
 }
