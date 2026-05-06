@@ -90,13 +90,12 @@ export const actions: Actions = {
 					v.union([
 						vFormEmptyZero,
 						vFormNumber,
-						//Idk man, when scheme doesn't start with nullish(), undefined value just returns error (no matter what I do). Also there is no undefined() scheme (I mean there is, but it does the exact opposite)
 						v.pipe(
-							v.any(),
+							v.unknown(),
 							v.transform(() => 0)
 						),
 					]),
-					0 //I love how you can use null or undefined default on "nullish" value without a problem, no matter what types schemes returns. BUT GOD FORBID YOU USE A 0 WHEN SOME SCHEME DOESN'T RETURN A NUMBER!!!
+					0
 				),
 				rInterval: v.nullish(v.union([vFormEmpty, vFormNumber]), null),
 				rUntil: v.nullish(v.union([vFormEmpty, vFormDate]), null),
