@@ -9,7 +9,7 @@ COPY . .
 RUN pnpm build && pnpm prune --prod
 
 # debian12 has less vulnerabilities
-FROM dhi.io/node:25-debian12 AS run
+FROM dhi.io/node:25-debian13 AS run
 COPY --from=build /data /data
 WORKDIR /app
 
