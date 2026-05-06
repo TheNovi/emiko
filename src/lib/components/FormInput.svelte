@@ -10,14 +10,14 @@
 	type THidden = { type: "hidden"; value: string | number | null } & TI;
 	type TText = { type: "text" | "password"; value: string } & TI;
 	type TNumber = { type: "number"; value: number | null } & TI;
+	type TCheckBox = { type: "checkbox"; value: boolean | null } & TI;
 	type TDateTime = { type: "datetime" } & ComponentProps<typeof InputDate>;
 	type TTextArea = { type: "textarea"; value: string } & TTA;
 	type TSelect = { type: "select"; value: number | string | null } & TS;
-	type P = THidden | TText | TNumber | TDateTime | TTextArea | TSelect;
+	type P = THidden | TText | TNumber | TCheckBox | TDateTime | TTextArea | TSelect;
 	let { type, name, label, value = $bindable(), children, ...rest }: P & { label?: string; name: string } = $props();
 </script>
 
-<!-- TODO Toggle -->
 {#if type == "hidden"}
 	{@const r = { ...rest } as TI}
 	<input type="hidden" {name} id={rest.id || name} bind:value {...r} />
@@ -36,6 +36,10 @@
 			<select {name} {id} bind:value {...r}>
 				{@render children?.()}
 			</select>
+		{:else if type == "checkbox"}
+			{@const r = { ...rest } as TI}
+			<!-- TODO Label after checkbox -->
+			<input type="checkbox" {name} {id} bind:checked={value as TCheckBox["value"]} {...r} />
 		{:else}
 			{@const r = { ...rest } as TI}
 			<input {type} {name} {id} bind:value {...r} />

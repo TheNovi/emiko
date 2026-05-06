@@ -2,35 +2,38 @@ import { sql } from "drizzle-orm";
 import { sqliteTable, text, integer, real, customType, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
 import { DateTime } from "luxon";
 
-function getToggles<T extends readonly string[]>(name: string, keys: [...T]) {
-	//Type copied from stackoverflow, have no idea what is this black magic
-	type Toggles<T extends readonly string[]> = {
-		[Key in T[number]]: boolean;
-	};
-	return customType<{ data: Toggles<T>; driverData: number; notNull: true; default: true }>({
-		dataType: () => "integer",
-		toDriver(value) {
-			let exp = 1;
-			let out = 0;
-			for (const k of keys) {
-				out |= value[k] ? exp : 0;
-				exp *= 2;
-			}
-			return out;
-		},
-		fromDriver(value: number) {
-			let exp = 1;
-			let out: { [key: string]: boolean } = {};
-			for (const k of keys) {
-				out[k] = !!(value & exp);
-				exp *= 2;
-			}
-			return out as Toggles<T>;
-		},
-	})(name)
-		.notNull()
-		.default(0 as any);
-}
+//This is overcomplicated overkill. Sqlite maybe use full byte for boolean (number), but "storage size" is not really a priority here.
+// function getToggles<T extends readonly string[]>(name: string, keys: [...T]) {
+// 	//Type copied from stackoverflow, have no idea what is this black magic
+// 	type Toggles<T extends readonly string[]> = {
+// 		[Key in T[number]]: boolean;
+// 	};
+// 	return customType<{ data: Toggles<T>; driverData: number; notNull: true; default: true }>({
+// 		dataType: () => "integer",
+// 		toDriver(value) {
+// 			let exp = 1;
+// 			let out = 0;
+// 			for (const k of keys) {
+// 				out |= value[k] ? exp : 0;
+// 				exp *= 2;
+// 			}
+// 			return out;
+// 		},
+// 		fromDriver(value: number) {
+// 			let exp = 1;
+// 			let out: { [key: string]: boolean } = {};
+// 			for (const k of keys) {
+// 				out[k] = !!(value & exp);
+// 				exp *= 2;
+// 			}
+// 			return out as Toggles<T>;
+// 		},
+// 	})(name)
+// 		.notNull()
+// 		.default(0 as any);
+// }
+
+const Boolean = (name: string, def: boolean = false) => integer(name, { mode: "boolean" }).notNull().default(def);
 
 const LuxonDateTime = customType<{ data: DateTime; driverData: number }>({
 	dataType() {
@@ -94,7 +97,7 @@ export const todItem = sqliteTable("tod_item", {
 	description: text("description", { length: 5000 }).notNull().default(""),
 	place: text("place", { length: 250 }).notNull().default(""),
 	//TODO url
-	toggles: getToggles("toggles", ["pin"]),
+	//TODO pin toggle
 	// Calendar stuff
 	dtStart: LuxonDateTime("dt_start"),
 	dtEnd: LuxonDateTime("dt_end"), //TODO Make as number of days. Or maybe as luxon interval string. Dst makes this very buggy
@@ -114,12 +117,15 @@ export const woMachine = sqliteTable("workout_machine", {
 	reps: integer("reps").notNull().default(10), //Also used as duration (10min)
 	sets: integer("sets").notNull().default(2),
 	value: real("value").notNull().default(0), //50kg, 7km/h ...
-	unit: integer("unit").notNull().default(0), //TODO As enum?
-	// Okay, next two columns could and should be separate tables, ...but, that would be overkill (at least for foreseeable future).
-	// Every machine is going to have 1 qr code.
-	// And I am not going to struggle with tag's many-to-many rel. for max +-50 rows per user.
-	qrCode: text("qr_code", { length: 250 }).notNull().default(""),
-	tags: text("tags", { length: 250 }).notNull().default(""), //Space separated
+	unit: text("unit", { length: 25 }).notNull().default(""),
+	tags: text("tagss", { length: 250 }).notNull().default(""), //TODO Remove
+	cardio: Boolean("cardio"),
+	hands: Boolean("hands"),
+	legs: Boolean("legs"),
+	belly: Boolean("belly"),
+	push: Boolean("push"),
+	pull: Boolean("pull"),
+	other: Boolean("other"),
 });
 
 export const woActivity = sqliteTable("workout_activity", {

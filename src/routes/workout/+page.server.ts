@@ -20,6 +20,16 @@ export const load = (async (event) => {
 }) satisfies PageServerLoad;
 
 // TODO 999 Make these to univ. funcs.
+
+const vFormEmpty = v.pipe(
+	v.literal(""),
+	v.transform(() => null)
+);
+const vFormEmptyZero = v.pipe(
+	v.literal(""),
+	v.transform(() => 0)
+);
+
 const vFormNumber = v.pipe(
 	v.string(),
 	v.digits(),
@@ -36,14 +46,18 @@ const vFormFloat = v.pipe(
 	v.minValue(0),
 	v.maxValue(10000000) //10 mil
 );
-
-const vFormEmpty = v.pipe(
-	v.literal(""),
-	v.transform(() => null)
-);
-const vFormEmptyZero = v.pipe(
-	v.literal(""),
-	v.transform(() => 0)
+const vFormCheckbox = v.nullish(
+	v.union([
+		v.pipe(
+			v.literal("on"),
+			v.transform(() => true)
+		),
+		v.pipe(
+			v.unknown(),
+			v.transform(() => false)
+		),
+	]),
+	false
 );
 
 export const actions: Actions = {
@@ -65,9 +79,15 @@ export const actions: Actions = {
 				reps: vFormNumber,
 				sets: vFormNumber,
 				value: vFormFloat,
-				unit: vFormNumber,
-				qrcode: v.pipe(v.string("QrCode must be string"), v.trim(), v.maxLength(250, "QrCode is too long")),
-				tags: v.pipe(v.string("Tags must be string"), v.trim(), v.maxLength(250, "Tags are too long")),
+				unit: v.pipe(v.string("Unit must be string"), v.trim(), v.maxLength(25, "Unit is too long")),
+				// tags: v.pipe(v.string("Tags must be string"), v.trim(), v.maxLength(250, "Tags are too long")),
+				hands: vFormCheckbox,
+				legs: vFormCheckbox,
+				belly: vFormCheckbox,
+				push: vFormCheckbox,
+				pull: vFormCheckbox,
+				cardio: vFormCheckbox,
+				other: vFormCheckbox,
 			}),
 			Object.fromEntries(await request.formData())
 			// Object.fromEntries(d)
