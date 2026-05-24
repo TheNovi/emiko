@@ -86,7 +86,7 @@
 <!-- {#if searchText || selectedTags.size > 0} -->
 <!-- TODO Show all tag -->
 {#each results as m (m.id)}
-	<!-- TODO Show tags -->
+	<!-- TODO Show sets + value + unit-->
 	<button class="machine" onclick={() => (selectedMachine = copyMachine(m))} command="show-modal" commandfor="machine">
 		{m.name}
 	</button>

@@ -166,7 +166,8 @@ export const actions: Actions = {
 
 		if (!o) errors.push("Empty result from db");
 
-		if (errors.length == 0) return redirect(303, `/workout/act/${o?.id}`);
+		// if (errors.length == 0) return redirect(303, `/workout/act/${o?.id}`);
+		if (errors.length == 0) return { success: true, close: true };
 		else return fail(400, { errors });
 	},
 };
