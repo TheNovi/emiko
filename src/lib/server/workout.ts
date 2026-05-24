@@ -39,7 +39,9 @@ export async function getDailyActivity(userId: number, tz: string) {
 	return await db
 		.select({
 			id: woActivity.id,
+			mId: woMachine.id,
 			mName: woMachine.name,
+			mUnit: woMachine.unit,
 			reps: woActivity.reps,
 			sets: woActivity.sets,
 			value: woActivity.value,

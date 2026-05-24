@@ -44,7 +44,7 @@
 					reps: 10,
 					sets: 4,
 					value: 0,
-					unit: "",
+					unit: "kg",
 					tags: "",
 					hands: false,
 					legs: false,
@@ -89,6 +89,12 @@
 	<!-- TODO Show sets + value + unit-->
 	<button class="machine" onclick={() => (selectedMachine = copyMachine(m))} command="show-modal" commandfor="machine">
 		{m.name}
+		{m.reps}x{m.sets}
+		{#if m.value}
+			-
+			{m.value}
+			{m.unit}
+		{/if}
 	</button>
 {:else}
 	<div id="noRes">No result</div>
@@ -146,7 +152,14 @@
 <!-- Activity -->
 {#each data.act as act (act.id)}
 	<a href={`/workout/act/${act.id}`} class="activity">
-		{act.mName} -
+		{act.mName}
+		{act.reps}x{act.sets}
+		{#if act.value}
+			-
+			{act.value}
+			{act.mUnit}
+		{/if}
+		-
 		{DateTime.fromJSDate(act.updatedAt).toFormat("HH:mm")}
 	</a>
 {:else}
