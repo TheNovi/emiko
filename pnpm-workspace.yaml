@@ -1,0 +1,8 @@
+minimumReleaseAge: 1440
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - "chokidar@4.0.3"
+  - "tinyexec@1.2.2"
+allowBuilds:
+  bcrypt: true
+  esbuild: true

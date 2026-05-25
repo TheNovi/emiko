@@ -3,12 +3,6 @@
 	"private": true,
 	"version": "1.7.6",
 	"type": "module",
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"bcrypt",
-			"esbuild"
-		]
-	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -21,7 +15,7 @@
 	"devDependencies": {
 		"@lucide/svelte": "^1.16.0",
 		"@sveltejs/adapter-node": "^5.5.4",
-		"@sveltejs/kit": "^2.61.0",
+		"@sveltejs/kit": "^2.61.1",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@types/bcrypt": "^6.0.0",
 		"@types/jsonwebtoken": "^9.0.10",
