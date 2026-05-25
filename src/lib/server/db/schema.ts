@@ -118,7 +118,6 @@ export const woMachine = sqliteTable("workout_machine", {
 	sets: integer("sets").notNull().default(2),
 	value: real("value").notNull().default(0), //50kg, 7km/h ...
 	unit: text("unit", { length: 25 }).notNull().default(""),
-	tags: text("tagss", { length: 250 }).notNull().default(""), //TODO Remove
 	cardio: Boolean("cardio"),
 	hands: Boolean("hands"),
 	legs: Boolean("legs"),

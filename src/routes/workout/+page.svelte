@@ -45,7 +45,6 @@
 					sets: 4,
 					value: 0,
 					unit: "kg",
-					tags: "",
 					hands: false,
 					legs: false,
 					belly: false,
@@ -126,8 +125,6 @@
 		<FormInput type="hidden" name="id" value={selectedMachine.id} />
 		Machine {selectedMachine.id}
 		<FormInput name="name" value={selectedMachine.name} type="text" />
-		<!-- TODO Remove -->
-		<FormInput name="tags" value={selectedMachine.tags} type="text" disabled />
 		<!-- TODO Tags as inline buttons (just visually) -->
 		<FormInput name="cardio" value={selectedMachine.cardio} type="checkbox" />
 		<FormInput name="hands" value={selectedMachine.hands} type="checkbox" />
