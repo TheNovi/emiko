@@ -1,25 +1,32 @@
-FROM dhi.io/node:25-dev AS build
+FROM dhi.io/node:25-dev AS base
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME/bin:$PATH
 RUN mkdir /data
+RUN corepack enable
+COPY . /app
 WORKDIR /app
 
-COPY package*.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm i
+FROM base AS prod-deps
+# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile
 
-COPY . .
-RUN pnpm build && pnpm prune --prod
+FROM base AS build
+# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
+RUN pnpm run build
 
-# debian12 has less vulnerabilities
-FROM dhi.io/node:25-debian13 AS run
-COPY --from=build /data /data
+
+# Main
+FROM dhi.io/node:25-debian13
+COPY --from=base /data /data
 WORKDIR /app
 
 # This should remove most of CVE's (not needed in hardened)
 # RUN npm r -g npm
 
+COPY --from=base /app/package.json .
 COPY --from=build /app/build build
-COPY --from=build /app/package.json .
-COPY --from=build /app/node_modules node_modules
-# RUN mkdir /data
+COPY --from=prod-deps /app/node_modules node_modules
 # RUN ulimit -c unlimited
 
 ENV NODE_ENV=production
