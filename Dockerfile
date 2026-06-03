@@ -1,8 +1,11 @@
-FROM dhi.io/node:25-dev AS base
+# https://hub.docker.com/hardened-images/catalog/dhi/node
+FROM dhi.io/node:26-dev AS base
+# FROM ghcr.io/pnpm/pnpm:11 AS base
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME/bin:$PATH
 RUN mkdir /data
-RUN corepack enable
+# RUN corepack enable pnpm #! Issue with permission
+RUN npm i -g pnpm
 COPY . /app
 WORKDIR /app
 
@@ -17,7 +20,7 @@ RUN pnpm run build
 
 
 # Main
-FROM dhi.io/node:25-debian13
+FROM dhi.io/node:26-alpine3.23
 COPY --from=base /data /data
 WORKDIR /app
 
