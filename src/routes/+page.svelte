@@ -19,7 +19,7 @@
 			<span id="first">The</span><span id="second">Novi</span>
 		{/if}
 	</h1>
-	<span id="shruge">{APP_VERSION}</span>
+	<span id="ver">{APP_VERSION}</span>
 	<ul>
 		{#if data.user}
 			<li>&gt;<a href="/tod">Tod</a>&lt;</li>
@@ -62,12 +62,11 @@
 		animation: appear 5s forwards 1s;
 	}
 
-	#shruge {
+	#ver {
 		display: block;
 		/* margin-top: 8px; */
 		margin-bottom: 8px;
 		opacity: 0;
-		animation: appear 5s forwards 3s;
 	}
 
 	#login {
