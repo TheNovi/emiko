@@ -1,6 +1,6 @@
 import { db } from "$lib/server/db";
-import { woMachine, woActivity } from "$lib/server/db/schema";
-import { and, desc, eq, gt, isNull } from "drizzle-orm";
+import { woActivity, woMachine } from "$lib/server/db/schema";
+import { and, desc, eq, gt, isNull, getTableColumns } from "drizzle-orm";
 import { DateTime } from "luxon";
 
 export type WoMachine = Omit<typeof woMachine.$inferSelect, "userId" | "createdAt" | "deletedAt" | "updatedAt">;
@@ -63,13 +63,13 @@ export async function getActivity(userId: number, id: number) {
 	return await db
 		.select({
 			id: woActivity.id,
-			mName: woMachine.name,
-			mText: woMachine.text,
-			mUnit: woMachine.unit,
 			reps: woActivity.reps,
 			sets: woActivity.sets,
 			value: woActivity.value,
 			updatedAt: woActivity.updatedAt,
+			machine: {
+				...getTableColumns(woMachine),
+			},
 		})
 		.from(woActivity)
 		.innerJoin(woMachine, eq(woActivity.machineId, woMachine.id))

@@ -1,7 +1,7 @@
 {
 	"name": "emiko",
 	"private": true,
-	"version": "1.8.0",
+	"version": "1.8.1",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -13,7 +13,7 @@
 		"test": "vitest"
 	},
 	"devDependencies": {
-		"@lucide/svelte": "^1.16.0",
+		"@lucide/svelte": "^1.17.0",
 		"@sveltejs/adapter-node": "^5.5.4",
 		"@sveltejs/kit": "^2.61.1",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
@@ -22,12 +22,12 @@
 		"@types/luxon": "^3.7.1",
 		"drizzle-kit": "^0.31.10",
 		"prettier": "^3.8.3",
-		"prettier-plugin-svelte": "^4.0.1",
-		"svelte": "^5.55.9",
-		"svelte-check": "^4.4.8",
+		"prettier-plugin-svelte": "^4.1.0",
+		"svelte": "^5.56.1",
+		"svelte-check": "^4.5.0",
 		"typescript": "^6.0.3",
-		"vite": "^8.0.14",
-		"vitest": "^4.1.7"
+		"vite": "^8.0.16",
+		"vitest": "^4.1.8"
 	},
 	"dependencies": {
 		"@libsql/client": "^0.17.3",
@@ -35,6 +35,6 @@
 		"drizzle-orm": "^0.45.2",
 		"jsonwebtoken": "^9.0.3",
 		"luxon": "^3.7.2",
-		"valibot": "^1.4.0"
+		"valibot": "^1.4.1"
 	}
 }

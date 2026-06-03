@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import FormInput from "$lib/components/FormInput.svelte";
+	import MachineForm from "../../MachineFormInputs.svelte";
 	import type { PageProps } from "./$types";
 
 	let { data, form }: PageProps = $props();
-	// //Reactive values (for bindings)
+	// Reactive values (for bindings)
 	let act = $derived.by(() => {
 		let v = $state(data.act);
 		return v;
 	});
 </script>
 
-<h2>{act.mName}</h2>
+<h2>{act.machine.name}</h2>
 <form
 	method="post"
 	use:enhance={({ formData }) => {
@@ -29,10 +30,39 @@
 	<FormInput name="reps" type="number" bind:value={act.reps} min="0" />
 	<FormInput name="sets" type="number" bind:value={act.sets} min="0" />
 	<FormInput name="value" type="number" value={act.value} step="0.1" min="0" />
-	<!-- TODO {act.mUnit} -->
-	<div>{act.mText}</div>
+	<!-- TODO As slot after input {act.machine.unit} -->
+	<div>{act.machine.text}</div>
+
 	<button formaction="?/save" type="submit" style="background-color: green;">Save</button>
-	<!-- TODO Delete confirm -->
+	<!-- TODO Delete confirm (as Delete button component) -->
 	<button formaction="?/delete" type="submit" style="background-color: red;">Delete</button>
 	<a href="/workout" class="button">Exit</a>
 </form>
+
+<form
+	id="machine"
+	method="post"
+	use:enhance={({ formData }) => {
+		// formDatesToISO(formData, ["dtStart", "dtEnd", "rUntil"]);
+		return async ({ update }) => {
+			update({ reset: false });
+		};
+	}}
+>
+	<MachineForm machine={act.machine} />
+	<button formaction="?/saveMachine" type="submit" style="background-color: green;">Save</button>
+</form>
+
+<style lang="postcss">
+	h2 {
+		margin-left: 1vw;
+	}
+
+	form {
+		margin-left: 1vw;
+	}
+
+	#machine {
+		margin-top: 5vh;
+	}
+</style>

@@ -6,6 +6,7 @@
 	import { DateTime } from "luxon";
 	import { SvelteSet } from "svelte/reactivity";
 	import type { ActionData, PageProps } from "./$types";
+	import MachineFormInputs from "./MachineFormInputs.svelte";
 
 	let { data, form }: PageProps = $props();
 	let searchText = $state("");
@@ -82,7 +83,6 @@
 	{/each}
 </div>
 {results.length}/{data.machines.length}
-<!-- {#if searchText || selectedTags.size > 0} -->
 <!-- TODO Show all tag -->
 {#each results as m (m.id)}
 	<!-- TODO Show sets + value + unit-->
@@ -98,7 +98,6 @@
 {:else}
 	<div id="noRes">No result</div>
 {/each}
-<!-- {/if} -->
 <button id="Add" onclick={() => (selectedMachine = copyMachine())} command="show-modal" commandfor="machine">
 	Add Machine
 </button>
@@ -122,22 +121,7 @@
 		{#each form?.errors || [] as e (e)}
 			<div class="error">{e}</div>
 		{/each}
-		<FormInput type="hidden" name="id" value={selectedMachine.id} />
-		Machine {selectedMachine.id}
-		<FormInput name="name" value={selectedMachine.name} type="text" />
-		<!-- TODO Tags as inline buttons (just visually) -->
-		<FormInput name="cardio" value={selectedMachine.cardio} type="checkbox" />
-		<FormInput name="hands" value={selectedMachine.hands} type="checkbox" />
-		<FormInput name="legs" value={selectedMachine.legs} type="checkbox" />
-		<FormInput name="belly" value={selectedMachine.belly} type="checkbox" />
-		<FormInput name="push" value={selectedMachine.push} type="checkbox" />
-		<FormInput name="pull" value={selectedMachine.pull} type="checkbox" />
-		<FormInput name="other" value={selectedMachine.other} type="checkbox" />
-		<FormInput name="reps" value={selectedMachine.reps} type="number" min="0" />
-		<FormInput name="sets" value={selectedMachine.sets} type="number" min="0" />
-		<FormInput name="value" value={selectedMachine.value} type="number" step="0.1" min="0" />
-		<FormInput name="unit" value={selectedMachine.unit} type="text" />
-		<FormInput name="text" value={selectedMachine.text} type="textarea" />
+		<MachineFormInputs machine={selectedMachine} />
 		<button formaction="?/activityAdd" type="submit" id="act">Activity</button>
 		<!-- TODO Bigger buttons -->
 		<button formaction="?/save" type="submit" style="background-color: green;">Save</button>
