@@ -9,10 +9,11 @@
 
 	let { data, form }: PageProps = $props();
 	let searchText = $state("");
+	let searchAll = $state(false);
 	let results = $derived(
 		data.machines.filter((m) => {
-			// return true; //Debug
 			return (
+				searchAll ||
 				(searchText &&
 					searchText
 						.trim()
@@ -69,17 +70,38 @@
 
 <h1>Gotta Lift 'Em All</h1>
 
+{#snippet Tag(name: string, selected: boolean, onSel: () => void, onDeSel: () => void)}
+	{#if selected}
+		<button class="tag sel" onclick={onDeSel}>{name}</button>
+	{:else}
+		<button class="tag" onclick={onSel}>{name}</button>
+	{/if}
+{/snippet}
+
 <!-- Search -->
 <input type="text" name="search" id="search" bind:value={searchText} />
 <!-- Search result -->
 <div id="tags">
-	{#each tags as tag}
-		{#if selectedTags.has(tag)}
-			<button class="tag sel" onclick={() => selectedTags.delete(tag)}>{tag}</button>
-		{:else}
-			<button class="tag" onclick={() => selectedTags.add(tag)}>{tag}</button>
-		{/if}
-	{/each}
+	{@render Tag(
+		"All",
+		searchAll,
+		() => {
+			searchAll = true;
+		},
+		() => {
+			searchAll = false;
+		}
+	)}
+	{#if !searchAll}
+		{#each tags as tag}
+			{@render Tag(
+				tag,
+				selectedTags.has(tag),
+				() => selectedTags.add(tag),
+				() => selectedTags.delete(tag)
+			)}
+		{/each}
+	{/if}
 </div>
 {results.length}/{data.machines.length}
 {#each results as m (m.id)}
@@ -165,6 +187,7 @@
 	#tags {
 		margin-top: 1vh;
 		margin-bottom: 1vh;
+		margin-left: 0.5vw;
 		user-select: none;
 	}
 	.tag {
