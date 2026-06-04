@@ -11,7 +11,7 @@
 		...opts
 	}: { name: string; value: DateTime | null } & Omit<HTMLInputAttributes, "value"> = $props();
 
-	let showButton = $derived(value && (value.get("hour") > 0 || value.get("minute") > 0));
+	let showButton = $derived(value && (value?.get("hour") > 0 || value?.get("minute") > 0)); //TODO Remove ? after svelte fixes brackets
 </script>
 
 {#if !value || browser}
