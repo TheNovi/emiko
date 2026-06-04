@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import FormInput from "$lib/components/FormInput.svelte";
+	import { DateTime } from "luxon";
 	import MachineForm from "../../MachineFormInputs.svelte";
 	import type { PageProps } from "./$types";
 
@@ -53,6 +54,21 @@
 	<button formaction="?/saveMachine" type="submit" style="background-color: green;">Save</button>
 </form>
 
+{#each data.acts as h (h.id)}
+	<a href={`/workout/act/${h.id}`} class="history" class:colorGreen={h.id == act.id}>
+		{DateTime.fromJSDate(h.createdAt).toFormat("dd.MM.yyyy HH:mm")}
+		-
+		{h.reps}x{h.sets}
+		{#if h.value}
+			-
+			{h.value}
+			{act.machine.unit}
+		{/if}
+	</a>
+{:else}
+	<h2>No history</h2>
+{/each}
+
 <style lang="postcss">
 	h2 {
 		margin-left: 1vw;
@@ -64,5 +80,16 @@
 
 	#machine {
 		margin-top: 5vh;
+	}
+
+	.history {
+		display: block;
+		margin-left: 1vw;
+		padding-top: 1vh;
+		width: fit-content;
+	}
+
+	.colorGreen {
+		color: green;
 	}
 </style>

@@ -45,7 +45,7 @@ export async function getDailyActivity(userId: number, tz: string) {
 			reps: woActivity.reps,
 			sets: woActivity.sets,
 			value: woActivity.value,
-			updatedAt: woActivity.updatedAt,
+			createdAt: woActivity.createdAt,
 		})
 		.from(woActivity)
 		.innerJoin(woMachine, eq(woActivity.machineId, woMachine.id))
@@ -58,7 +58,37 @@ export async function getDailyActivity(userId: number, tz: string) {
 		)
 		.orderBy(desc(woActivity.createdAt));
 }
+export async function getMachineActivity(userId: number, machineId: number) {
+	return await db
+		.select({
+			id: woActivity.id,
+			reps: woActivity.reps,
+			sets: woActivity.sets,
+			value: woActivity.value,
+			createdAt: woActivity.createdAt,
+		})
+		.from(woActivity)
+		.innerJoin(woMachine, eq(woActivity.machineId, woMachine.id))
+		.where(and(eq(woMachine.id, machineId), eq(woActivity.userId, userId), isNull(woActivity.deletedAt)))
+		.orderBy(desc(woActivity.createdAt));
+}
 
+export async function getAllActivities(userId: number) {
+	return await db
+		.select({
+			id: woActivity.id,
+			reps: woActivity.reps,
+			sets: woActivity.sets,
+			value: woActivity.value,
+			createdAt: woActivity.createdAt,
+			mName: woMachine.name,
+			mUnit: woMachine.unit,
+		})
+		.from(woActivity)
+		.innerJoin(woMachine, eq(woActivity.machineId, woMachine.id))
+		.where(and(eq(woActivity.userId, userId), isNull(woActivity.deletedAt)))
+		.orderBy(desc(woActivity.createdAt));
+}
 export async function getActivity(userId: number, id: number) {
 	return await db
 		.select({
@@ -66,7 +96,7 @@ export async function getActivity(userId: number, id: number) {
 			reps: woActivity.reps,
 			sets: woActivity.sets,
 			value: woActivity.value,
-			updatedAt: woActivity.updatedAt,
+			createdAt: woActivity.createdAt,
 			machine: {
 				...getTableColumns(woMachine),
 			},

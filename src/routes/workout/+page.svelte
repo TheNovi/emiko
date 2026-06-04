@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import FormInput from "$lib/components/FormInput.svelte";
 	import Title from "$lib/components/Title.svelte";
 	import type { WoMachine } from "$lib/server/workout";
 	import { DateTime } from "luxon";
@@ -83,9 +82,7 @@
 	{/each}
 </div>
 {results.length}/{data.machines.length}
-<!-- TODO Show all tag -->
 {#each results as m (m.id)}
-	<!-- TODO Show sets + value + unit-->
 	<button class="machine" onclick={() => (selectedMachine = copyMachine(m))} command="show-modal" commandfor="machine">
 		{m.name}
 		{m.reps}x{m.sets}
@@ -141,11 +138,12 @@
 			{act.mUnit}
 		{/if}
 		-
-		{DateTime.fromJSDate(act.updatedAt).toFormat("HH:mm")}
+		{DateTime.fromJSDate(act.createdAt).toFormat("HH:mm")}
 	</a>
 {:else}
 	<h2>Get to work!</h2>
 {/each}
+<a id="Stats" href="/workout/stats">View all stats</a>
 
 <style lang="postcss">
 	h1,
@@ -210,6 +208,15 @@
 		margin-bottom: 1vh;
 		text-align: center;
 		border-radius: 25px;
+	}
+	a#Stats {
+		display: block;
+		width: 95vw;
+		margin: auto;
+		padding: 0.6em;
+		margin-top: 5vh;
+		margin-bottom: 2vh;
+		text-align: center;
 	}
 
 	dialog#machine {

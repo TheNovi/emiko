@@ -1,4 +1,4 @@
-import { deleteActivity, getActivity, updateActivity, updateMachine } from "$lib/server/workout";
+import { deleteActivity, getActivity, getMachineActivity, updateActivity, updateMachine } from "$lib/server/workout";
 import { fail, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
 import type { Actions, PageServerLoad } from "./$types";
@@ -7,7 +7,7 @@ export const load = (async (event) => {
 	if (!event.locals.user) redirect(303, "/login");
 	const act = await getActivity(event.locals.user.id, +event.params.id);
 	if (!act) redirect(303, "/workout");
-	return { act };
+	return { act, acts: await getMachineActivity(event.locals.user.id, act.machine.id) };
 }) satisfies PageServerLoad;
 
 const vFormNumber = v.pipe(
