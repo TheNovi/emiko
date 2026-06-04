@@ -66,7 +66,6 @@
 		display: block;
 		/* margin-top: 8px; */
 		margin-bottom: 8px;
-		opacity: 0;
 	}
 
 	#login {
