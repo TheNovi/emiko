@@ -1,6 +1,8 @@
 import { db } from "$lib/server/db";
 import { todItem } from "$lib/server/db/schema";
-import { and, desc, eq, isNull, sql, type SQLWrapper } from "drizzle-orm";
+import { and, desc, eq, isNull, like, or, sql, type SQLWrapper } from "drizzle-orm";
+
+export type SearchItem = { id: number; title: string };
 
 //Type for empty Root and SmartItemDetail select (it auto switches based on value in id) (discriminated unions)
 type SmartItemDetail = ({ id: null; title: string } | typeof todItem.$inferSelect) & {
@@ -8,7 +10,7 @@ type SmartItemDetail = ({ id: null; title: string } | typeof todItem.$inferSelec
 	items: Awaited<ReturnType<typeof getChildren>>;
 };
 
-function basicWhere(userId: number, ...other: SQLWrapper[]) {
+function basicWhere(userId: number, ...other: (SQLWrapper | undefined)[]) {
 	return and(eq(todItem.userId, userId), isNull(todItem.deletedAt), ...other);
 }
 
@@ -64,10 +66,20 @@ async function getParents(userId: number, itemId: number | null): Promise<{ id: 
 
 async function getChildren(userId: number, parentId: number | null, tz: string) {
 	return await db
-		.select({ id: todItem.id, title: todItem.title, state: todItem.state, dtStart: todItem.dtStart, dtEnd: todItem.dtEnd, rFreq: todItem.rFreq, rInterval: todItem.rInterval, rUntil: todItem.rUntil })
+		.select({
+			id: todItem.id,
+			title: todItem.title,
+			state: todItem.state,
+			dtStart: todItem.dtStart,
+			dtEnd: todItem.dtEnd,
+			rFreq: todItem.rFreq,
+			rInterval: todItem.rInterval,
+			rUntil: todItem.rUntil,
+		})
 		.from(todItem)
 		.where(basicWhere(userId, parentId ? eq(todItem.parentId, parentId) : isNull(todItem.parentId)))
-		.orderBy(desc(todItem.state), todItem.dtStart, todItem.title, desc(todItem.id)).then((all) => { 
+		.orderBy(desc(todItem.state), todItem.dtStart, todItem.title, desc(todItem.id))
+		.then((all) => {
 			for (const e of all) {
 				e.dtStart = e.dtStart?.setZone(tz) || null;
 				e.dtEnd = e.dtEnd?.setZone(tz) || null;
@@ -131,6 +143,34 @@ export async function deleteItem(userId: number, itemId: number) {
 	if (!d) return itemId; //TODO Error
 	// console.log(d);
 	//TODO Don't return from children
-	for (const c of await getChildren(userId, itemId, '')) deleteItem(userId, c.id);
+	for (const c of await getChildren(userId, itemId, "")) deleteItem(userId, c.id);
 	return d.parentId || 0;
+}
+
+/**
+ * Get items based on search string
+ * @param userId userId
+ * @param search search string
+ */
+export async function searchItem(userId: number, search: string): Promise<SearchItem[]> {
+	if (!search) return [];
+
+	//TODO 0 Better alg (as db view?)
+	return await db
+		.select({
+			id: todItem.id,
+			title: todItem.title,
+		})
+		.from(todItem)
+		.limit(10)
+		.where(
+			basicWhere(
+				userId,
+				or(
+					like(todItem.title, `%${search}%`)
+					// like(todItem.place, `%${search}%`),
+					// like(todItem.description, `%${search}%`)
+				)
+			)
+		);
 }

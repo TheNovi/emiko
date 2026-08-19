@@ -7,6 +7,7 @@
 	import { formDatesToISO } from "$lib/util";
 	import Control from "../Control.svelte";
 	import ListItem from "../ListItem.svelte";
+	import Search from "../Search.svelte";
 	import type { PageProps } from "./$types";
 
 	let { data, form }: PageProps = $props();
@@ -27,6 +28,7 @@
 	// $inspect(tod.parents);
 </script>
 
+<Search input />
 {#if tod.id}
 	<Title title={`Tod | ${tod.title}`} />
 {:else}

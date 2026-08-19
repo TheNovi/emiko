@@ -7,6 +7,7 @@
 	import ListItem from "./ListItem.svelte";
 	import { DateTime } from "luxon";
 	import type { PageProps } from "./$types";
+	import Search from "./Search.svelte";
 
 	let { data }: PageProps = $props();
 
@@ -43,6 +44,7 @@
 
 <Title title="Tod Calendar" />
 
+<Search input />
 {#if data.tasks.length}
 	<div id="tasks">
 		<div>Tasks:</div>
