@@ -20,7 +20,7 @@ RUN pnpm run build
 
 
 # Main
-FROM dhi.io/node:26-alpine3.23
+FROM dhi.io/node:26-alpine3.24
 COPY --from=base /data /data
 WORKDIR /app
 
