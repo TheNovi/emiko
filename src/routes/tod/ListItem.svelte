@@ -1,5 +1,7 @@
 <script lang="ts">
 	import DateView from "$lib/components/DateView.svelte";
+	import FormInput from "$lib/components/FormInput.svelte";
+	import { todIsTask } from "$lib/todUtil";
 	import type { DateTime } from "luxon";
 
 	type TItem = {
@@ -11,6 +13,7 @@
 		rFreq: number | null;
 		rInterval: number | null;
 		rUntil: DateTime | null;
+		eventType?: number;
 	};
 	let { item }: { item: TItem } = $props();
 
@@ -48,6 +51,13 @@
 				<span>until: <DateView date={item.rUntil} /> </span>
 			{/if}
 		{/if}
+		{#if todIsTask(item)}
+			<!-- TODO As remote function -->
+			<form method="post">
+				<FormInput type="hidden" name="id" value={item.id} />
+				<button formaction="?/completeTask" type="submit">Task Complete</button>
+			</form>
+		{/if}
 	{/if}
 </div>
 
@@ -64,6 +74,11 @@
 
 	.item span,
 	.item a {
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+	}
+
+	button {
 		padding-top: 0.5em;
 		padding-bottom: 0.5em;
 	}
