@@ -58,6 +58,6 @@ export function todTaskComplete(item: CallItem) {
 	}
 }
 
-export function todIsTask(item: { eventType: number; dtStart: any }) {
+export function todIsTask(item: { eventType?: number; dtStart: any }) {
 	return item.dtStart && (item.eventType === 1 || item.eventType === 2);
 }

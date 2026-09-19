@@ -27,6 +27,7 @@
 		}
 		{...opts}
 	/>
+	<!-- TODO Button with link to Tod calendar (for this date) -->
 	{#if showButton}
 		<button
 			type="button"

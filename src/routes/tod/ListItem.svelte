@@ -2,7 +2,16 @@
 	import DateView from "$lib/components/DateView.svelte";
 	import type { DateTime } from "luxon";
 
-	type TItem = { id: number; title: string; state: number; dtStart: DateTime | null; dtEnd: DateTime | null; rFreq: number | null; rInterval: number | null; rUntil: DateTime | null };
+	type TItem = {
+		id: number;
+		title: string;
+		state: number;
+		dtStart: DateTime | null;
+		dtEnd: DateTime | null;
+		rFreq: number | null;
+		rInterval: number | null;
+		rUntil: DateTime | null;
+	};
 	let { item }: { item: TItem } = $props();
 
 	let freq = $derived.by(() => {
@@ -22,9 +31,10 @@
 	});
 </script>
 
-<!-- TODO 10 Internet says its not good idea to have other clickable items inside <a>. So either make only title part link. Or inspire from how reddit has done it -->
-<a href={`/tod/${item.id}`} class={["item", ["done", "open", "process"][item.state]]}>
-	<span>{item.title}</span>
+<div class={["item", ["done", "open", "process"][item.state]]}>
+	<span>
+		<a href={`/tod/${item.id}`}>{item.title}</a>
+	</span>
 	{#if item.dtStart}
 		<span>
 			<DateView date={item.dtStart} />
@@ -39,7 +49,7 @@
 			{/if}
 		{/if}
 	{/if}
-</a>
+</div>
 
 <style lang="postcss">
 	.item {
@@ -49,8 +59,13 @@
 		gap: 1em;
 		background-color: #222;
 		border-radius: 0.5em;
-		padding: 0.5em;
 		margin-bottom: 0.5em;
+	}
+
+	.item span,
+	.item a {
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
 	}
 
 	.done {
