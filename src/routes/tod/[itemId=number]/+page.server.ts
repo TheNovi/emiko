@@ -52,6 +52,8 @@ export const actions: Actions = {
 		// console.log("delete");
 		// return;
 		if (!locals.user) return redirect(303, "/login");
+		if (!(await checkIfItemBelongsUser(locals.user.id, +itemId)))
+			return fail(400, { errors: ["id does not belong to user"] }); //User should never get this error
 		let n = await deleteItem(locals.user.id, +itemId);
 		return redirect(303, `/tod/${n}`);
 	},
@@ -108,8 +110,8 @@ export const actions: Actions = {
 		// console.log(item.output);
 		// return;
 
-		if (!(await checkIfItemBelongsUser(item.output.userId, item.output.parentId)))
-			return fail(400, { errors: ["Parent id does not belong to user"] }); //User should never get this error
+		if (!(await checkIfItemBelongsUser(item.output.userId, item.output.id)))
+			return fail(400, { errors: ["id does not belong to user"] }); //User should never get this error
 		await updateItem(item.output);
 
 		if (errors.length == 0) return { success: true };
