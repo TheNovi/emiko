@@ -112,6 +112,7 @@ export const actions: Actions = {
 
 		if (!(await checkIfItemBelongsUser(item.output.userId, item.output.id)))
 			return fail(400, { errors: ["id does not belong to user"] }); //User should never get this error
+		//TODO 0 Check if parentId is also owned
 		await updateItem(item.output);
 
 		if (errors.length == 0) return { success: true };

@@ -13,14 +13,35 @@ dialog {
 
 button,
 .button {
+	cursor: pointer;
 	border: 0;
 	border-radius: 25px;
 	color: inherit;
 	background-color: #333;
-	padding: 5px;
-	margin: 0.1em;
+	padding: 5px; /* Bigger buttons for mobile */
+	margin-top: 0.1em; /* Small space above */
+
+	/* Font reset */
 	appearance: auto;
-	cursor: pointer;
+	font-style: unset;
+	font-variant-ligatures: unset;
+	font-variant-caps: unset;
+	font-variant-numeric: unset;
+	font-variant-east-asian: unset;
+	font-variant-alternates: unset;
+	font-variant-position: unset;
+	/* font-variant-emoji: unset; */
+	font-weight: unset;
+	font-stretch: unset;
+	font-size: unset;
+	font-family: unset;
+	font-optical-sizing: unset;
+	font-size-adjust: unset;
+	font-kerning: unset;
+	font-feature-settings: unset;
+	font-variation-settings: unset;
+	font-language-override: unset;
+	text-rendering: auto;
 }
 
 a {

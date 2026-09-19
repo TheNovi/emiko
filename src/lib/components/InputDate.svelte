@@ -11,7 +11,7 @@
 		...opts
 	}: { name: string; value: DateTime | null } & Omit<HTMLInputAttributes, "value"> = $props();
 
-	let showButton = $derived(value && (value?.get("hour") > 0 || value?.get("minute") > 0)); //TODO Remove ? after svelte fixes brackets
+	let showClearTime = $derived(value && (value?.get("hour") > 0 || value?.get("minute") > 0)); //TODO Remove ? after svelte fixes brackets
 </script>
 
 {#if !value || browser}
@@ -28,10 +28,10 @@
 		{...opts}
 	/>
 	<!-- TODO Button with link to Tod calendar (for this date) -->
-	{#if showButton}
+	{#if showClearTime}
 		<button
 			type="button"
-			hidden={!showButton}
+			hidden={!showClearTime}
 			onclick={() => {
 				value = value?.startOf("day") || null;
 			}}>Clear Time</button
@@ -39,6 +39,7 @@
 	{/if}
 	{#if value}
 		<DateView date={value} style="margin-left: 0.5em" />
+		<a class="button" href={`/tod?d=${value.toISODate()}`}>Calendar</a>
 	{/if}
 {/if}
 

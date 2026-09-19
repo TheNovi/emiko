@@ -176,7 +176,7 @@
 	#search {
 		border: 0;
 		display: block;
-		width: 99vw;
+		width: 98vw;
 		margin: auto;
 		height: 3vh;
 		font-size: 2vh;
