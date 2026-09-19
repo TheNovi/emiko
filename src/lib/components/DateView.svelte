@@ -11,14 +11,20 @@
 	import type { DateTime } from "luxon";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	let { date, onlyTime = false, ...props }: { date: DateTime; onlyTime?: boolean } & HTMLAttributes<HTMLSpanElement> = $props();
-	let langs = $state(navigator.languages);
+	let {
+		date,
+		onlyTime = false,
+		...props
+	}: { date: DateTime; onlyTime?: boolean } & HTMLAttributes<HTMLSpanElement> = $props();
+
+	// let langs = navigator.languages;
+	let langs = new Set<string>(navigator.languages.map((v) => v.replace(/-.*/, ""))).values().toArray(); //Removes sub langs (en-US vs en-UK) and removes duplicates
 	let locale = $derived(langs[s]);
 
 	const dateOpts: Intl.DateTimeFormatOptions = { weekday: "short", day: "numeric", month: "long", year: "numeric" };
 	const timeOpts: Intl.DateTimeFormatOptions = { hour12: false, timeStyle: "short" };
 
-	// $inspect(s, locale);
+	// $inspect(s, locale, langs);
 	// $inspect(date.zoneName);
 </script>
 
