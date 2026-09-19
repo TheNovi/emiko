@@ -34,10 +34,13 @@
 	});
 </script>
 
+{#snippet offset()}
+	<a class="offset" aria-label={`empty space with link to item`} href={`/tod/${item.id}`}></a>
+{/snippet}
+
 <div class={["item", ["done", "open", "process"][item.state]]}>
-	<span>
-		<a href={`/tod/${item.id}`}>{item.title}</a>
-	</span>
+	{@render offset()}
+	<a href={`/tod/${item.id}`}>{item.title}</a>
 	{#if item.dtStart}
 		<span>
 			<DateView date={item.dtStart} />
@@ -59,6 +62,7 @@
 			</form>
 		{/if}
 	{/if}
+	{@render offset()}
 </div>
 
 <style lang="postcss">
@@ -66,16 +70,21 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
-		gap: 1em;
+		/* gap: 1em; */
 		background-color: #222;
 		border-radius: 0.5em;
 		margin-bottom: 0.5em;
 	}
 
+	.item .offset {
+		flex-grow: 1;
+	}
+
 	.item span,
 	.item a {
-		padding-top: 0.5em;
-		padding-bottom: 0.5em;
+		padding: 0.5em;
+		/* padding-top: 0.5em;
+		padding-bottom: 0.5em; */
 	}
 
 	button {
