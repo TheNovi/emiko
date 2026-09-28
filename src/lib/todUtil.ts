@@ -41,7 +41,7 @@ export function todTaskComplete(item: CallItem) {
 	switch (item.eventType) {
 		case 1:
 			const edt = getEdt(item);
-			item.dtStart = DateTime.now().startOf("day"); //TODO Copy Time from dtStart
+			item.dtStart = DateTime.now().setZone(item.dtStart.zone).startOf("day"); //TODO Copy Time from dtStart
 			if (item.dtEnd) item.dtEnd = item.dtStart.plus(edt);
 			break;
 		case 2:
