@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { shuffle } from "$lib/util";
+	import type { PageProps } from "./$types";
 
 	// import type { PageProps } from "./$types";
 	type Cell = { value: number; hidden: boolean };
 
-	// let { data }: PageProps = $props();
+	let { data }: PageProps = $props();
 
 	//Config
 	let size = $state(8);
@@ -12,9 +13,10 @@
 	let hideAll = $state(false);
 
 	//Inner state
+	let topOffset = $derived((data.user ? 24 : 0) + 33 + 21 + 10 + 5);
 	let w: number = $state(0);
 	let h: number = $state(0);
-	let cellSize = $derived(Math.floor(Math.min(h - (33 + 21 + 10 + 5), w) / size));
+	let cellSize = $derived(Math.floor(Math.min(h - topOffset, w) / size));
 	let grid: Cell[] = $state([]);
 	// 0=End, 1=Start, 2=Hidden, 3=Win, 4=Loss
 	let gameState: number = $state(0);
