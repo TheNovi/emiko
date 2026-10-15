@@ -2,7 +2,7 @@
 	import DateView from "$lib/components/DateView.svelte";
 	import FormInput from "$lib/components/FormInput.svelte";
 	import { todIsTask } from "$lib/todUtil";
-	import type { DateTime } from "luxon";
+	import { DateTime } from "luxon";
 
 	type TItem = {
 		id: number;
@@ -54,7 +54,7 @@
 				<span>until: <DateView date={item.rUntil} /> </span>
 			{/if}
 		{/if}
-		{#if todIsTask(item)}
+		{#if item.state > 0 && todIsTask(item)}
 			<!-- TODO As remote function -->
 			<form method="post">
 				<FormInput type="hidden" name="id" value={item.id} />
