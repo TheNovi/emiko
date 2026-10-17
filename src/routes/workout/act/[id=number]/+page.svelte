@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import FormInput from "$lib/components/FormInput.svelte";
+	import FormInput from "#lib/components/FormInput.svelte";
 	import { DateTime } from "luxon";
 	import MachineForm from "../../MachineFormInputs.svelte";
 	import type { PageProps } from "./$types";

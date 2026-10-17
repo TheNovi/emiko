@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import Title from "$lib/components/Title.svelte";
-	import type { WoMachine } from "$lib/server/workout";
+	import Title from "#lib/components/Title.svelte";
+	import type { WoMachine } from "#lib/server/workout.js";
 	import { DateTime } from "luxon";
 	import { SvelteSet } from "svelte/reactivity";
 	import type { ActionData, PageProps } from "./$types";

@@ -1,7 +1,7 @@
-import { AuthError, loginUser } from "$lib/server/auth";
+import { AuthError, loginUser } from "#lib/server/auth.js";
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
-import { addError } from "$lib/checks";
+import { addError } from "#lib/checks.js";
 import * as v from "valibot";
 
 export const load = (async (event) => {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DateTime } from "luxon";
 	import type { PageProps } from "./$types";
-	import DateView from "$lib/components/DateView.svelte";
+	import DateView from "#lib/components/DateView.svelte";
 
 	let { data }: PageProps = $props();
 </script>

@@ -1,6 +1,6 @@
-import { hash, logoutUser } from "$lib/server/auth";
-import { db } from "$lib/server/db";
-import { user } from "$lib/server/db/schema";
+import { hash, logoutUser } from "#lib/server/auth.js";
+import { db } from "#lib/server/db/index.js";
+import { user } from "#lib/server/db/schema.js";
 import { fail, redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import * as v from "valibot";
@@ -21,10 +21,27 @@ export const actions: Actions = {
 		let out: { name?: string; tz?: string; password?: string } = {};
 		const o = v.safeParse(
 			v.object({
-				name: v.pipe(v.string("Name can't be empty"), v.trim(), v.minLength(3, "Name is too short"), v.maxLength(25, "Name is too long")),
-				tz: v.pipe(v.string("Timezone can't be empty"), v.trim(), v.minLength(3, "Timezone is too short"), v.maxLength(25, "Timezone is too long")),
+				name: v.pipe(
+					v.string("Name can't be empty"),
+					v.trim(),
+					v.minLength(3, "Name is too short"),
+					v.maxLength(25, "Name is too long")
+				),
+				tz: v.pipe(
+					v.string("Timezone can't be empty"),
+					v.trim(),
+					v.minLength(3, "Timezone is too short"),
+					v.maxLength(25, "Timezone is too long")
+				),
 				newPassword: v.optional(
-					v.pipe(v.string("Password must be string"), v.trim(), v.union([v.literal(""), v.pipe(v.string(), v.minLength(5, "Password is too short"), v.maxLength(250, "Password is too long"))]))
+					v.pipe(
+						v.string("Password must be string"),
+						v.trim(),
+						v.union([
+							v.literal(""),
+							v.pipe(v.string(), v.minLength(5, "Password is too short"), v.maxLength(250, "Password is too long")),
+						])
+					)
 				),
 				newPasswordAgain: v.optional(v.pipe(v.string(), v.trim())),
 			}),
@@ -51,7 +68,12 @@ export const actions: Actions = {
 		}
 
 		if (out.name || out.tz || out.password) {
-			const u = await db.update(user).set(out).where(eq(user.id, locals.user.id)).returning({ name: user.name, tz: user.tz }).get();
+			const u = await db
+				.update(user)
+				.set(out)
+				.where(eq(user.id, locals.user.id))
+				.returning({ name: user.name, tz: user.tz })
+				.get();
 			if (u) {
 				locals.user.name = u.name;
 				locals.user.tz = u.tz;

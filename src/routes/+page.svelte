@@ -1,8 +1,9 @@
 <script lang="ts">
+	import GraphAnim from "#lib/components/GraphAnim.svelte";
+	import Title from "#lib/components/Title.svelte";
+	import { GraphMode } from "#lib/graphAnim.js";
+	import { APP_VERSION } from "$app/env/public";
 	import { goto } from "$app/navigation";
-	import GraphAnim from "$lib/components/GraphAnim.svelte";
-	import Title from "$lib/components/Title.svelte";
-	import { GraphMode } from "$lib/graphAnim";
 	import type { PageData } from "./$types";
 
 	let { data }: { data: PageData } = $props();

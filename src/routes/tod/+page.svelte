@@ -1,8 +1,8 @@
 <script lang="ts">
-	import DateView from "$lib/components/DateView.svelte";
-	import Title from "$lib/components/Title.svelte";
-	import type { CallItem } from "$lib/server/todCal";
-	import { todIsTask, todNext } from "$lib/todUtil";
+	import DateView from "#lib/components/DateView.svelte";
+	import Title from "#lib/components/Title.svelte";
+	import type { CallItem } from "#lib/server/todCal.js";
+	import { todIsTask, todNext } from "#lib/todUtil.js";
 	import Control from "./Control.svelte";
 	import ListItem from "./ListItem.svelte";
 	import { DateTime } from "luxon";

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import FormInput from "$lib/components/FormInput.svelte";
-	import Title from "$lib/components/Title.svelte";
-	import type { CallItem } from "$lib/server/todCal";
-	import { todIsTask, todTaskComplete } from "$lib/todUtil";
-	import { formDatesToISO } from "$lib/util";
+	import FormInput from "#lib/components/FormInput.svelte";
+	import Title from "#lib/components/Title.svelte";
+	import type { CallItem } from "#lib/server/todCal.js";
+	import { todIsTask, todTaskComplete } from "#lib/todUtil.js";
+	import { formDatesToISO } from "#lib/util.js";
 	import Control from "../Control.svelte";
 	import ListItem from "../ListItem.svelte";
 	import Search from "../Search.svelte";

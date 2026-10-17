@@ -1,4 +1,4 @@
-import { getStrollPlaceWeek } from "$lib/server/stroll";
+import { getStrollPlaceWeek } from "#lib/server/stroll.js";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async () => {

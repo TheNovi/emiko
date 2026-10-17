@@ -1,4 +1,4 @@
-import type { Transport } from "@sveltejs/kit";
+import type { Transport } from "@sveltejs/kit/hooks";
 import { DateTime } from "luxon";
 
 export const transport: Transport = {

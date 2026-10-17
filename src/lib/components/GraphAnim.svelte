@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GPoint, GraphMode, LorenzDefaults, Points, type LorenzConsts } from "$lib/graphAnim";
+	import { GPoint, GraphMode, LorenzDefaults, Points, type LorenzConsts } from "#lib/graphAnim.js";
 	import { onMount } from "svelte";
 
 	let {
@@ -10,7 +10,15 @@
 		scale = 15,
 		rotateDeg = 0,
 		style = "",
-	}: { mode: GraphMode; color?: string; count?: number; size?: number; scale?: number; rotateDeg?: number; style?: string } = $props();
+	}: {
+		mode: GraphMode;
+		color?: string;
+		count?: number;
+		size?: number;
+		scale?: number;
+		rotateDeg?: number;
+		style?: string;
+	} = $props();
 
 	let innerWidth = $state(0),
 		innerHeight = $state(0);

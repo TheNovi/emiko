@@ -1,4 +1,4 @@
-import { checkIfItemBelongsUser, deleteItem, getItemDetail, insertItem, updateItem } from "$lib/server/tod";
+import { checkIfItemBelongsUser, deleteItem, getItemDetail, insertItem, updateItem } from "#lib/server/tod.js";
 import { fail, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
 import type { Actions, PageServerLoad } from "./$types";

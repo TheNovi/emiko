@@ -5,7 +5,7 @@ import {
 	insertActivity,
 	insertMachine,
 	updateMachine,
-} from "$lib/server/workout";
+} from "#lib/server/workout.js";
 import { fail, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
 import type { Actions, PageServerLoad } from "./$types";

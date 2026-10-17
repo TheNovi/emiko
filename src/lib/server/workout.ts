@@ -1,5 +1,5 @@
-import { db } from "$lib/server/db";
-import { woActivity, woMachine } from "$lib/server/db/schema";
+import { db } from "#lib/server/db/index.js";
+import { woActivity, woMachine } from "#lib/server/db/schema.js";
 import { and, desc, eq, gt, isNull, getTableColumns } from "drizzle-orm";
 import { DateTime } from "luxon";
 

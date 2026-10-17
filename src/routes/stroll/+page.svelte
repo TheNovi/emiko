@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Title from "$lib/components/Title.svelte";
-	import { random, sleep } from "$lib/util";
+	import Title from "#lib/components/Title.svelte";
+	import { random, sleep } from "#lib/util.js";
 	import Place from "./Place.svelte";
 	import WeeklyStrollCountdown from "./WeeklyStrollCountdown.svelte";
 	import type { PageData } from "./$types";
@@ -29,7 +29,8 @@
 
 <Title title="Stroll" />
 <div id="c">
-	Chceš na výlet, ale nevíš kam? Zde najdeš každý týden nový tip kam vyrazit. A pokud daná lokace zrovna nebude vyhovovat, tak si jednoduše vylosuješ novou.
+	Chceš na výlet, ale nevíš kam? Zde najdeš každý týden nový tip kam vyrazit. A pokud daná lokace zrovna nebude
+	vyhovovat, tak si jednoduše vylosuješ novou.
 	<div id="countdown">
 		Další místo bude vylosováno za: <div><WeeklyStrollCountdown /></div>
 	</div>

@@ -1,4 +1,4 @@
-import { getAllActivities } from "$lib/server/workout";
+import { getAllActivities } from "#lib/server/workout.js";
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 

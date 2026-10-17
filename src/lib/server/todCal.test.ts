@@ -6,7 +6,13 @@ const tz = "Europe/Prague"; //Random tz with DST
 process.env.TZ = tz;
 Settings.defaultZone = tz;
 
-function p(e: { ds: DateTime; de: DateTime | null; interval: number | null; until: DateTime | null | undefined }, dateFrom: DateTime, dateTo: DateTime, rFreq: number, result: boolean) {
+function p(
+	e: { ds: DateTime; de: DateTime | null; interval: number | null; until: DateTime | null | undefined },
+	dateFrom: DateTime,
+	dateTo: DateTime,
+	rFreq: number,
+	result: boolean
+) {
 	const name = () => {
 		let o = e.ds.toString() + " ";
 		o += "+" + e.interval;
@@ -60,20 +66,68 @@ describe("parseCalls", () => {
 	});
 	describe("Days", () => {
 		const m = 1;
-		p({ interval: null, ds: DateTime.local(2025, 1, 1), de: DateTime.local(2025, 1, 5), until: null }, DateTime.local(2025, 1, 5), DateTime.local(2025, 2, 5), m, true);
-		p({ interval: 0, ds: DateTime.local(2025, 1, 1), de: null, until: null }, DateTime.local(2025, 1, 5), DateTime.local(2025, 2, 5), m, false);
-		p({ interval: 7, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 13), DateTime.local(2025, 9, 13), m, true);
+		p(
+			{ interval: null, ds: DateTime.local(2025, 1, 1), de: DateTime.local(2025, 1, 5), until: null },
+			DateTime.local(2025, 1, 5),
+			DateTime.local(2025, 2, 5),
+			m,
+			true
+		);
+		p(
+			{ interval: 0, ds: DateTime.local(2025, 1, 1), de: null, until: null },
+			DateTime.local(2025, 1, 5),
+			DateTime.local(2025, 2, 5),
+			m,
+			false
+		);
+		p(
+			{ interval: 7, ds: DateTime.local(2025, 6, 7), de: null, until: null },
+			DateTime.local(2025, 8, 13),
+			DateTime.local(2025, 9, 13),
+			m,
+			true
+		);
 	});
 	describe("Month days", () => {
 		const m = 3;
-		p({ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 13), DateTime.local(2025, 9, 8), m, true);
-		p({ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 7), DateTime.local(2025, 9, 1), m, true);
-		p({ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 8), DateTime.local(2025, 9, 1), m, false);
-		p({ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null }, DateTime.local(2025, 8, 13), DateTime.local(2025, 9, 7), m, false);
+		p(
+			{ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null },
+			DateTime.local(2025, 8, 13),
+			DateTime.local(2025, 9, 8),
+			m,
+			true
+		);
+		p(
+			{ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null },
+			DateTime.local(2025, 8, 7),
+			DateTime.local(2025, 9, 1),
+			m,
+			true
+		);
+		p(
+			{ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null },
+			DateTime.local(2025, 8, 8),
+			DateTime.local(2025, 9, 1),
+			m,
+			false
+		);
+		p(
+			{ interval: 0, ds: DateTime.local(2025, 6, 7), de: null, until: null },
+			DateTime.local(2025, 8, 13),
+			DateTime.local(2025, 9, 7),
+			m,
+			false
+		);
 	});
 	describe("Years", () => {
 		const m = 4;
-		p({ interval: 1, ds: DateTime.local(2024, 9, 7), de: null, until: null }, DateTime.local(2025, 8, 13), DateTime.local(2025, 9, 13), m, true);
+		p(
+			{ interval: 1, ds: DateTime.local(2024, 9, 7), de: null, until: null },
+			DateTime.local(2025, 8, 13),
+			DateTime.local(2025, 9, 13),
+			m,
+			true
+		);
 	});
 });
 

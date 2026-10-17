@@ -1,4 +1,4 @@
-import { browser } from "$app/environment";
+import { browser } from "$app/env";
 import { Settings } from "luxon";
 import type { LayoutLoad } from "./$types";
 

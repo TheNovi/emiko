@@ -1,5 +1,5 @@
-import { db } from "$lib/server/db";
-import { stroll } from "$lib/server/db/schema";
+import { db } from "#lib/server/db/index.js";
+import { stroll } from "#lib/server/db/schema.js";
 import { createHash } from "crypto";
 import { sql } from "drizzle-orm";
 

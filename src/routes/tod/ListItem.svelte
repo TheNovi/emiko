@@ -1,7 +1,7 @@
 <script lang="ts">
-	import DateView from "$lib/components/DateView.svelte";
-	import FormInput from "$lib/components/FormInput.svelte";
-	import { todIsTask } from "$lib/todUtil";
+	import DateView from "#lib/components/DateView.svelte";
+	import FormInput from "#lib/components/FormInput.svelte";
+	import { todIsTask } from "#lib/todUtil.js";
 	import { DateTime } from "luxon";
 
 	type TItem = {

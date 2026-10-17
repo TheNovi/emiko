@@ -1,24 +1,22 @@
+import adapter from "@sveltejs/adapter-node";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
+
 /// <reference types="vitest" />
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [sveltekit()],
-	define: {
-		APP_VERSION: JSON.stringify(process.env.npm_package_version),
-	},
-	test: {
-		expect: { requireAssertions: true },
-		projects: [
-			{
-				extends: "./vite.config.ts",
-				test: {
-					name: "server",
-					environment: "node",
-					include: ["src/**/*.{test,spec}.{js,ts}"],
-					exclude: ["src/**/*.svelte.{test,spec}.{js,ts}"],
-				},
-			},
-		],
-	},
+	plugins: [
+		sveltekit({
+			// Consult https://svelte.dev/docs/kit/integrations
+			// for more information about preprocessors
+			preprocess: vitePreprocess(),
+
+			// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
+			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
+			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
+			adapter: adapter(),
+		}),
+	],
+	// define: { APP_VERSION: JSON.stringify(process.env.npm_package_version) }, //Moved to SvelteKit env.ts
 });

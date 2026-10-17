@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import FormInput from "$lib/components/FormInput.svelte";
-	import Title from "$lib/components/Title.svelte";
+	import FormInput from "#lib/components/FormInput.svelte";
+	import Title from "#lib/components/Title.svelte";
 	import type { PageProps } from "./$types";
 
 	let { data, form }: PageProps = $props();

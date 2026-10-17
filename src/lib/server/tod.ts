@@ -1,5 +1,5 @@
-import { db } from "$lib/server/db";
-import { todItem } from "$lib/server/db/schema";
+import { db } from "#lib/server/db/index.js";
+import { todItem } from "#lib/server/db/schema.js";
 import { and, desc, eq, isNull, like, or, sql, type SQLWrapper } from "drizzle-orm";
 
 export type SearchItem = { id: number; title: string };

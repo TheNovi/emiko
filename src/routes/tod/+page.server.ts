@@ -1,6 +1,6 @@
-import { getItemDetail, updateItem } from "$lib/server/tod";
-import { getCal, type CallItem } from "$lib/server/todCal";
-import { todIsTask, todTaskComplete } from "$lib/todUtil";
+import { getItemDetail, updateItem } from "#lib/server/tod.js";
+import { getCal, type CallItem } from "#lib/server/todCal.js";
+import { todIsTask, todTaskComplete } from "#lib/todUtil.js";
 import { error, fail, redirect } from "@sveltejs/kit";
 import { DateTime } from "luxon";
 import type { Actions, PageServerLoad } from "./$types";

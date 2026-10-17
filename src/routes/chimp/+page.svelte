@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { shuffle } from "$lib/util";
+	import { shuffle } from "#lib/util.js";
 	import type { PageProps } from "./$types";
 
 	// import type { PageProps } from "./$types";

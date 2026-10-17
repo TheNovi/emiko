@@ -1,6 +1,6 @@
 <script lang="ts">
-	import FormInput from "$lib/components/FormInput.svelte";
-	import type { WoMachine } from "$lib/server/workout";
+	import FormInput from "#lib/components/FormInput.svelte";
+	import type { WoMachine } from "#lib/server/workout.js";
 
 	let { machine, prefix }: { machine: WoMachine; prefix?: string } = $props();
 </script>

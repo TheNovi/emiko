@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
-	import { formParseInputDate } from "$lib/util";
+	import { browser } from "$app/env";
+	import { formParseInputDate } from "#lib/util.js";
 	import type { HTMLInputAttributes } from "svelte/elements";
 	import DateView from "./DateView.svelte";
 	import { DateTime } from "luxon";

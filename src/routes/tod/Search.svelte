@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
-	import type { SearchItem } from "$lib/server/tod";
+	import type { SearchItem } from "#lib/server/tod.js";
 
 	let { onSearch, input = false }: { onSearch?: (item: SearchItem) => void; input?: boolean } = $props();
 	let value: string = $state("");

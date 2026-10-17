@@ -1,7 +1,6 @@
-import { getStrollPlaceRandom } from "$lib/server/stroll";
-import { json } from "@sveltejs/kit";
+import { getStrollPlaceRandom } from "#lib/server/stroll.js";
 import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = async () => {
-	return json(await getStrollPlaceRandom());
+	return Response.json(await getStrollPlaceRandom());
 };

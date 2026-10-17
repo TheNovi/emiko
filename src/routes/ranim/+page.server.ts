@@ -1,4 +1,4 @@
-import { random } from "$lib/util";
+import { random } from "#lib/util.js";
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 

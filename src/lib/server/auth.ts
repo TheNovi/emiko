@@ -1,12 +1,10 @@
-import { building } from "$app/environment";
-import { env } from "$env/dynamic/private";
+import { JWT_SECRET } from "$app/env/private";
 import { type Cookies } from "@sveltejs/kit";
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
 import { db } from "./db";
 import { user } from "./db/schema";
-if (!building && !env.JWT_SECRET) throw new Error("JWT_SECRET is not set");
 
 const COOKIE_NAME = "emiko";
 
@@ -17,10 +15,17 @@ export enum AuthError {
 	WRONG_PASSWORD = "Wrong password",
 }
 
-export async function loginUser(cookies: Cookies, creds: { name?: string; password?: string }): Promise<string | undefined> {
+export async function loginUser(
+	cookies: Cookies,
+	creds: { name?: string; password?: string }
+): Promise<string | undefined> {
 	if (!creds.name || !creds.password) return AuthError.MISSING;
 
-	let u = await db.select({ id: user.id, password: user.password, deletedAt: user.deletedAt }).from(user).where(eq(user.name, creds.name)).get();
+	let u = await db
+		.select({ id: user.id, password: user.password, deletedAt: user.deletedAt })
+		.from(user)
+		.where(eq(user.name, creds.name))
+		.get();
 	if (!u) return AuthError.USER_NOT_EXISTS;
 	if (u.deletedAt) return AuthError.USER_DELETED;
 	if (!bcrypt.compareSync(creds.password.trim(), u.password)) return AuthError.WRONG_PASSWORD;
@@ -31,7 +36,7 @@ export async function loginUser(cookies: Cookies, creds: { name?: string; passwo
 }
 
 export function createCookie(cookies: Cookies, user: { id: number }) {
-	let token = jwt.sign({ id: user.id }, env.JWT_SECRET, { expiresIn: "7d", algorithm: "HS256" });
+	let token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "7d", algorithm: "HS256" });
 	//`Bearer ${token}`
 	cookies.set(COOKIE_NAME, token, {
 		path: "/",
@@ -58,9 +63,7 @@ export async function getUserFromCookie(cookies: Cookies) {
 	if (!token) return;
 	try {
 		//.split(' ')[1]; //Bearer token
-		return jwt.verify(token, env.JWT_SECRET, {
-			algorithms: ["HS256"],
-		}) as unknown as { id: number };
+		return jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"] }) as unknown as { id: number };
 	} catch (error) {
 		console.log(error);
 	}
