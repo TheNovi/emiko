@@ -6,5 +6,5 @@ export const variables = defineEnvVars({
 	JWT_SECRET: { schema: building ? v.optional(v.string()) : v.string() },
 	DB_URL: { schema: building ? v.optional(v.string()) : v.string() },
 	TZ: { public: true, schema: (value) => value ?? "utc" },
-	APP_VERSION: { public: true, schema: (value) => process.env.npm_package_version },
+	APP_VERSION: { public: true, static: true, schema: (value) => process.env.npm_package_version },
 });
