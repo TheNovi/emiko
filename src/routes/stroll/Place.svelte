@@ -35,7 +35,7 @@
 				place.name,
 				"//www.google.com/images/branding/product/ico/maps15_bnuw3a_32dp.ico"
 			)}
-			{@render link("Turistické známky", "//turisticke-znamky.cz/znamky/", place.name + "-c" + place.tz, "")}
+			{@render link("Turistické známky", "//turisticke-znamky.cz/items", "?search=" + place.tz, "")}
 		</ul>
 	</div>
 {/if}
