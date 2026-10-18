@@ -141,7 +141,7 @@
 			<div class="error">{e}</div>
 		{/each}
 		<MachineFormInputs machine={selectedMachine} />
-		<button formaction="?/activityAdd" type="submit" id="act">Activity</button>
+		<button formaction="?/activityAdd" type="submit" id="act" disabled={!selectedMachine.id}>Activity</button>
 		<!-- TODO Bigger buttons -->
 		<button formaction="?/save" type="submit" style="background-color: green;">Save</button>
 		<!-- TODO Delete confirm -->
